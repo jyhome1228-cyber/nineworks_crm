@@ -5,46 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#18181b" />
   <meta name="description" content="Nineworks 일정 및 클라이언트 요청 관리 시스템" />
-  <title>9WORKS — Work Management System</title>
+  <title>NINEWORKS — Admin Work System</title>
 
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
   <link rel="stylesheet" href="./css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js" defer></script>
   <script src="./js/app.js" defer></script>
+
+  <style>
+    .brand-logo {
+      display: block;
+      width: 148px;
+      height: auto;
+      filter: brightness(0) invert(1);
+    }
+
+    .brand--login {
+      display: block;
+      margin-bottom: 82px;
+    }
+
+    .brand--login .brand-logo {
+      width: min(238px, 66vw);
+    }
+
+    .brand--button {
+      display: inline-flex;
+      min-width: 148px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .brand--button .brand-logo {
+      width: 148px;
+    }
+
+    .login-copy .admin-label {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      margin-bottom: 22px;
+      padding: 0 11px;
+      background: rgba(255, 255, 255, 0.035);
+      color: #9a9aa3;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+    }
+
+    .login-form__notice strong {
+      color: #888892;
+      font-weight: 600;
+    }
+
+    @media (max-width: 760px) {
+      .brand--button {
+        min-width: auto;
+      }
+
+      .brand--button .brand-logo {
+        width: 116px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="ambient ambient--one" aria-hidden="true"></div>
   <div class="ambient ambient--two" aria-hidden="true"></div>
 
-  <!-- Login -->
+  <!-- Admin Login -->
   <main id="loginView" class="login-view">
     <section class="login-shell" aria-labelledby="loginTitle">
       <div class="brand brand--login">
-        <span class="brand__symbol" aria-hidden="true">✦</span>
-        <span class="brand__name">9WORKS</span>
+        <img class="brand-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS" />
       </div>
 
       <div class="login-copy">
+        <span class="admin-label">ADMIN WORKSPACE</span>
         <p class="eyebrow">WORK MANAGEMENT SYSTEM</p>
-        <h1 id="loginTitle">함께 진행하는 업무와 일정을<br />한곳에서 관리합니다.</h1>
-        <p>클라이언트 요청부터 목표 일정, 담당 업무까지 팀이 같은 흐름을 공유합니다.</p>
+        <h1 id="loginTitle">관리자 계정으로<br />로그인하세요.</h1>
+        <p>나인웍스 내부 일정과 클라이언트 요청, 담당 업무를 한곳에서 관리합니다.</p>
       </div>
 
       <form id="loginForm" class="login-form">
         <label class="field">
-          <span>이메일</span>
-          <input id="loginEmail" type="email" autocomplete="email" placeholder="name@9works.kr" required />
+          <span>관리자 이메일</span>
+          <input id="loginEmail" type="email" autocomplete="email" placeholder="admin@nineworks.kr" required />
         </label>
         <label class="field">
           <span>비밀번호</span>
           <input id="loginPassword" type="password" autocomplete="current-password" placeholder="비밀번호를 입력하세요" required />
         </label>
-        <button class="button button--primary button--large" type="submit">로그인</button>
-        <p class="login-form__notice">현재는 화면 확인용 프로토타입입니다. 이메일과 비밀번호를 입력하면 접속됩니다.</p>
+        <button class="button button--primary button--large" type="submit">관리자 로그인</button>
+        <p class="login-form__notice"><strong>현재는 UI 프로토타입 단계입니다.</strong><br />Firebase 인증 연결 후 등록된 관리자와 직원 계정만 접속할 수 있습니다.</p>
       </form>
 
-      <p class="login-footer">CLIENT · SCHEDULE · WORKFLOW</p>
+      <p class="login-footer">NINEWORKS · INTERNAL WORKSPACE</p>
     </section>
   </main>
 
@@ -53,8 +112,7 @@
     <header class="topbar">
       <div class="topbar__inner">
         <button class="brand brand--button" type="button" data-route="calendar" aria-label="캘린더로 이동">
-          <span class="brand__symbol" aria-hidden="true">✦</span>
-          <span class="brand__name">9WORKS</span>
+          <img class="brand-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS" />
         </button>
 
         <nav class="main-nav" aria-label="주요 메뉴">
@@ -234,7 +292,7 @@
                 <h2>박재영</h2>
                 <p>OWNER · BRAND DESIGNER</p>
                 <dl>
-                  <div><dt>이메일</dt><dd>admin@9works.kr</dd></div>
+                  <div><dt>이메일</dt><dd>admin@nineworks.kr</dd></div>
                   <div><dt>권한</dt><dd>전체 관리</dd></div>
                   <div><dt>기본 화면</dt><dd>전체 캘린더</dd></div>
                 </dl>
