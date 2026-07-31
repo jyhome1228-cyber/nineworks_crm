@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#18181b" />
+  <meta name="description" content="Nineworks 일정 및 클라이언트 요청 관리 시스템" />
+  <title>9WORKS — Work Management System</title>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js" defer></script>
+  <script src="./js/app.js" defer></script>
+</head>
+<body>
+  <div class="ambient ambient--one" aria-hidden="true"></div>
+  <div class="ambient ambient--two" aria-hidden="true"></div>
+
+  <!-- Login -->
+  <main id="loginView" class="login-view">
+    <section class="login-shell" aria-labelledby="loginTitle">
+      <div class="brand brand--login">
+        <span class="brand__symbol" aria-hidden="true">✦</span>
+        <span class="brand__name">9WORKS</span>
+      </div>
+
+      <div class="login-copy">
+        <p class="eyebrow">WORK MANAGEMENT SYSTEM</p>
+        <h1 id="loginTitle">함께 진행하는 업무와 일정을<br />한곳에서 관리합니다.</h1>
+        <p>클라이언트 요청부터 목표 일정, 담당 업무까지 팀이 같은 흐름을 공유합니다.</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <label class="field">
+          <span>이메일</span>
+          <input id="loginEmail" type="email" autocomplete="email" placeholder="name@9works.kr" required />
+        </label>
+        <label class="field">
+          <span>비밀번호</span>
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="비밀번호를 입력하세요" required />
+        </label>
+        <button class="button button--primary button--large" type="submit">로그인</button>
+        <p class="login-form__notice">현재는 화면 확인용 프로토타입입니다. 이메일과 비밀번호를 입력하면 접속됩니다.</p>
+      </form>
+
+      <p class="login-footer">CLIENT · SCHEDULE · WORKFLOW</p>
+    </section>
+  </main>
+
+  <!-- Application -->
+  <div id="appView" class="app" hidden>
+    <header class="topbar">
+      <div class="topbar__inner">
+        <button class="brand brand--button" type="button" data-route="calendar" aria-label="캘린더로 이동">
+          <span class="brand__symbol" aria-hidden="true">✦</span>
+          <span class="brand__name">9WORKS</span>
+        </button>
+
+        <nav class="main-nav" aria-label="주요 메뉴">
+          <button class="nav-link is-active" type="button" data-route="calendar">캘린더</button>
+          <button class="nav-link" type="button" data-route="mypage">마이페이지</button>
+          <button class="nav-link" type="button" data-route="clients">클라이언트</button>
+          <button class="nav-link" type="button" data-route="requests">요청함 <span id="requestBadge" class="nav-badge">2</span></button>
+        </nav>
+
+        <div class="topbar__actions">
+          <label class="search-box" aria-label="업무 검색">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" /></svg>
+            <input id="globalSearch" type="search" placeholder="검색" />
+          </label>
+          <button class="icon-button" id="notificationButton" type="button" aria-label="알림 확인">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
+            <span class="status-dot" aria-hidden="true"></span>
+          </button>
+          <button class="profile-button" type="button" data-route="mypage">
+            <span class="profile-button__avatar">박</span>
+            <span class="profile-button__text"><strong>박재영</strong><small>OWNER</small></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-content">
+      <!-- Calendar page -->
+      <main id="calendarPage" class="page is-active" data-page="calendar">
+        <section class="page-heading">
+          <div>
+            <p class="eyebrow">WORK CALENDAR</p>
+            <h1>팀의 일정을 한눈에 관리합니다.</h1>
+            <p>일정을 마우스로 옮기거나 끝부분을 늘려 목표 기간을 바로 조정할 수 있습니다.</p>
+          </div>
+          <button id="openEventDrawer" class="button button--primary" type="button">
+            <span aria-hidden="true">＋</span> 일정 추가
+          </button>
+        </section>
+
+        <section class="calendar-toolbar" aria-label="캘린더 필터">
+          <div class="filter-group">
+            <label class="select-control">
+              <span>클라이언트</span>
+              <select id="clientFilter">
+                <option value="all">전체 클라이언트</option>
+                <option value="건강미">건강미</option>
+                <option value="리림">리림</option>
+                <option value="오드벨">오드벨</option>
+                <option value="JNCOS TECH">JNCOS TECH</option>
+              </select>
+            </label>
+            <label class="select-control">
+              <span>담당자</span>
+              <select id="memberFilter">
+                <option value="all">전체 담당자</option>
+                <option value="박재영">박재영</option>
+                <option value="신민용">신민용</option>
+              </select>
+            </label>
+            <label class="select-control">
+              <span>업무 분류</span>
+              <select id="categoryFilter">
+                <option value="all">전체 업무</option>
+                <option value="디자인">디자인</option>
+                <option value="홈페이지">홈페이지</option>
+                <option value="브랜딩">브랜딩</option>
+                <option value="미팅">미팅</option>
+                <option value="수정사항">수정사항</option>
+              </select>
+            </label>
+          </div>
+          <div class="calendar-legend" aria-label="일정 상태 안내">
+            <span><i class="legend-dot legend-dot--planned"></i>예정</span>
+            <span><i class="legend-dot legend-dot--progress"></i>진행 중</span>
+            <span><i class="legend-dot legend-dot--review"></i>검수 중</span>
+            <span><i class="legend-dot legend-dot--done"></i>완료</span>
+          </div>
+        </section>
+
+        <section class="calendar-layout">
+          <div class="calendar-main panel">
+            <div id="calendar"></div>
+          </div>
+
+          <aside class="schedule-side">
+            <section class="panel side-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">TODAY</p>
+                  <h2>오늘 일정</h2>
+                </div>
+                <span id="todayCount" class="count-badge">0</span>
+              </div>
+              <div id="todaySchedule" class="compact-list"></div>
+            </section>
+
+            <section class="panel side-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">REQUESTS</p>
+                  <h2>최근 요청</h2>
+                </div>
+                <button class="text-button" type="button" data-route="requests">전체 보기</button>
+              </div>
+              <div id="requestPreview" class="compact-list"></div>
+            </section>
+          </aside>
+        </section>
+      </main>
+
+      <!-- My page -->
+      <main id="mypagePage" class="page" data-page="mypage">
+        <section class="page-heading page-heading--compact">
+          <div>
+            <p class="eyebrow">MY WORKSPACE</p>
+            <h1>박재영 님, 오늘의 업무 흐름입니다.</h1>
+            <p>내 목표와 할 일, 배정된 요청사항을 빠르게 확인하세요.</p>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <article class="summary-card"><span>오늘 일정</span><strong id="summaryToday">0</strong><small>건</small></article>
+          <article class="summary-card"><span>진행 중 업무</span><strong id="summaryProgress">0</strong><small>건</small></article>
+          <article class="summary-card"><span>이번 주 목표</span><strong id="summaryGoals">0</strong><small>건</small></article>
+          <article class="summary-card"><span>새 요청사항</span><strong id="summaryRequests">0</strong><small>건</small></article>
+        </section>
+
+        <div class="workspace-tabs" role="tablist" aria-label="마이페이지 메뉴">
+          <button class="workspace-tab is-active" type="button" data-workspace-tab="overview">전체 현황</button>
+          <button class="workspace-tab" type="button" data-workspace-tab="goals">목표 일정</button>
+          <button class="workspace-tab" type="button" data-workspace-tab="todo">해야 할 일</button>
+          <button class="workspace-tab" type="button" data-workspace-tab="assigned">담당 요청</button>
+          <button class="workspace-tab" type="button" data-workspace-tab="completed">완료 업무</button>
+          <button class="workspace-tab" type="button" data-workspace-tab="profile">프로필</button>
+        </div>
+
+        <section class="workspace-content panel">
+          <div class="workspace-panel is-active" data-workspace-panel="overview">
+            <div class="two-column-list">
+              <div>
+                <div class="section-title"><div><p class="eyebrow">GOALS</p><h2>다가오는 목표 일정</h2></div></div>
+                <div id="overviewGoals" class="line-list"></div>
+              </div>
+              <div>
+                <div class="section-title"><div><p class="eyebrow">TO DO</p><h2>지금 해야 할 일</h2></div></div>
+                <div id="overviewTodo" class="todo-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="workspace-panel" data-workspace-panel="goals">
+            <div class="section-title"><div><p class="eyebrow">GOALS</p><h2>목표 일정</h2></div><button class="button button--ghost" type="button" data-route="calendar">캘린더 보기</button></div>
+            <div id="goalList" class="line-list"></div>
+          </div>
+
+          <div class="workspace-panel" data-workspace-panel="todo">
+            <div class="section-title"><div><p class="eyebrow">TO DO</p><h2>해야 할 일</h2></div><button id="addTodoButton" class="button button--ghost" type="button">＋ 할 일 추가</button></div>
+            <div id="todoList" class="todo-list"></div>
+          </div>
+
+          <div class="workspace-panel" data-workspace-panel="assigned">
+            <div class="section-title"><div><p class="eyebrow">ASSIGNED REQUESTS</p><h2>나에게 배정된 요청</h2></div></div>
+            <div id="assignedRequestList" class="request-list"></div>
+          </div>
+
+          <div class="workspace-panel" data-workspace-panel="completed">
+            <div class="section-title"><div><p class="eyebrow">COMPLETED</p><h2>완료 업무</h2></div></div>
+            <div id="completedList" class="line-list"></div>
+          </div>
+
+          <div class="workspace-panel" data-workspace-panel="profile">
+            <div class="profile-layout">
+              <div class="profile-large-avatar">박</div>
+              <div class="profile-info">
+                <p class="eyebrow">PROFILE</p>
+                <h2>박재영</h2>
+                <p>OWNER · BRAND DESIGNER</p>
+                <dl>
+                  <div><dt>이메일</dt><dd>admin@9works.kr</dd></div>
+                  <div><dt>권한</dt><dd>전체 관리</dd></div>
+                  <div><dt>기본 화면</dt><dd>전체 캘린더</dd></div>
+                </dl>
+                <button id="logoutButton" class="button button--ghost" type="button">로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Clients -->
+      <main id="clientsPage" class="page" data-page="clients">
+        <section class="page-heading">
+          <div><p class="eyebrow">CLIENTS</p><h1>클라이언트 목록</h1><p>클라이언트별 일정과 요청사항을 한곳에서 확인합니다.</p></div>
+          <button id="addClientButton" class="button button--primary" type="button">＋ 클라이언트 추가</button>
+        </section>
+        <section class="panel table-panel">
+          <div class="table-toolbar"><input id="clientSearch" type="search" placeholder="클라이언트 검색" /><span id="clientCount">0 CLIENTS</span></div>
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead><tr><th>클라이언트</th><th>분류</th><th>진행 업무</th><th>요청</th><th>상태</th><th>담당자</th></tr></thead>
+              <tbody id="clientTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <!-- Requests -->
+      <main id="requestsPage" class="page" data-page="requests">
+        <section class="page-heading">
+          <div><p class="eyebrow">CLIENT REQUESTS</p><h1>요청사항을 놓치지 않도록 정리합니다.</h1><p>카카오톡, 전화, 이메일로 받은 요청을 등록하고 일정으로 바로 전환하세요.</p></div>
+          <button id="addRequestButton" class="button button--primary" type="button">＋ 요청 등록</button>
+        </section>
+        <section class="request-board">
+          <div class="request-column panel"><div class="request-column__heading"><span>새 요청</span><b id="newRequestCount">0</b></div><div id="newRequestList" class="request-cards"></div></div>
+          <div class="request-column panel"><div class="request-column__heading"><span>확인 완료</span><b id="confirmedRequestCount">0</b></div><div id="confirmedRequestList" class="request-cards"></div></div>
+          <div class="request-column panel"><div class="request-column__heading"><span>작업 중</span><b id="workingRequestCount">0</b></div><div id="workingRequestList" class="request-cards"></div></div>
+          <div class="request-column panel"><div class="request-column__heading"><span>완료</span><b id="doneRequestCount">0</b></div><div id="doneRequestList" class="request-cards"></div></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Event drawer -->
+    <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
+    <aside id="eventDrawer" class="drawer" aria-hidden="true" aria-labelledby="drawerTitle">
+      <div class="drawer__header">
+        <div><p class="eyebrow">NEW SCHEDULE</p><h2 id="drawerTitle">일정 추가</h2></div>
+        <button id="closeEventDrawer" class="icon-button" type="button" aria-label="일정 창 닫기">×</button>
+      </div>
+      <form id="eventForm" class="drawer__form">
+        <input id="eventId" type="hidden" />
+        <label class="field"><span>일정명</span><input id="eventTitle" type="text" placeholder="업무 이름을 입력하세요" required /></label>
+        <div class="form-grid">
+          <label class="field"><span>클라이언트</span><select id="eventClient" required><option value="">선택</option><option>건강미</option><option>리림</option><option>오드벨</option><option>JNCOS TECH</option><option>나인웍스</option></select></label>
+          <label class="field"><span>업무 분류</span><select id="eventCategory" required><option value="">선택</option><option>디자인</option><option>홈페이지</option><option>브랜딩</option><option>미팅</option><option>수정사항</option><option>개인 일정</option></select></label>
+        </div>
+        <label class="field"><span>담당자</span><select id="eventMember" required><option value="박재영">박재영</option><option value="신민용">신민용</option></select></label>
+        <div class="form-grid">
+          <label class="field"><span>시작일</span><input id="eventStart" type="date" required /></label>
+          <label class="field"><span>목표 완료일</span><input id="eventEnd" type="date" required /></label>
+        </div>
+        <label class="field"><span>상태</span><select id="eventStatus"><option value="planned">예정</option><option value="progress">진행 중</option><option value="review">검수 중</option><option value="done">완료</option></select></label>
+        <label class="field"><span>요청 내용 및 메모</span><textarea id="eventMemo" rows="5" placeholder="요청사항이나 작업 메모를 입력하세요"></textarea></label>
+        <label class="field"><span>관련 링크</span><input id="eventLink" type="url" placeholder="Figma, GitHub, Drive 링크" /></label>
+        <div class="drawer__actions">
+          <button id="deleteEventButton" class="button button--danger" type="button" hidden>삭제</button>
+          <button class="button button--primary" type="submit">저장</button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Request modal -->
+    <div id="modalBackdrop" class="modal-backdrop" hidden></div>
+    <section id="requestModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="requestModalTitle" hidden>
+      <div class="modal__header"><div><p class="eyebrow">CLIENT REQUEST</p><h2 id="requestModalTitle">요청 등록</h2></div><button id="closeRequestModal" class="icon-button" type="button">×</button></div>
+      <form id="requestForm" class="modal__body">
+        <label class="field"><span>클라이언트</span><select id="requestClient" required><option value="">선택</option><option>건강미</option><option>리림</option><option>오드벨</option><option>JNCOS TECH</option></select></label>
+        <label class="field"><span>요청 제목</span><input id="requestTitle" type="text" required /></label>
+        <label class="field"><span>요청 내용</span><textarea id="requestContent" rows="5" required></textarea></label>
+        <div class="form-grid">
+          <label class="field"><span>담당자</span><select id="requestAssignee"><option>박재영</option><option>신민용</option><option>미지정</option></select></label>
+          <label class="field"><span>희망 완료일</span><input id="requestDue" type="date" required /></label>
+        </div>
+        <div class="modal__actions"><button class="button button--ghost" type="button" id="cancelRequestModal">취소</button><button class="button button--primary" type="submit">요청 등록</button></div>
+      </form>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+</body>
+</html>
