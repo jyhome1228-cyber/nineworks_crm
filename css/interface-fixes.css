@@ -1,0 +1,175 @@
+/* Mypage list fixes and visible account controls */
+
+/* Prevent goal/completed list buttons from inheriting browser button styles. */
+#overviewGoals,
+#goalList,
+#completedList {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+}
+
+.two-column-list > div {
+  min-width: 0;
+}
+
+#overviewGoals .line-item,
+#goalList .line-item,
+#completedList .line-item {
+  -webkit-appearance: none;
+  appearance: none;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: 88px minmax(0, 1fr) 138px;
+  align-items: center;
+  gap: 18px;
+  margin: 0;
+  padding: 18px 0;
+  border: 0 !important;
+  border-top: 1px solid var(--line-soft) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text);
+  text-align: left;
+  transform: none !important;
+}
+
+#overviewGoals .line-item:first-child,
+#goalList .line-item:first-child,
+#completedList .line-item:first-child {
+  border-top: 0 !important;
+}
+
+#overviewGoals .line-item:hover,
+#goalList .line-item:hover,
+#completedList .line-item:hover,
+#overviewGoals .line-item:focus-visible,
+#goalList .line-item:focus-visible,
+#completedList .line-item:focus-visible {
+  background: rgba(255, 255, 255, 0.025) !important;
+}
+
+#overviewGoals .line-item__date,
+#goalList .line-item__date,
+#completedList .line-item__date {
+  color: var(--primary-hover);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+#overviewGoals .line-item__body,
+#goalList .line-item__body,
+#completedList .line-item__body {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+#overviewGoals .line-item__body strong,
+#goalList .line-item__body strong,
+#completedList .line-item__body strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 720;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#overviewGoals .line-item__body small,
+#goalList .line-item__body small,
+#completedList .line-item__body small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#overviewGoals .line-item__meta,
+#goalList .line-item__meta,
+#completedList .line-item__meta {
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.55;
+  text-align: right;
+}
+
+/* Persistent logout control in the top navigation. */
+.topbar-logout {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  padding: 0 13px;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: 150ms ease;
+}
+
+.topbar-logout:hover {
+  border-color: #45454d;
+  background: var(--surface-2);
+  color: #fff;
+}
+
+.topbar-logout svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.topbar-logout.is-loading {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+@media (max-width: 980px) {
+  .topbar-logout span {
+    display: none;
+  }
+
+  .topbar-logout {
+    width: 38px;
+    padding: 0;
+    border-radius: 50%;
+  }
+}
+
+@media (max-width: 760px) {
+  #overviewGoals .line-item,
+  #goalList .line-item,
+  #completedList .line-item {
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 12px;
+    padding: 15px 0;
+  }
+
+  #overviewGoals .line-item__meta,
+  #goalList .line-item__meta,
+  #completedList .line-item__meta {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  #overviewGoals .line-item__body strong,
+  #goalList .line-item__body strong,
+  #completedList .line-item__body strong {
+    font-size: 15px;
+  }
+}
