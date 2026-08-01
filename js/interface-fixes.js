@@ -8,6 +8,11 @@ typographyStyle.rel = "stylesheet";
 typographyStyle.href = new URL("../css/typography-refinement.css", import.meta.url).href;
 document.head.appendChild(typographyStyle);
 
+const readabilityStyle = document.createElement("link");
+readabilityStyle.rel = "stylesheet";
+readabilityStyle.href = new URL("../css/readability-bright.css", import.meta.url).href;
+document.head.appendChild(readabilityStyle);
+
 const api = window.NineworksFirebase;
 
 function addVisibleLogoutButton() {
