@@ -59,6 +59,12 @@ window.NineworksFirebase = firebaseApi;
 
 queueMicrotask(async () => {
   try {
+    await import("./fullcalendar-native-events.js");
+  } catch (error) {
+    console.warn("캘린더 기본 렌더러 로드 실패", error);
+  }
+
+  try {
     const memberModule = await import("./member-cleanup.js");
     await memberModule.initializeMemberCleanup();
   } catch (error) {
@@ -68,9 +74,7 @@ queueMicrotask(async () => {
   import("./team-enhancements.js").catch((error) => console.warn("팀 기능 모듈 로드 실패", error));
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
-  import("./calendar-event-details.js").catch((error) => console.warn("캘린더 상세 모듈 로드 실패", error));
-  import("./calendar-resize.js").catch((error) => console.warn("캘린더 폭 조절 모듈 로드 실패", error));
-  import("./public-calendar-sync.js").catch((error) => console.warn("공유 캘린더 동기화 모듈 로드 실패", error));
+  import("./calendar-resize-share.js").catch((error) => console.warn("캘린더 공유·크기 조절 모듈 로드 실패", error));
 });
 
 export {
