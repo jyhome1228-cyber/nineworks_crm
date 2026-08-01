@@ -1,3 +1,4 @@
+import "./fullcalendar-native-events.js?v=20260801-3";
 import "./ui-enhancements.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
@@ -123,12 +124,6 @@ window.NineworksFirebase = firebaseApi;
 
 queueMicrotask(async () => {
   initializeLoginFeedback();
-
-  try {
-    await import("./fullcalendar-native-events.js");
-  } catch (error) {
-    console.warn("캘린더 기본 렌더러 로드 실패", error);
-  }
 
   try {
     const memberModule = await import("./member-cleanup.js");
