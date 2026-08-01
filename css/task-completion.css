@@ -1,0 +1,109 @@
+/* Calendar completion state and quick action */
+
+/* All unfinished work is immediately visible in Nineworks blue. */
+.fc .event-status-planned,
+.fc .event-status-progress,
+.fc .event-status-review {
+  border-color: rgba(76, 111, 255, 0.72) !important;
+  border-left-color: #4f72ff !important;
+  background: linear-gradient(90deg, rgba(67, 104, 245, 0.24), rgba(38, 43, 68, 0.9)) !important;
+}
+
+.fc .event-status-planned:hover,
+.fc .event-status-progress:hover,
+.fc .event-status-review:hover {
+  background: linear-gradient(90deg, rgba(67, 104, 245, 0.34), rgba(43, 49, 78, 0.96)) !important;
+}
+
+/* Completed work recedes into a calm black card. */
+.fc .event-status-done {
+  border-color: #29292f !important;
+  border-left-color: #4a4a52 !important;
+  background: #101012 !important;
+  opacity: 0.76;
+}
+
+.fc .event-status-done .nw-event-title {
+  color: #a9a9b0;
+}
+
+.fc .event-status-done .nw-event-note {
+  color: #686870;
+}
+
+.fc .event-status-done:hover {
+  opacity: 0.94;
+  background: #141416 !important;
+}
+
+.drawer__header {
+  align-items: flex-start;
+}
+
+.drawer__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-complete-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(85, 119, 255, 0.5);
+  border-radius: 8px;
+  padding: 0 13px;
+  background: rgba(67, 104, 245, 0.14);
+  color: #c8d2ff;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: 150ms ease;
+}
+
+.quick-complete-button:hover {
+  border-color: rgba(85, 119, 255, 0.85);
+  background: rgba(67, 104, 245, 0.24);
+  color: #fff;
+}
+
+.quick-complete-button.is-completed {
+  border-color: #3b3b42;
+  background: #111113;
+  color: #9c9ca5;
+}
+
+.quick-complete-button svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.quick-complete-button[hidden] {
+  display: none !important;
+}
+
+.brand--button {
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .drawer__header-actions {
+    gap: 6px;
+  }
+
+  .quick-complete-button {
+    min-width: 38px;
+    padding: 0 10px;
+  }
+
+  .quick-complete-button span {
+    display: none;
+  }
+}
