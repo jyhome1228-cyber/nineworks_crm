@@ -1,0 +1,189 @@
+/* Refined typography hierarchy — lighter, calmer Nineworks workspace */
+body {
+  font-weight: 400;
+}
+
+/* Large headings */
+.page-heading h1,
+.login-copy h1,
+#calendarPage .page-heading h1,
+#mypagePage .page-heading h1,
+#requestsPage .page-heading h1,
+#clientsPage .page-heading h1 {
+  font-weight: 650;
+  letter-spacing: -0.048em;
+}
+
+.drawer__header h2,
+.modal__header h2,
+.notification-panel__head h2,
+.simple-request-heading h2,
+.panel-heading h2,
+.section-title h2,
+.client-drag-section__head h2 {
+  font-weight: 620;
+}
+
+/* Navigation and controls */
+.nav-link,
+.workspace-tab,
+.button,
+.topbar-logout,
+.text-button,
+.client-drag-chip,
+.select-control select {
+  font-weight: 550;
+}
+
+.nav-link.is-active,
+.workspace-tab.is-active,
+.button--primary {
+  font-weight: 620;
+}
+
+.profile-button__text strong,
+.brand__name {
+  font-weight: 620;
+}
+
+.profile-button__text small,
+.eyebrow,
+.admin-label,
+.client-drag-section__hint,
+.select-control > span,
+.field > span {
+  font-weight: 550;
+}
+
+/* Calendar */
+.fc .fc-toolbar-title {
+  font-weight: 650 !important;
+  letter-spacing: -0.035em;
+}
+
+.fc .fc-button {
+  font-weight: 550 !important;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  font-weight: 620 !important;
+}
+
+.fc .fc-col-header-cell-cushion {
+  font-weight: 550 !important;
+}
+
+.fc .fc-daygrid-day-number {
+  font-weight: 450 !important;
+}
+
+.fc .fc-event-title,
+.fc .fc-event-main,
+.fc .fc-daygrid-event {
+  font-weight: 580 !important;
+}
+
+.calendar-legend,
+.calendar-legend span {
+  font-weight: 450;
+}
+
+/* Right-side summaries */
+.schedule-side .panel-heading h2 {
+  font-weight: 620;
+}
+
+.schedule-side .compact-item strong {
+  font-weight: 580;
+}
+
+.schedule-side .compact-item small {
+  font-weight: 400;
+}
+
+.count-badge,
+.nav-badge,
+.notification-count {
+  font-weight: 650;
+}
+
+/* Mypage */
+.summary-card span,
+.summary-card small {
+  font-weight: 450;
+}
+
+.summary-card strong {
+  font-weight: 600;
+}
+
+#overviewGoals .line-item__date,
+#goalList .line-item__date,
+#completedList .line-item__date {
+  font-weight: 600;
+}
+
+#overviewGoals .line-item__body strong,
+#goalList .line-item__body strong,
+#completedList .line-item__body strong,
+.todo-item__body strong,
+.request-row strong {
+  font-weight: 580;
+}
+
+#overviewGoals .line-item__body small,
+#goalList .line-item__body small,
+#completedList .line-item__body small,
+.todo-item__body small,
+.request-row p,
+.line-item__meta {
+  font-weight: 400;
+}
+
+/* Requests */
+.simple-request-item__status span,
+.simple-request-item__body small {
+  font-weight: 580;
+}
+
+.simple-request-item__body h3,
+.request-card strong,
+.notification-item__body strong {
+  font-weight: 600;
+}
+
+.simple-request-item__body p,
+.simple-request-item__meta,
+.request-card p,
+.request-card__meta,
+.notification-item__body small,
+.notification-item__body em {
+  font-weight: 400;
+}
+
+/* Forms and data */
+.field input,
+.field select,
+.field textarea,
+.table-toolbar input,
+.data-table,
+.client-name,
+.client-chip {
+  font-weight: 400;
+}
+
+.data-table th {
+  font-weight: 550;
+}
+
+.data-table td {
+  font-weight: 400;
+}
+
+@media (max-width: 760px) {
+  .page-heading h1,
+  .login-copy h1 {
+    font-weight: 650;
+  }
+}
