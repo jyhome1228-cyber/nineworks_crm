@@ -50,9 +50,24 @@ function addVisibleLogoutButton() {
 }
 
 function ensureLoginCopyIsCurrent() {
+  const title = document.querySelector("#loginTitle");
+  const emailLabel = document.querySelector("#loginEmail")?.closest(".field")?.querySelector(":scope > span");
   const notice = document.querySelector(".login-form__notice");
-  if (notice) {
-    notice.innerHTML = "Firebase에 등록된 관리자·직원 계정만 로그인할 수 있습니다.";
+  const loginButton = document.querySelector("#loginForm button[type='submit']");
+
+  if (title) title.innerHTML = "나인웍스 계정으로<br />로그인하세요.";
+  if (emailLabel) emailLabel.textContent = "이메일";
+  if (notice) notice.innerHTML = "Firebase에 등록된 관리자·직원 계정만 로그인할 수 있습니다.";
+  if (loginButton && !loginButton.disabled) loginButton.textContent = "로그인";
+
+  if (loginButton && !loginButton.dataset.labelObserver) {
+    loginButton.dataset.labelObserver = "true";
+    const observer = new MutationObserver(() => {
+      if (!loginButton.disabled && loginButton.textContent.trim() !== "로그인") {
+        loginButton.textContent = "로그인";
+      }
+    });
+    observer.observe(loginButton, { childList: true, attributes: true, attributeFilter: ["disabled"] });
   }
 }
 
@@ -60,7 +75,10 @@ function initializeInterfaceFixes() {
   addVisibleLogoutButton();
   ensureLoginCopyIsCurrent();
 
-  const observer = new MutationObserver(() => addVisibleLogoutButton());
+  const observer = new MutationObserver(() => {
+    addVisibleLogoutButton();
+    ensureLoginCopyIsCurrent();
+  });
   const app = document.querySelector("#appView");
   if (app) observer.observe(app, { attributes: true, attributeFilter: ["hidden"] });
 }
