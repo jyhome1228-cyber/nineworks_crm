@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">NINEWORKS CRM</title>
+  <desc id="desc">검정 배경 중앙에 흰색 나인웍스 로고가 배치된 공유 이미지</desc>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="55%">
+      <stop offset="0" stop-color="#24386f" stop-opacity=".28"/>
+      <stop offset=".58" stop-color="#11131a" stop-opacity=".1"/>
+      <stop offset="1" stop-color="#09090b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="logoWhite" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="#09090b"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="24" y="24" width="1152" height="582" rx="18" fill="none" stroke="#242429" stroke-width="2"/>
+  <image href="https://9workscrm.cloud/assets/nineworks-logo.svg" x="300" y="274" width="600" height="82" preserveAspectRatio="xMidYMid meet" filter="url(#logoWhite)"/>
+  <text x="600" y="404" text-anchor="middle" fill="#7d7d86" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600" letter-spacing="6">WORK MANAGEMENT SYSTEM</text>
+</svg>
