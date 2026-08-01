@@ -105,6 +105,13 @@ async function migrateLegacyAssignees() {
   if (changeCount > 0) await batch.commit();
 }
 
+async function prepareSignedInUser(user) {
+  if (!user) return;
+  await ensureKnownProfile(user);
+  await migrateLegacyAssignees();
+  enforceMemberOptions();
+}
+
 function observeMemberSelects() {
   enforceMemberOptions();
 
@@ -130,14 +137,24 @@ export async function initializeMemberCleanup() {
 
   observeMemberSelects();
 
+  let initialResolved = false;
+  let resolveInitial;
+  const initialReady = new Promise((resolve) => {
+    resolveInitial = resolve;
+  });
+
   api.onAuthStateChanged(api.auth, async (user) => {
-    if (!user) return;
     try {
-      await ensureKnownProfile(user);
-      await migrateLegacyAssignees();
-      enforceMemberOptions();
+      await prepareSignedInUser(user);
     } catch (error) {
       console.warn("담당자 정리 실패", error);
+    } finally {
+      if (!initialResolved) {
+        initialResolved = true;
+        resolveInitial();
+      }
     }
   });
+
+  await initialReady;
 }
