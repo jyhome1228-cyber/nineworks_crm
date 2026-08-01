@@ -59,6 +59,7 @@ window.NineworksFirebase = firebaseApi;
 
 queueMicrotask(() => {
   import("./team-enhancements.js").catch((error) => console.warn("팀 기능 모듈 로드 실패", error));
+  import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
 });
 
 export {
