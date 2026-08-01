@@ -30,6 +30,11 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
+    match /publicCalendar/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
     match /meta/{document=**} {
       allow read, write: if isSignedIn();
     }
