@@ -1,4 +1,4 @@
-import "./fullcalendar-native-events.js?v=20260801-3";
+import "./fullcalendar-native-events.js?v=20260801-5";
 import "./ui-enhancements.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
