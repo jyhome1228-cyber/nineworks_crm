@@ -22,13 +22,18 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
+    match /notifications/{document=**} {
+      allow read, write: if isSignedIn();
+    }
+
     match /meta/{document=**} {
       allow read, write: if isSignedIn();
     }
 
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow write: if request.auth.uid == userId;
+      allow create, update: if request.auth.uid == userId;
+      allow delete: if false;
     }
 
     match /{document=**} {
