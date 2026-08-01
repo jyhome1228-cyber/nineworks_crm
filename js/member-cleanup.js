@@ -1,131 +1,187 @@
 const api = window.NineworksFirebase;
 
-const ALLOWED_MEMBERS = ["박재영", "박상혁"];
-const KNOWN_STAFF_EMAIL = "daytuio0329@naver.com";
+const MEMBERS = ["박재영", "박상혁"];
+const PROFILE_BY_EMAIL_LOCAL = {
+  planus253: { name: "박재영", role: "owner" },
+  daytuio0329: { name: "박상혁", role: "staff" }
+};
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
+let signedInUser = null;
+let signedInProfile = null;
+let rosterTimer = null;
 
 function normalize(value = "") {
-  return String(value).replace(/\s+/g, "").trim();
+  return String(value).replace(/\s+/g, "").trim().toLowerCase();
 }
 
-function sameOptions(select, values) {
-  if (!select) return true;
-  const current = [...select.options].map((option) => option.value);
-  return current.length === values.length && current.every((value, index) => value === values[index]);
+function profileFromUser(user) {
+  const local = String(user?.email || "").split("@")[0].toLowerCase();
+  return PROFILE_BY_EMAIL_LOCAL[local] || null;
 }
 
-function replaceOptions(select, values, fallbackValue = "") {
-  if (!select || sameOptions(select, values)) return;
+function optionValues(select) {
+  return select ? [...select.options].map((option) => option.value) : [];
+}
+
+function replaceOptions(select, values, fallback = "") {
+  if (!select) return;
+
+  const expected = values.map((item) => item.value);
+  const current = optionValues(select);
+  const same = expected.length === current.length && expected.every((value, index) => value === current[index]);
   const previous = select.value;
-  select.innerHTML = values
-    .map(({ value, label }) => `<option value="${value}">${label}</option>`)
-    .join("");
 
-  if (values.some((item) => item.value === previous)) {
-    select.value = previous;
-  } else if (previous === "신민용" && values.some((item) => item.value === "박상혁")) {
-    select.value = "박상혁";
-  } else {
-    select.value = fallbackValue || values[0]?.value || "";
+  if (!same) {
+    select.innerHTML = values
+      .map((item) => `<option value="${item.value}">${item.label}</option>`)
+      .join("");
   }
+
+  if (expected.includes(previous)) {
+    select.value = previous;
+    return;
+  }
+
+  const normalizedPrevious = normalize(previous);
+  if (["신민용", "daytuio0329", "daytuio0329@naver.com"].map(normalize).includes(normalizedPrevious)) {
+    select.value = expected.includes("박상혁") ? "박상혁" : fallback;
+    return;
+  }
+
+  if (["planus253"].map(normalize).includes(normalizedPrevious)) {
+    select.value = expected.includes("박재영") ? "박재영" : fallback;
+    return;
+  }
+
+  select.value = fallback || expected[0] || "";
 }
 
 function enforceMemberOptions() {
   replaceOptions(
     $("#eventMember"),
-    ALLOWED_MEMBERS.map((name) => ({ value: name, label: name })),
-    "박재영"
+    MEMBERS.map((name) => ({ value: name, label: name })),
+    signedInProfile?.name || "박재영"
   );
 
   replaceOptions(
     $("#requestAssignee"),
-    [...ALLOWED_MEMBERS.map((name) => ({ value: name, label: name })), { value: "미지정", label: "미지정" }],
-    "박재영"
+    [...MEMBERS.map((name) => ({ value: name, label: name })), { value: "미지정", label: "미지정" }],
+    signedInProfile?.name || "박재영"
   );
 
   replaceOptions(
     $("#memberFilter"),
     [
       { value: "all", label: "전체 담당자" },
-      ...ALLOWED_MEMBERS.map((name) => ({ value: name, label: name }))
+      ...MEMBERS.map((name) => ({ value: name, label: name }))
     ],
     "all"
   );
-}
 
-async function ensureKnownProfile(user) {
-  if (!user || String(user.email || "").toLowerCase() !== KNOWN_STAFF_EMAIL) return;
-
-  await api.setDoc(
-    api.doc(api.db, "users", user.uid),
-    {
-      uid: user.uid,
-      name: "박상혁",
-      email: user.email || KNOWN_STAFF_EMAIL,
-      role: "staff",
-      active: true,
-      updatedAt: api.serverTimestamp()
-    },
-    { merge: true }
+  replaceOptions(
+    $("#goalAssignee"),
+    MEMBERS.map((name) => ({ value: name, label: name })),
+    signedInProfile?.name || "박재영"
   );
 }
 
-async function migrateLegacyAssignees() {
-  const [eventsSnapshot, requestsSnapshot, clientsSnapshot] = await Promise.all([
-    api.getDocs(api.collection(api.db, "events")),
-    api.getDocs(api.collection(api.db, "requests")),
-    api.getDocs(api.collection(api.db, "clients"))
-  ]);
+function enforceVisibleIdentity(profile) {
+  if (!profile) return;
+  const roleLabel = profile.role === "owner" ? "OWNER" : "STAFF";
 
+  const headerName = $(".profile-button__text strong");
+  const headerRole = $(".profile-button__text small");
+  const avatar = $(".profile-button__avatar");
+  const workspaceHeading = $("#mypagePage .page-heading h1");
+  const profileName = $(".profile-info h2");
+  const profileRole = $(".profile-info > p:not(.eyebrow)");
+  const profileAvatar = $(".profile-large-avatar");
+  const profileEmail = $(".profile-info dl div:first-child dd");
+
+  if (headerName) headerName.textContent = profile.name;
+  if (headerRole) headerRole.textContent = roleLabel;
+  if (avatar) avatar.textContent = profile.name.slice(0, 1);
+  if (workspaceHeading) workspaceHeading.textContent = `${profile.name} 님, 오늘의 업무 흐름입니다.`;
+  if (profileName) profileName.textContent = profile.name;
+  if (profileRole) profileRole.textContent = `${roleLabel} · NINEWORKS`;
+  if (profileAvatar) profileAvatar.textContent = profile.name.slice(0, 1);
+  if (profileEmail) profileEmail.textContent = signedInUser?.email || "-";
+}
+
+async function ensureCorrectProfile(user) {
+  const mapped = profileFromUser(user);
+  if (!mapped) return null;
+
+  const profile = {
+    uid: user.uid,
+    name: mapped.name,
+    email: user.email || "",
+    role: mapped.role,
+    active: true,
+    updatedAt: api.serverTimestamp()
+  };
+
+  await api.setDoc(api.doc(api.db, "users", user.uid), profile, { merge: true });
+  return profile;
+}
+
+function migratedName(value) {
+  const normalized = normalize(value);
+  if (["신민용", "daytuio0329", "daytuio0329@naver.com"].map(normalize).includes(normalized)) return "박상혁";
+  if (["planus253"].map(normalize).includes(normalized)) return "박재영";
+  return null;
+}
+
+async function migrateCollection(collectionName, fieldName) {
+  const snapshot = await api.getDocs(api.collection(api.db, collectionName));
   const batch = api.writeBatch(api.db);
-  let changeCount = 0;
+  let changes = 0;
 
-  eventsSnapshot.docs.forEach((document) => {
-    const data = document.data();
-    if (normalize(data.member) !== normalize("신민용")) return;
-    batch.set(document.ref, { member: "박상혁", updatedAt: api.serverTimestamp() }, { merge: true });
-    changeCount += 1;
+  snapshot.docs.forEach((document) => {
+    const replacement = migratedName(document.data()?.[fieldName]);
+    if (!replacement) return;
+    batch.set(document.ref, {
+      [fieldName]: replacement,
+      updatedAt: api.serverTimestamp()
+    }, { merge: true });
+    changes += 1;
   });
 
-  requestsSnapshot.docs.forEach((document) => {
-    const data = document.data();
-    if (normalize(data.assignee) !== normalize("신민용")) return;
-    batch.set(document.ref, { assignee: "박상혁", updatedAt: api.serverTimestamp() }, { merge: true });
-    changeCount += 1;
-  });
-
-  clientsSnapshot.docs.forEach((document) => {
-    const data = document.data();
-    if (normalize(data.member) !== normalize("신민용")) return;
-    batch.set(document.ref, { member: "박상혁", updatedAt: api.serverTimestamp() }, { merge: true });
-    changeCount += 1;
-  });
-
-  if (changeCount > 0) await batch.commit();
+  if (changes) await batch.commit();
 }
 
-async function prepareSignedInUser(user) {
-  if (!user) return;
-  await ensureKnownProfile(user);
-  await migrateLegacyAssignees();
-  enforceMemberOptions();
+async function migrateLegacyNames() {
+  await Promise.all([
+    migrateCollection("events", "member"),
+    migrateCollection("requests", "assignee"),
+    migrateCollection("clients", "member"),
+    migrateCollection("goals", "assignee"),
+    migrateCollection("notifications", "recipientName")
+  ]);
 }
 
-function observeMemberSelects() {
+function startDomGuard() {
   enforceMemberOptions();
 
-  let scheduled = false;
+  let queued = false;
   const observer = new MutationObserver(() => {
-    if (scheduled) return;
-    scheduled = true;
+    if (queued) return;
+    queued = true;
     requestAnimationFrame(() => {
-      scheduled = false;
+      queued = false;
       enforceMemberOptions();
+      enforceVisibleIdentity(signedInProfile);
     });
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
+
+  clearInterval(rosterTimer);
+  rosterTimer = window.setInterval(() => {
+    enforceMemberOptions();
+    enforceVisibleIdentity(signedInProfile);
+  }, 1200);
 }
 
 export async function initializeMemberCleanup() {
@@ -135,7 +191,7 @@ export async function initializeMemberCleanup() {
     await new Promise((resolve) => document.addEventListener("DOMContentLoaded", resolve, { once: true }));
   }
 
-  observeMemberSelects();
+  startDomGuard();
 
   let initialResolved = false;
   let resolveInitial;
@@ -144,8 +200,16 @@ export async function initializeMemberCleanup() {
   });
 
   api.onAuthStateChanged(api.auth, async (user) => {
+    signedInUser = user;
+    signedInProfile = null;
+
     try {
-      await prepareSignedInUser(user);
+      if (user) {
+        signedInProfile = await ensureCorrectProfile(user);
+        enforceVisibleIdentity(signedInProfile);
+        await migrateLegacyNames();
+      }
+      enforceMemberOptions();
     } catch (error) {
       console.warn("담당자 정리 실패", error);
     } finally {
