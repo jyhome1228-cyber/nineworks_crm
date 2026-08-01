@@ -1,0 +1,112 @@
+/* Notion-like resizable calendar workspace */
+.calendar-layout {
+  --schedule-side-width: 300px;
+  display: grid !important;
+  grid-template-columns: minmax(560px, 1fr) 10px minmax(240px, var(--schedule-side-width)) !important;
+  gap: 0 !important;
+  align-items: start;
+}
+
+.calendar-main {
+  min-width: 0;
+  margin-right: 10px;
+}
+
+.schedule-side {
+  min-width: 0;
+  margin-left: 10px;
+}
+
+.calendar-resize-handle {
+  position: relative;
+  display: flex;
+  min-height: 420px;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.calendar-resize-handle::before {
+  content: "";
+  width: 2px;
+  height: 72px;
+  border-radius: 999px;
+  background: #323239;
+  transition: 150ms ease;
+}
+
+.calendar-resize-handle:hover::before,
+.calendar-resize-handle.is-dragging::before {
+  width: 3px;
+  height: 104px;
+  background: var(--primary);
+}
+
+.calendar-resize-handle::after {
+  content: "⋮";
+  position: absolute;
+  display: grid;
+  width: 20px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--surface);
+  color: #777781;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.calendar-resize-handle:hover::after,
+.calendar-resize-handle.is-dragging::after {
+  border-color: rgba(85, 119, 255, 0.7);
+  color: #b9c6ff;
+}
+
+.calendar-layout.is-resizing,
+.calendar-layout.is-resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+.calendar-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.share-calendar-link {
+  text-decoration: none;
+}
+
+@media (max-width: 1080px) {
+  .calendar-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .calendar-main,
+  .schedule-side {
+    margin: 0;
+  }
+
+  .calendar-resize-handle {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .calendar-heading-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .calendar-heading-actions .button,
+  .calendar-heading-actions .share-calendar-link {
+    flex: 1 1 auto;
+  }
+}
