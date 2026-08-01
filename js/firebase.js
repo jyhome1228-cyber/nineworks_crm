@@ -68,6 +68,7 @@ queueMicrotask(async () => {
   import("./team-enhancements.js").catch((error) => console.warn("팀 기능 모듈 로드 실패", error));
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
+  import("./calendar-event-details.js").catch((error) => console.warn("캘린더 상세 모듈 로드 실패", error));
 });
 
 export {
