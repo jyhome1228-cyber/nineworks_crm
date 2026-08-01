@@ -5,10 +5,12 @@ style.rel = "stylesheet";
 style.href = new URL("../css/calendar-event-details.css", import.meta.url).href;
 document.head.appendChild(style);
 
+const EVENT_LANE_HEIGHT = 58;
 let events = [];
 let unsubscribeEvents = null;
 let renderQueued = false;
-let resizeQueued = false;
+let layoutQueued = false;
+let applyingLayout = false;
 
 function normalize(value = "") {
   return String(value).replace(/\s+/g, " ").trim().toLowerCase();
@@ -49,31 +51,72 @@ function findEventForElement(element, map) {
   }) || null;
 }
 
-function ensureVerticalCopy(container) {
-  let copy = container.querySelector(":scope > .fc-event-copy");
-  const titleContainer = container.querySelector(":scope > .fc-event-title-container")
-    || container.querySelector(".fc-event-title-container");
-
-  if (!copy) {
-    copy = document.createElement("span");
-    copy.className = "fc-event-copy";
-    container.insertBefore(copy, container.firstChild);
+function originalHarnessTop(harness) {
+  if (harness.dataset.nineworksOriginalTop !== undefined) {
+    return Number(harness.dataset.nineworksOriginalTop) || 0;
   }
 
-  if (titleContainer && titleContainer.parentElement !== copy) {
-    copy.appendChild(titleContainer);
-  }
+  const inlineTop = Number.parseFloat(harness.style.top);
+  const computedTop = Number.parseFloat(window.getComputedStyle(harness).top);
+  const value = Number.isFinite(inlineTop)
+    ? inlineTop
+    : Number.isFinite(computedTop)
+      ? computedTop
+      : 0;
 
-  return copy;
+  harness.dataset.nineworksOriginalTop = String(value);
+  return value;
 }
 
-function requestCalendarRelayout() {
-  if (resizeQueued) return;
-  resizeQueued = true;
-  window.setTimeout(() => {
-    resizeQueued = false;
-    window.dispatchEvent(new Event("resize"));
-  }, 80);
+function getCalendarRows(calendar) {
+  const roleRows = [...calendar.querySelectorAll(".fc-daygrid-body tr[role='row']")];
+  if (roleRows.length) return roleRows;
+  return [...calendar.querySelectorAll(".fc-daygrid-body tbody > tr")];
+}
+
+function restackCalendarEvents() {
+  layoutQueued = false;
+  if (applyingLayout) return;
+
+  const calendar = document.querySelector("#calendar");
+  if (!calendar) return;
+
+  applyingLayout = true;
+
+  getCalendarRows(calendar).forEach((row) => {
+    const absoluteHarnesses = [...row.querySelectorAll(".fc-daygrid-event-harness-abs")];
+    if (!absoluteHarnesses.length) return;
+
+    const originalTops = [...new Set(absoluteHarnesses.map(originalHarnessTop))]
+      .sort((a, b) => a - b);
+
+    const levelByTop = new Map(originalTops.map((top, index) => [top, index]));
+
+    absoluteHarnesses.forEach((harness) => {
+      const level = levelByTop.get(originalHarnessTop(harness)) || 0;
+      const nextTop = level * EVENT_LANE_HEIGHT;
+      const nextTopValue = `${nextTop}px`;
+
+      if (harness.style.top !== nextTopValue) harness.style.top = nextTopValue;
+      harness.style.height = `${EVENT_LANE_HEIGHT - 5}px`;
+      harness.style.zIndex = String(10 + level);
+    });
+
+    const requiredHeight = Math.max(EVENT_LANE_HEIGHT, originalTops.length * EVENT_LANE_HEIGHT + 4);
+    row.querySelectorAll(".fc-daygrid-day-events").forEach((container) => {
+      container.style.minHeight = `${requiredHeight}px`;
+    });
+  });
+
+  applyingLayout = false;
+}
+
+function queueLayout() {
+  if (layoutQueued) return;
+  layoutQueued = true;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(restackCalendarEvents);
+  });
 }
 
 function renderEventDetails() {
@@ -82,7 +125,6 @@ function renderEventDetails() {
   if (!calendar) return;
 
   const map = buildEventMap();
-  let changed = false;
 
   calendar.querySelectorAll(".fc-daygrid-event, .fc-timegrid-event").forEach((element) => {
     const item = findEventForElement(element, map);
@@ -91,21 +133,15 @@ function renderEventDetails() {
     const container = element.querySelector(".fc-event-main-frame") || element.querySelector(".fc-event-main");
     if (!container) return;
 
-    const copy = ensureVerticalCopy(container);
-    let note = copy.querySelector(":scope > .fc-event-note");
+    let note = container.querySelector(".fc-event-note");
     if (!note) {
       note = document.createElement("span");
       note.className = "fc-event-note";
-      copy.appendChild(note);
-      changed = true;
+      container.appendChild(note);
     }
 
     const memo = cleanMemo(item.memo);
-    const nextText = memo || [item.member, item.category].filter(Boolean).join(" · ");
-    if (note.textContent !== nextText) {
-      note.textContent = nextText;
-      changed = true;
-    }
+    note.textContent = memo || [item.member, item.category].filter(Boolean).join(" · ");
     note.hidden = !note.textContent;
 
     const fullText = [
@@ -116,11 +152,11 @@ function renderEventDetails() {
     element.setAttribute("title", fullText);
   });
 
-  if (changed) requestCalendarRelayout();
+  queueLayout();
 }
 
 function queueRender() {
-  if (renderQueued) return;
+  if (applyingLayout || renderQueued) return;
   renderQueued = true;
   requestAnimationFrame(renderEventDetails);
 }
@@ -132,8 +168,13 @@ function observeCalendar() {
     return;
   }
 
-  const observer = new MutationObserver(queueRender);
+  const observer = new MutationObserver(() => {
+    if (applyingLayout) return;
+    queueRender();
+  });
   observer.observe(calendar, { childList: true, subtree: true });
+
+  window.addEventListener("resize", queueLayout, { passive: true });
   queueRender();
 }
 
