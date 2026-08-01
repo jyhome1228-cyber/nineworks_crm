@@ -1,0 +1,207 @@
+/* Calendar workflow enhancements */
+.client-drag-section {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: rgba(29, 29, 32, 0.92);
+}
+
+.client-drag-section__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.client-drag-section__head h2 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+}
+
+.client-drag-section__head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.client-drag-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 5px;
+  scrollbar-width: thin;
+}
+
+.client-drag-chip {
+  flex: 0 0 auto;
+  min-height: 38px;
+  border: 1px solid #383840;
+  border-radius: 999px;
+  padding: 0 14px;
+  background: #222227;
+  color: #d9d9de;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: grab;
+  transition: 150ms ease;
+}
+
+.client-drag-chip:hover {
+  border-color: rgba(85, 119, 255, 0.7);
+  background: rgba(67, 104, 245, 0.12);
+  color: #fff;
+}
+
+.client-drag-chip:active,
+.client-drag-chip.is-dragging {
+  cursor: grabbing;
+  opacity: 0.55;
+  transform: scale(0.98);
+}
+
+.client-drag-section__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #666670;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.client-drag-section__hint::before {
+  content: "↘";
+  color: var(--primary);
+  font-size: 13px;
+}
+
+.fc .fc-daygrid-day.is-client-drop-target,
+.fc .fc-timegrid-col.is-client-drop-target {
+  background: rgba(67, 104, 245, 0.12) !important;
+  box-shadow: inset 0 0 0 1px rgba(85, 119, 255, 0.65);
+}
+
+.fc .fc-daygrid-day.is-client-drop-target::after {
+  content: "여기에 일정 배치";
+  position: absolute;
+  z-index: 8;
+  inset: 8px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(85, 119, 255, 0.85);
+  border-radius: 7px;
+  background: rgba(19, 25, 52, 0.76);
+  color: #b9c6ff;
+  font-size: 10px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* Fix right-side summary cards that were inheriting browser button styling. */
+.schedule-side .side-panel {
+  overflow: hidden;
+}
+
+.schedule-side .compact-list {
+  display: grid;
+  gap: 0;
+}
+
+.schedule-side .compact-item {
+  -webkit-appearance: none;
+  appearance: none;
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  margin: 0;
+  padding: 14px 0;
+  border: 0 !important;
+  border-bottom: 1px solid var(--line-soft) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text);
+  text-align: left;
+  transform: none !important;
+}
+
+.schedule-side .compact-item:first-child {
+  padding-top: 4px;
+}
+
+.schedule-side .compact-item:last-child {
+  border-bottom: 0 !important;
+  padding-bottom: 2px;
+}
+
+.schedule-side .compact-item:hover,
+.schedule-side .compact-item:focus-visible {
+  background: transparent !important;
+  color: #fff;
+}
+
+.schedule-side .compact-item strong {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.schedule-side .compact-item small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.schedule-side .compact-item::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  margin: 6px 0 0 -10px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.event-reference-help {
+  margin: -2px 0 0;
+  color: #686871;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.event-period-guide {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  border: 1px solid rgba(67, 104, 245, 0.18);
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: rgba(67, 104, 245, 0.07);
+  color: #8e96b5;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.event-period-guide strong {
+  flex: 0 0 auto;
+  color: #aebcff;
+}
+
+@media (max-width: 760px) {
+  .client-drag-section__head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .client-drag-section__hint {
+    white-space: normal;
+  }
+}
