@@ -69,6 +69,8 @@ queueMicrotask(async () => {
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
   import("./calendar-event-details.js").catch((error) => console.warn("캘린더 상세 모듈 로드 실패", error));
+  import("./calendar-resize.js").catch((error) => console.warn("캘린더 폭 조절 모듈 로드 실패", error));
+  import("./public-calendar-sync.js").catch((error) => console.warn("공유 캘린더 동기화 모듈 로드 실패", error));
 });
 
 export {
