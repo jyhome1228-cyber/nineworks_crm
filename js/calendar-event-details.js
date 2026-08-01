@@ -49,6 +49,24 @@ function findEventForElement(element, map) {
   }) || null;
 }
 
+function ensureVerticalCopy(container) {
+  let copy = container.querySelector(":scope > .fc-event-copy");
+  const titleContainer = container.querySelector(":scope > .fc-event-title-container")
+    || container.querySelector(".fc-event-title-container");
+
+  if (!copy) {
+    copy = document.createElement("span");
+    copy.className = "fc-event-copy";
+    container.insertBefore(copy, container.firstChild);
+  }
+
+  if (titleContainer && titleContainer.parentElement !== copy) {
+    copy.appendChild(titleContainer);
+  }
+
+  return copy;
+}
+
 function requestCalendarRelayout() {
   if (resizeQueued) return;
   resizeQueued = true;
@@ -73,11 +91,12 @@ function renderEventDetails() {
     const container = element.querySelector(".fc-event-main-frame") || element.querySelector(".fc-event-main");
     if (!container) return;
 
-    let note = container.querySelector(".fc-event-note");
+    const copy = ensureVerticalCopy(container);
+    let note = copy.querySelector(":scope > .fc-event-note");
     if (!note) {
       note = document.createElement("span");
       note.className = "fc-event-note";
-      container.appendChild(note);
+      copy.appendChild(note);
       changed = true;
     }
 
