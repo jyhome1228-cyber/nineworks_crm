@@ -3,6 +3,11 @@ style.rel = "stylesheet";
 style.href = new URL("../css/interface-fixes.css", import.meta.url).href;
 document.head.appendChild(style);
 
+const typographyStyle = document.createElement("link");
+typographyStyle.rel = "stylesheet";
+typographyStyle.href = new URL("../css/typography-refinement.css", import.meta.url).href;
+document.head.appendChild(typographyStyle);
+
 const api = window.NineworksFirebase;
 
 function addVisibleLogoutButton() {
