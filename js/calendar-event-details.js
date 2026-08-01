@@ -8,6 +8,7 @@ document.head.appendChild(style);
 let events = [];
 let unsubscribeEvents = null;
 let renderQueued = false;
+let resizeQueued = false;
 
 function normalize(value = "") {
   return String(value).replace(/\s+/g, " ").trim().toLowerCase();
@@ -48,12 +49,23 @@ function findEventForElement(element, map) {
   }) || null;
 }
 
+function requestCalendarRelayout() {
+  if (resizeQueued) return;
+  resizeQueued = true;
+  window.setTimeout(() => {
+    resizeQueued = false;
+    window.dispatchEvent(new Event("resize"));
+  }, 80);
+}
+
 function renderEventDetails() {
   renderQueued = false;
   const calendar = document.querySelector("#calendar");
   if (!calendar) return;
 
   const map = buildEventMap();
+  let changed = false;
+
   calendar.querySelectorAll(".fc-daygrid-event, .fc-timegrid-event").forEach((element) => {
     const item = findEventForElement(element, map);
     if (!item) return;
@@ -66,10 +78,15 @@ function renderEventDetails() {
       note = document.createElement("span");
       note.className = "fc-event-note";
       container.appendChild(note);
+      changed = true;
     }
 
     const memo = cleanMemo(item.memo);
-    note.textContent = memo || [item.member, item.category].filter(Boolean).join(" · ");
+    const nextText = memo || [item.member, item.category].filter(Boolean).join(" · ");
+    if (note.textContent !== nextText) {
+      note.textContent = nextText;
+      changed = true;
+    }
     note.hidden = !note.textContent;
 
     const fullText = [
@@ -79,6 +96,8 @@ function renderEventDetails() {
     ].filter(Boolean).join("\n");
     element.setAttribute("title", fullText);
   });
+
+  if (changed) requestCalendarRelayout();
 }
 
 function queueRender() {
