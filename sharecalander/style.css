@@ -1,0 +1,326 @@
+:root {
+  --bg: #171719;
+  --surface: #1d1d20;
+  --surface-2: #232328;
+  --line: #303037;
+  --line-soft: #28282d;
+  --text: #f4f4f6;
+  --text-soft: #c3c3ca;
+  --muted: #8a8a94;
+  --primary: #4368f5;
+  --review: #a679f7;
+  --success: #57c58a;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  color-scheme: dark;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+button,
+select { font: inherit; }
+
+.share-header {
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(23, 23, 25, 0.94);
+  backdrop-filter: blur(16px);
+}
+
+.share-header__inner {
+  display: flex;
+  width: min(calc(100% - 48px), 1500px);
+  height: 70px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+
+.share-logo {
+  width: 170px;
+  filter: brightness(0) invert(1);
+}
+
+.share-header__inner > span,
+.eyebrow {
+  color: #8e8e98;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+}
+
+.share-main {
+  width: min(calc(100% - 48px), 1500px);
+  margin: 0 auto;
+  padding: 58px 0 56px;
+}
+
+.share-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 32px;
+}
+
+.share-heading h1 {
+  margin: 0;
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 520;
+  line-height: 1.16;
+  letter-spacing: -0.052em;
+}
+
+.share-heading > div:first-child > p:last-child {
+  margin: 13px 0 0;
+  color: var(--text-soft);
+  font-size: 15px;
+}
+
+.share-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 5px rgba(87, 197, 138, 0.08);
+}
+
+.share-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.share-toolbar label {
+  display: grid;
+  gap: 6px;
+}
+
+.share-toolbar label > span {
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.share-toolbar select {
+  min-width: 220px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 36px 0 13px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.share-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.share-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.dot--planned { background: #777780; }
+.dot--progress { background: var(--primary); }
+.dot--review { background: var(--review); }
+.dot--done { background: var(--success); }
+
+.calendar-panel {
+  position: relative;
+  min-height: 620px;
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  padding: 22px;
+  background: rgba(29, 29, 32, 0.94);
+}
+
+.empty-state {
+  position: absolute;
+  inset: 90px 22px 22px;
+  place-items: center;
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.empty-state:not([hidden]) { display: grid; }
+
+.fc {
+  --fc-border-color: #2b2b31;
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: #1a1a1d;
+  --fc-list-event-hover-bg-color: #25252a;
+  --fc-today-bg-color: rgba(67, 104, 245, 0.075);
+  color: var(--text-soft);
+}
+
+.fc .fc-toolbar {
+  margin-bottom: 20px !important;
+}
+
+.fc .fc-toolbar-title {
+  color: var(--text);
+  font-size: 25px !important;
+  font-weight: 520 !important;
+  letter-spacing: -0.035em;
+}
+
+.fc .fc-button {
+  min-height: 39px;
+  border-color: var(--line) !important;
+  background: var(--surface-2) !important;
+  color: var(--text-soft) !important;
+  font-size: 13px !important;
+  font-weight: 450 !important;
+  box-shadow: none !important;
+}
+
+.fc .fc-button:hover,
+.fc .fc-button-active {
+  background: #29304d !important;
+  color: #fff !important;
+}
+
+.fc .fc-col-header-cell-cushion {
+  padding: 14px 6px !important;
+  color: var(--text-soft);
+  font-size: 14px;
+  font-weight: 450;
+}
+
+.fc .fc-daygrid-day-number {
+  padding: 10px !important;
+  color: #c8c8ce;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.fc .fc-daygrid-day-events {
+  margin-top: 4px !important;
+}
+
+.fc .fc-daygrid-event-harness {
+  margin-top: 5px !important;
+}
+
+.fc .fc-daygrid-event,
+.fc .fc-timegrid-event {
+  min-height: 54px;
+  overflow: hidden;
+  border: 0 !important;
+  border-left: 3px solid #777780 !important;
+  border-radius: 7px !important;
+  padding: 7px 9px !important;
+  background: #24242b !important;
+  color: var(--text) !important;
+}
+
+.fc .event-status-progress { border-left-color: var(--primary) !important; }
+.fc .event-status-review { border-left-color: var(--review) !important; }
+.fc .event-status-done { border-left-color: var(--success) !important; opacity: 0.62; }
+
+.share-event-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.share-event-copy strong,
+.share-event-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-event-copy strong {
+  color: #f5f5f6;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.share-event-copy small {
+  color: #b7b7c0;
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.share-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 2px 0;
+  color: #73737d;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+}
+
+@media (max-width: 900px) {
+  .share-heading,
+  .share-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .share-status { white-space: normal; }
+
+  .calendar-panel {
+    overflow-x: auto;
+    padding: 16px;
+  }
+
+  #calendar { min-width: 820px; }
+}
+
+@media (max-width: 600px) {
+  .share-header__inner,
+  .share-main {
+    width: min(calc(100% - 28px), 1500px);
+  }
+
+  .share-logo { width: 142px; }
+  .share-header__inner > span { display: none; }
+  .share-main { padding-top: 38px; }
+  .share-heading h1 { font-size: 36px; }
+  .share-toolbar select { width: 100%; min-width: 0; }
+  .share-toolbar label { width: 100%; }
+  .share-footer { flex-direction: column; }
+}
