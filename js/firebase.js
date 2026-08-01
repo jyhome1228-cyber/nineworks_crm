@@ -57,7 +57,14 @@ const firebaseApi = {
 
 window.NineworksFirebase = firebaseApi;
 
-queueMicrotask(() => {
+queueMicrotask(async () => {
+  try {
+    const memberModule = await import("./member-cleanup.js");
+    await memberModule.initializeMemberCleanup();
+  } catch (error) {
+    console.warn("담당자 정리 모듈 로드 실패", error);
+  }
+
   import("./team-enhancements.js").catch((error) => console.warn("팀 기능 모듈 로드 실패", error));
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
 });
