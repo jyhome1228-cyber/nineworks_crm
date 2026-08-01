@@ -75,6 +75,7 @@ queueMicrotask(async () => {
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
   import("./calendar-resize-share.js").catch((error) => console.warn("캘린더 공유·크기 조절 모듈 로드 실패", error));
+  import("./task-completion.js").catch((error) => console.warn("일정 완료 기능 모듈 로드 실패", error));
 });
 
 export {
