@@ -38,6 +38,29 @@ setPersistence(auth, browserLocalPersistence).catch((error) => {
   console.warn("Firebase 로그인 유지 설정 실패", error);
 });
 
+const firebaseApi = {
+  auth,
+  db,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  writeBatch,
+  onSnapshot,
+  serverTimestamp,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+};
+
+window.NineworksFirebase = firebaseApi;
+
+queueMicrotask(() => {
+  import("./team-enhancements.js").catch((error) => console.warn("팀 기능 모듈 로드 실패", error));
+});
+
 export {
   auth,
   db,
