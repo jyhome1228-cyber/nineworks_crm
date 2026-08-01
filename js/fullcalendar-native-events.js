@@ -1,3 +1,8 @@
+const eventStyle = document.createElement("link");
+eventStyle.rel = "stylesheet";
+eventStyle.href = new URL("../css/calendar-event-details.css", import.meta.url).href;
+document.head.appendChild(eventStyle);
+
 const Calendar = window.FullCalendar?.Calendar;
 
 if (Calendar && !window.FullCalendar.__nineworksNativeEvents) {
