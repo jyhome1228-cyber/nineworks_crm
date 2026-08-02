@@ -128,6 +128,21 @@
   70% { transform: translateX(4px); }
 }
 
+/* Timed events must use the actual FullCalendar duration instead of the fixed month-card height. */
+.fc .fc-timegrid-event {
+  height: auto !important;
+  min-height: 28px !important;
+  max-height: none !important;
+  padding: 6px 8px !important;
+}
+
+.fc .fc-timegrid-event .nw-event-content {
+  height: auto !important;
+  min-height: 100%;
+  justify-content: flex-start;
+  padding-top: 1px;
+}
+
 @media (max-width: 560px) {
   .goal-reminder-options {
     grid-template-columns: 1fr;
