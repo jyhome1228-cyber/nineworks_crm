@@ -24,7 +24,7 @@ import {
 
 const interactionStyle = document.createElement("link");
 interactionStyle.rel = "stylesheet";
-interactionStyle.href = new URL("../css/interaction-fixes.css", import.meta.url).href;
+interactionStyle.href = new URL("../css/interaction-fixes.css?v=20260803-1", import.meta.url).href;
 document.head.appendChild(interactionStyle);
 
 const firebaseConfig = {
