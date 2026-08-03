@@ -1,0 +1,141 @@
+/* Team login and registration */
+.login-form__secondary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.signup-open-button {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #34343b;
+  border-radius: 8px;
+  background: #202024;
+  color: #d2d2d7;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 150ms ease;
+}
+
+.signup-open-button:hover {
+  border-color: #4b4b55;
+  background: #27272c;
+  color: #fff;
+}
+
+.signup-backdrop {
+  position: fixed;
+  z-index: 260;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(7px);
+}
+
+.signup-modal {
+  position: fixed;
+  z-index: 270;
+  top: 50%;
+  left: 50%;
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  border: 1px solid #35353c;
+  border-radius: 18px;
+  background: #1b1b1f;
+  box-shadow: 0 32px 100px rgba(0, 0, 0, 0.58);
+}
+
+.signup-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #2d2d33;
+  padding: 24px;
+}
+
+.signup-modal__head h2 {
+  margin: 0;
+  color: #f5f5f7;
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+
+.signup-modal__head p:last-child {
+  margin: 7px 0 0;
+  color: #8e8e97;
+  font-size: 12px;
+}
+
+.signup-form {
+  display: grid;
+  gap: 15px;
+  padding: 24px;
+}
+
+.signup-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.signup-form__help {
+  margin: -4px 0 0;
+  color: #74747d;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.signup-form__feedback {
+  display: none;
+  min-height: 44px;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.signup-form__feedback.is-visible {
+  display: flex;
+}
+
+.signup-form__feedback.is-error {
+  border-color: rgba(255, 107, 107, 0.34);
+  background: rgba(255, 107, 107, 0.09);
+  color: #ffaaaa;
+}
+
+.signup-form__feedback.is-success {
+  border-color: rgba(87, 197, 138, 0.28);
+  background: rgba(87, 197, 138, 0.08);
+  color: #a1e3bd;
+}
+
+.signup-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #2d2d33;
+  margin-top: 3px;
+  padding-top: 18px;
+}
+
+.signup-form button[disabled] {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+@media (max-width: 560px) {
+  .signup-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .signup-modal__head,
+  .signup-form {
+    padding: 20px;
+  }
+}
