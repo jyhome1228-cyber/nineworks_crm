@@ -1,0 +1,62 @@
+/* Optional schedule settings: time and personal reminders are opt-in. */
+.nw-time-section .nw-all-day-toggle {
+  display: none !important;
+}
+
+.nw-optional-setting-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #d5d5dc;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.nw-optional-setting-toggle input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.nw-time-section__optional-help,
+.nw-event-reminder-optional-help {
+  margin: -2px 0 0;
+  color: #92929c;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.nw-time-section.is-optional-disabled .nw-time-mode-switch,
+.nw-time-section.is-optional-disabled .nw-time-preset-panel,
+.nw-time-section.is-optional-disabled .nw-time-custom-panel,
+.nw-time-section.is-optional-disabled .nw-time-quick,
+.nw-time-section.is-optional-disabled .nw-time-grid {
+  display: none !important;
+}
+
+.nw-time-section.is-optional-disabled {
+  gap: 8px;
+}
+
+.nw-event-reminder-section.is-optional-disabled .nw-event-reminder-options {
+  display: none !important;
+}
+
+.nw-event-reminder-section.is-optional-disabled .nw-event-reminder-help {
+  display: none !important;
+}
+
+.nw-event-reminder-section .nw-reminder-master span {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .nw-optional-setting-toggle,
+  .nw-event-reminder-section .nw-reminder-master span {
+    font-size: 12px;
+  }
+}
