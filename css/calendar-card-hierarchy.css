@@ -53,15 +53,24 @@
 }
 
 .fc .event-status-done .nw-client-badge {
-  border-color: rgba(145, 145, 153, 0.18);
-  background: rgba(0, 0, 0, 0.28);
-  color: #777780;
+  border-color: rgba(145, 145, 153, 0.22);
+  background: rgba(0, 0, 0, 0.26);
+  color: #9a9aa3;
 }
 
 .fc .event-status-done .nw-task-title {
-  color: #898992;
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
+  color: #a4a4ad;
+}
+
+.fc .event-status-done,
+.fc .event-status-done *,
+.fc .fc-event.event-status-done,
+.fc .fc-event.event-status-done * {
+  text-decoration: none !important;
+}
+
+.fc .event-status-done .nw-event-note {
+  color: #85858e;
 }
 
 .fc .fc-timegrid-event .nw-client-badge {
