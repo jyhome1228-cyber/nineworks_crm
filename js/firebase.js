@@ -30,6 +30,11 @@ interactionStyle.rel = "stylesheet";
 interactionStyle.href = new URL("../css/interaction-fixes.css?v=20260803-1", import.meta.url).href;
 document.head.appendChild(interactionStyle);
 
+const readabilityStyle = document.createElement("link");
+readabilityStyle.rel = "stylesheet";
+readabilityStyle.href = new URL("../css/readability-polish.css?v=20260803-1", import.meta.url).href;
+document.head.appendChild(readabilityStyle);
+
 const firebaseConfig = {
   apiKey: "AIzaSyBXhDb0jyhIR4G1ho6Y7V8sibwvENI2r8k",
   authDomain: "nineworks-crm.firebaseapp.com",
