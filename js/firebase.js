@@ -130,14 +130,10 @@ queueMicrotask(async () => {
 
   import("./team-signup.js?v=20260803-1").catch((error) => console.warn("팀원 가입 모듈 로드 실패", error));
 
-  try {
-    const memberModule = await import("./member-cleanup.js");
-    await memberModule.initializeMemberCleanup();
-  } catch (error) {
-    console.warn("담당자 정리 모듈 로드 실패", error);
-  }
+  import("./team-enhancements.js")
+    .then(() => import("./dynamic-member-roster.js?v=20260803-1"))
+    .catch((error) => console.warn("가입 팀원 담당자 목록 모듈 로드 실패", error));
 
-  import("./team-enhancements.js").catch((error) => console.warn("팀 기능 모듈 로드 실패", error));
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
   import("./calendar-resize-share.js").catch((error) => console.warn("캘린더 공유·크기 조절 모듈 로드 실패", error));
