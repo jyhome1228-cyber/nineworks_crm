@@ -1,0 +1,86 @@
+/* Calendar card hierarchy: client badge, task title, and detail line */
+.nw-event-title {
+  display: flex !important;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.nw-client-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  max-width: 86px;
+  min-height: 20px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(182, 195, 255, 0.28);
+  border-radius: 999px;
+  padding: 2px 7px;
+  background: rgba(8, 12, 24, 0.34);
+  color: #dce3ff;
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nw-task-title {
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  color: #f7f7f9;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nw-event-title .nw-meeting-star {
+  flex: 0 0 auto;
+  margin-right: -2px;
+}
+
+.nw-event-note {
+  padding-left: 1px;
+  color: #b8bac5;
+}
+
+.fc .event-status-done .nw-client-badge {
+  border-color: rgba(145, 145, 153, 0.18);
+  background: rgba(0, 0, 0, 0.28);
+  color: #777780;
+}
+
+.fc .event-status-done .nw-task-title {
+  color: #898992;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.fc .fc-timegrid-event .nw-client-badge {
+  max-width: 72px;
+}
+
+@media (max-width: 760px) {
+  .nw-event-title {
+    gap: 5px;
+  }
+
+  .nw-client-badge {
+    max-width: 70px;
+    min-height: 18px;
+    padding: 2px 6px;
+    font-size: 9.5px;
+  }
+
+  .nw-task-title {
+    font-size: 13px;
+  }
+}
