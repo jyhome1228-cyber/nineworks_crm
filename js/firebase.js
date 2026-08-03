@@ -138,6 +138,7 @@ queueMicrotask(async () => {
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
   import("./calendar-resize-share.js").catch((error) => console.warn("캘린더 공유·크기 조절 모듈 로드 실패", error));
   import("./task-completion.js").catch((error) => console.warn("일정 완료 기능 모듈 로드 실패", error));
+  import("./calendar-summary-grid.js?v=20260803-1").catch((error) => console.warn("캘린더 요약 레이아웃 모듈 로드 실패", error));
 });
 
 export {
