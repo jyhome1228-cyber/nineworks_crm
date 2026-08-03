@@ -30,11 +30,6 @@ interactionStyle.rel = "stylesheet";
 interactionStyle.href = new URL("../css/interaction-fixes.css?v=20260803-1", import.meta.url).href;
 document.head.appendChild(interactionStyle);
 
-const readabilityStyle = document.createElement("link");
-readabilityStyle.rel = "stylesheet";
-readabilityStyle.href = new URL("../css/readability-polish.css?v=20260803-1", import.meta.url).href;
-document.head.appendChild(readabilityStyle);
-
 const firebaseConfig = {
   apiKey: "AIzaSyBXhDb0jyhIR4G1ho6Y7V8sibwvENI2r8k",
   authDomain: "nineworks-crm.firebaseapp.com",
@@ -147,7 +142,8 @@ queueMicrotask(async () => {
   import("./browser-reminders-v2.js?v=20260803-2")
     .then(() => Promise.all([
       import("./reminder-settings-page.js?v=20260803-1"),
-      import("./reminder-sound-repeat.js?v=20260803-1")
+      import("./reminder-sound-repeat.js?v=20260803-1"),
+      import("./optional-schedule-settings.js?v=20260803-1")
     ]))
     .catch((error) => console.warn("개인 알림 관리 모듈 로드 실패", error));
 });
