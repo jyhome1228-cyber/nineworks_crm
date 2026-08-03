@@ -48,7 +48,7 @@ setPersistence(auth, browserLocalPersistence).catch((error) => {
 function authErrorMessage(error) {
   const code = String(error?.code || "");
   if (code.includes("invalid-credential") || code.includes("wrong-password") || code.includes("user-not-found") || code.includes("invalid-email")) {
-    return "이메일 또는 비밀번호가 올바르지 않습니다.";
+    return "아이디 또는 비밀번호가 올바르지 않습니다.";
   }
   if (code.includes("too-many-requests")) {
     return "로그인 시도가 많습니다. 잠시 후 다시 시도해주세요.";
@@ -99,7 +99,7 @@ function initializeLoginFeedback() {
     document.querySelector(selector)?.addEventListener("input", () => {
       if (!form.classList.contains("has-auth-error")) return;
       form.classList.remove("has-auth-error");
-      setLoginFeedback("Firebase에 등록된 관리자·직원 계정으로 로그인해주세요.", "info");
+      setLoginFeedback("가입한 팀원 아이디 또는 기존 이메일 계정으로 로그인해주세요.", "info");
     });
   });
 }
@@ -125,6 +125,8 @@ window.NineworksFirebase = firebaseApi;
 
 queueMicrotask(async () => {
   initializeLoginFeedback();
+
+  import("./team-signup.js?v=20260803-1").catch((error) => console.warn("팀원 가입 모듈 로드 실패", error));
 
   try {
     const memberModule = await import("./member-cleanup.js");
