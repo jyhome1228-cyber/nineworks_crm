@@ -1,0 +1,137 @@
+/* Readability pass for secondary descriptions, helper text, and metadata. */
+:root {
+  --nw-support-text: #a8a8b2;
+  --nw-support-text-strong: #bebec7;
+}
+
+/* Shared helper and metadata text */
+.page-heading > div > p:not(.eyebrow),
+.login-copy > p:not(.eyebrow),
+.login-form__notice,
+.signup-form__help,
+.signup-form__feedback,
+.nw-time-quick small,
+.nw-time-grid label,
+.nw-event-reminder-help,
+.nw-reminder-panel__description,
+.nw-reminder-panel__notice,
+.reminder-page-heading p:not(.eyebrow),
+.reminder-panel-title p,
+.reminder-setting-copy small,
+.reminder-event-meta,
+.reminder-event-help,
+.weekly-work-item__meta,
+.compact-item small,
+.compact-list small,
+.line-list small,
+.todo-list small,
+.request-list small,
+.simple-request-item__body p,
+.simple-request-item__meta,
+.notification-item__body small,
+.notification-item__body em,
+.profile-info dd,
+.profile-info dt,
+.table-toolbar span,
+.data-table th,
+.data-table td small,
+.calendar-toolbar .select-control > span,
+.field > span,
+.nw-event-note,
+.nw-time-section__head > span,
+.nw-all-day-toggle,
+.nw-time-quick small,
+.nw-time-grid label,
+.nw-quick-time-note,
+.nw-direct-time-fields label,
+.nw-reminder-setting-note,
+.signup-modal__head p,
+.notification-empty,
+.simple-empty,
+.empty-state {
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+  color: var(--nw-support-text) !important;
+  letter-spacing: -0.01em;
+}
+
+/* Labels that should remain compact but clearly legible */
+.eyebrow,
+.admin-label,
+.profile-button__text small,
+.count-badge,
+.nav-badge,
+.nw-reminder-status,
+.weekly-work-item__date,
+.reminder-status-card > span,
+.summary-card > span,
+.summary-card > small,
+.request-column__heading,
+.panel-heading .text-button,
+.text-button,
+.nw-time-mode-button,
+.nw-client-badge {
+  font-size: 11.5px !important;
+  line-height: 1.4 !important;
+}
+
+/* Calendar detail line needs a little more contrast without competing with the title. */
+.nw-event-note {
+  color: #c0c1ca !important;
+  font-weight: 430 !important;
+}
+
+/* Form labels and hints */
+.field > span,
+.nw-time-grid label,
+.nw-direct-time-fields label {
+  color: var(--nw-support-text-strong) !important;
+  font-weight: 550 !important;
+}
+
+/* Side panels and request metadata */
+.compact-list small,
+.weekly-work-item__meta,
+.simple-request-item__meta,
+.notification-item__body small,
+.notification-item__body em {
+  color: #a4a4ae !important;
+}
+
+/* Keep dense mobile screens readable too. */
+@media (max-width: 760px) {
+  .page-heading > div > p:not(.eyebrow),
+  .login-copy > p:not(.eyebrow),
+  .login-form__notice,
+  .signup-form__help,
+  .signup-form__feedback,
+  .nw-time-quick small,
+  .nw-time-grid label,
+  .nw-event-reminder-help,
+  .nw-reminder-panel__description,
+  .nw-reminder-panel__notice,
+  .reminder-page-heading p:not(.eyebrow),
+  .reminder-panel-title p,
+  .weekly-work-item__meta,
+  .compact-list small,
+  .line-list small,
+  .todo-list small,
+  .request-list small,
+  .field > span,
+  .nw-event-note {
+    font-size: 11.5px !important;
+  }
+
+  .eyebrow,
+  .admin-label,
+  .profile-button__text small,
+  .count-badge,
+  .nav-badge,
+  .nw-reminder-status,
+  .weekly-work-item__date,
+  .summary-card > span,
+  .summary-card > small,
+  .nw-client-badge {
+    font-size: 11px !important;
+  }
+}
