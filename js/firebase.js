@@ -1,6 +1,7 @@
 import "./fullcalendar-native-events.js?v=20260803-1";
+import "./time-setting-ui-v2.js?v=20260803-1";
 import "./calendar-visual-polish.js?v=20260803-1";
-import "./calendar-card-hierarchy.js?v=20260803-1";
+import "./calendar-card-hierarchy.js?v=20260803-2";
 import "./ui-enhancements.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
