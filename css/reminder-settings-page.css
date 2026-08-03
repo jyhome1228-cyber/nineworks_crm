@@ -1,0 +1,341 @@
+/* Personal reminder settings page */
+.reminder-page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.reminder-page-heading h1 {
+  margin: 0;
+  font-size: clamp(30px, 3vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+}
+
+.reminder-page-heading p:last-child {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.reminder-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.reminder-status-card {
+  min-height: 118px;
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  padding: 20px;
+  background: rgba(29, 29, 32, 0.94);
+}
+
+.reminder-status-card span {
+  display: block;
+  color: #95959e;
+  font-size: 12px;
+}
+
+.reminder-status-card strong {
+  display: block;
+  margin-top: 18px;
+  color: #f2f2f5;
+  font-size: 23px;
+  font-weight: 600;
+}
+
+.reminder-settings-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.86fr) minmax(0, 1.6fr);
+  gap: 16px;
+}
+
+.reminder-settings-panel,
+.reminder-events-panel {
+  padding: 22px;
+}
+
+.reminder-panel-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.reminder-panel-title h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.reminder-panel-title p {
+  margin: 7px 0 0;
+  color: #8e8e97;
+  font-size: 12px;
+}
+
+.reminder-setting-list {
+  display: grid;
+  gap: 0;
+}
+
+.reminder-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid var(--line-soft);
+  padding: 17px 0;
+}
+
+.reminder-setting-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.reminder-setting-copy strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.reminder-setting-copy small {
+  display: block;
+  margin-top: 4px;
+  color: #808089;
+  font-size: 11px;
+}
+
+.reminder-switch {
+  position: relative;
+  display: inline-flex;
+  width: 46px;
+  height: 26px;
+  flex: 0 0 auto;
+}
+
+.reminder-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reminder-switch span {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #3b3b43;
+  border-radius: 999px;
+  background: #25252a;
+  transition: 150ms ease;
+}
+
+.reminder-switch span::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #81818b;
+  transition: 150ms ease;
+}
+
+.reminder-switch input:checked + span {
+  border-color: rgba(85, 119, 255, .75);
+  background: rgba(67, 104, 245, .36);
+}
+
+.reminder-switch input:checked + span::after {
+  transform: translateX(20px);
+  background: #fff;
+}
+
+.reminder-time-input {
+  width: 112px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.reminder-offset-group,
+.event-reminder-offsets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.reminder-offset-chip {
+  position: relative;
+}
+
+.reminder-offset-chip input {
+  position: absolute;
+  opacity: 0;
+}
+
+.reminder-offset-chip span {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  border: 1px solid #38383f;
+  border-radius: 999px;
+  padding: 0 11px;
+  background: #222226;
+  color: #a9a9b2;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.reminder-offset-chip input:checked + span {
+  border-color: rgba(85, 119, 255, .72);
+  background: rgba(67, 104, 245, .15);
+  color: #e8ecff;
+}
+
+.reminder-settings-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.reminder-events-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reminder-events-toolbar input {
+  width: min(260px, 100%);
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.reminder-event-list {
+  display: grid;
+}
+
+.reminder-event-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  border-top: 1px solid var(--line-soft);
+  padding: 17px 0;
+}
+
+.reminder-event-row:first-child {
+  border-top: 0;
+}
+
+.reminder-event-date {
+  color: #8fa2ff;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.reminder-event-date strong {
+  display: block;
+  color: #dce3ff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.reminder-event-body {
+  min-width: 0;
+}
+
+.reminder-event-title {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #efeff2;
+  font-size: 14px;
+  font-weight: 550;
+  text-align: left;
+}
+
+.reminder-event-title:hover {
+  color: #fff;
+}
+
+.reminder-event-meta {
+  margin-top: 5px;
+  color: #85858e;
+  font-size: 11px;
+}
+
+.reminder-event-controls {
+  display: grid;
+  justify-items: end;
+  gap: 9px;
+}
+
+.reminder-event-control-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.reminder-reset-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #777781;
+  font-size: 10px;
+}
+
+.reminder-reset-button:hover {
+  color: #c9c9d0;
+}
+
+.reminder-event-row.is-disabled {
+  opacity: .48;
+}
+
+.reminder-empty {
+  margin: 0;
+  padding: 54px 0;
+  color: #85858e;
+  text-align: center;
+}
+
+@media (max-width: 1080px) {
+  .reminder-settings-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .reminder-page-heading,
+  .reminder-panel-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reminder-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reminder-event-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .reminder-event-controls {
+    justify-items: start;
+  }
+}
