@@ -1,6 +1,6 @@
 const hierarchyStyle = document.createElement("link");
 hierarchyStyle.rel = "stylesheet";
-hierarchyStyle.href = new URL("../css/calendar-card-hierarchy.css?v=20260803-1", import.meta.url).href;
+hierarchyStyle.href = new URL("../css/calendar-card-hierarchy.css?v=20260803-2", import.meta.url).href;
 document.head.appendChild(hierarchyStyle);
 
 function enhanceCalendarTitle(titleElement) {
