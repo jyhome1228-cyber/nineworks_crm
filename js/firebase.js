@@ -1,5 +1,6 @@
 import "./fullcalendar-native-events.js?v=20260803-1";
 import "./calendar-visual-polish.js?v=20260803-1";
+import "./calendar-card-hierarchy.js?v=20260803-1";
 import "./ui-enhancements.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
@@ -142,7 +143,10 @@ queueMicrotask(async () => {
   import("./task-completion.js").catch((error) => console.warn("일정 완료 기능 모듈 로드 실패", error));
   import("./calendar-summary-grid.js?v=20260803-1").catch((error) => console.warn("캘린더 요약 레이아웃 모듈 로드 실패", error));
   import("./browser-reminders-v2.js?v=20260803-2")
-    .then(() => import("./reminder-settings-page.js?v=20260803-1"))
+    .then(() => Promise.all([
+      import("./reminder-settings-page.js?v=20260803-1"),
+      import("./reminder-sound-repeat.js?v=20260803-1")
+    ]))
     .catch((error) => console.warn("개인 알림 관리 모듈 로드 실패", error));
 });
 
