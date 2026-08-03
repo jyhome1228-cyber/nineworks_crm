@@ -1,0 +1,89 @@
+/* Visible duration resize handle for month-view schedule bars */
+.fc .fc-daygrid-event.nw-event-rendered {
+  position: relative;
+  overflow: visible !important;
+}
+
+.fc .fc-daygrid-event.nw-event-rendered .fc-event-main,
+.fc .fc-daygrid-event.nw-event-rendered .fc-event-main-frame {
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.fc .fc-daygrid-event.nw-event-rendered .fc-event-resizer-end {
+  position: absolute !important;
+  z-index: 30 !important;
+  top: 0 !important;
+  right: -1px !important;
+  bottom: 0 !important;
+  display: block !important;
+  width: 18px !important;
+  height: auto !important;
+  border: 0 !important;
+  opacity: 0;
+  cursor: ew-resize !important;
+  touch-action: none;
+  transition: opacity 140ms ease;
+}
+
+.fc .fc-daygrid-event.nw-event-rendered .fc-event-resizer-end::before {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  width: 4px;
+  height: 23px;
+  border-radius: 999px;
+  background: rgba(233, 237, 255, 0.78);
+  box-shadow: 0 0 0 1px rgba(20, 24, 38, 0.42);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.fc .fc-daygrid-event.nw-event-rendered:hover .fc-event-resizer-end,
+.fc .fc-daygrid-event.nw-event-rendered:focus-within .fc-event-resizer-end,
+.fc .fc-daygrid-event.nw-event-rendered.is-resizing .fc-event-resizer-end,
+.fc .fc-daygrid-event.nw-event-rendered.fc-event-resizing .fc-event-resizer-end {
+  opacity: 1;
+}
+
+.fc .fc-daygrid-event.nw-event-rendered:hover {
+  z-index: 40 !important;
+}
+
+.fc .fc-daygrid-event.nw-event-rendered:hover .fc-event-main::after {
+  position: absolute;
+  z-index: 9;
+  top: 50%;
+  right: 18px;
+  color: rgba(224, 230, 255, 0.74);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  content: "기간";
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.fc .fc-daygrid-event.fc-event-resizing,
+.fc .fc-daygrid-event.is-resizing {
+  box-shadow: 0 0 0 2px rgba(91, 126, 255, 0.8), 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .fc .fc-daygrid-event.nw-event-rendered .fc-event-resizer-end {
+    right: -2px !important;
+    width: 25px !important;
+    opacity: 0.72;
+  }
+
+  .fc .fc-daygrid-event.nw-event-rendered .fc-event-resizer-end::before {
+    right: 6px;
+    width: 5px;
+    height: 27px;
+    background: rgba(233, 237, 255, 0.88);
+  }
+
+  .fc .fc-daygrid-event.nw-event-rendered:hover .fc-event-main::after {
+    display: none;
+  }
+}
