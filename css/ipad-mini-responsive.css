@@ -298,12 +298,12 @@
     min-height: 102px;
   }
 
-  .calendar-layout[data-summary-layout="true"] .schedule-side,
-  .schedule-side {
+  body .calendar-layout[data-summary-layout="true"] .schedule-side,
+  body .schedule-side {
     grid-template-columns: 1fr !important;
   }
 
-  .calendar-layout[data-summary-layout="true"] .schedule-side > .side-panel:last-child {
+  body .calendar-layout[data-summary-layout="true"] .schedule-side > .side-panel:last-child {
     grid-column: auto !important;
   }
 
