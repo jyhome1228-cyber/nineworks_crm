@@ -1,4 +1,5 @@
 import "./fullcalendar-native-events.js?v=20260803-1";
+import "./calendar-duration-resize.js?v=20260804-1";
 import "./time-setting-ui-v2.js?v=20260803-1";
 import "./calendar-visual-polish.js?v=20260803-1";
 import "./calendar-card-hierarchy.js?v=20260803-3";
