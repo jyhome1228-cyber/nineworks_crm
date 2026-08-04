@@ -1,6 +1,6 @@
 const resizeStyle = document.createElement("link");
 resizeStyle.rel = "stylesheet";
-resizeStyle.href = new URL("../css/calendar-duration-resize.css?v=20260804-3", import.meta.url).href;
+resizeStyle.href = new URL("../css/calendar-duration-resize.css?v=20260804-4", import.meta.url).href;
 document.head.appendChild(resizeStyle);
 
 const BaseCalendar = window.FullCalendar?.Calendar;
@@ -122,6 +122,11 @@ function appendPreviewContent(segment, isFirstSegment) {
   segment.appendChild(content);
 }
 
+function previewRightEdge({ pointerX, left, cellRect, isTargetRow }) {
+  if (!isTargetRow) return cellRect.right - 3;
+  return Math.max(left + 24, Math.min(pointerX, cellRect.right - 3));
+}
+
 function renderContinuousPreview(pointerX) {
   if (!activeResize?.previewHost || !activeResize.targetCell) return;
 
@@ -161,11 +166,12 @@ function renderContinuousPreview(pointerX) {
     const isTargetRow = group.row === activeResize.targetCell.closest("tr");
 
     const left = firstRect.left + 3;
-    let right = lastRect.right - 3;
-    if (isTargetRow && targetDate !== visibleStartDate) {
-      right = Math.max(lastRect.left + 16, Math.min(pointerX, lastRect.right - 3));
-    }
-    if (targetDate === visibleStartDate) right = lastRect.right - 3;
+    const right = previewRightEdge({
+      pointerX,
+      left,
+      cellRect: lastRect,
+      isTargetRow
+    });
 
     const segment = document.createElement("div");
     segment.className = "nw-duration-preview-segment";
