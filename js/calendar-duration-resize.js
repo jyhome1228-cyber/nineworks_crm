@@ -1,6 +1,6 @@
 const resizeStyle = document.createElement("link");
 resizeStyle.rel = "stylesheet";
-resizeStyle.href = new URL("../css/calendar-duration-resize.css?v=20260804-2", import.meta.url).href;
+resizeStyle.href = new URL("../css/calendar-duration-resize.css?v=20260804-3", import.meta.url).href;
 document.head.appendChild(resizeStyle);
 
 const BaseCalendar = window.FullCalendar?.Calendar;
@@ -36,6 +36,12 @@ function showToast(message) {
   window.setTimeout(() => toast.classList.remove("is-visible"), 2400);
 }
 
+function visibleDateCells() {
+  return [...document.querySelectorAll("#calendar .fc-daygrid-day[data-date]")]
+    .filter((cell) => cell.offsetParent !== null)
+    .sort((a, b) => String(a.dataset.date).localeCompare(String(b.dataset.date)));
+}
+
 function clearResizeTargets() {
   document.querySelectorAll("#calendar .is-duration-resize-target").forEach((cell) => {
     cell.classList.remove("is-duration-resize-target");
@@ -43,16 +49,147 @@ function clearResizeTargets() {
 }
 
 function dateCellAt(x, y) {
-  const target = document.elementFromPoint(x, y);
-  const cell = target?.closest?.("#calendar [data-date]");
-  return cell && document.querySelector("#calendar")?.contains(cell) ? cell : null;
+  const calendar = document.querySelector("#calendar");
+  if (!calendar) return null;
+
+  const direct = document.elementFromPoint(x, y)?.closest?.("#calendar .fc-daygrid-day[data-date]");
+  if (direct && calendar.contains(direct)) return direct;
+
+  const cells = visibleDateCells();
+  const sameRow = cells.filter((cell) => {
+    const rect = cell.getBoundingClientRect();
+    return y >= rect.top && y <= rect.bottom;
+  });
+  if (!sameRow.length) return null;
+
+  return sameRow.reduce((nearest, cell) => {
+    const rect = cell.getBoundingClientRect();
+    const distance = x < rect.left ? rect.left - x : x > rect.right ? x - rect.right : 0;
+    if (!nearest || distance < nearest.distance) return { cell, distance };
+    return nearest;
+  }, null)?.cell || null;
+}
+
+function eventSegmentElements(eventId) {
+  return [...document.querySelectorAll("#calendar .fc-daygrid-event[data-nw-event-id]")]
+    .filter((element) => element.dataset.nwEventId === eventId);
+}
+
+function markSourceSegments(eventId, active) {
+  eventSegmentElements(eventId).forEach((segment) => {
+    segment.classList.toggle("is-duration-resize-source", active);
+  });
+}
+
+function clearPreview() {
+  document.querySelector("#nwDurationResizePreview")?.remove();
+}
+
+function createPreviewHost() {
+  clearPreview();
+  const host = document.createElement("div");
+  host.id = "nwDurationResizePreview";
+  host.className = "nw-duration-preview";
+  host.setAttribute("aria-hidden", "true");
+  document.body.appendChild(host);
+  return host;
+}
+
+function normalizedTargetCell(cell) {
+  if (!activeResize || !cell) return null;
+  const targetDate = cell.getAttribute("data-date") || "";
+  if (targetDate >= activeResize.startDate) return cell;
+  return visibleDateCells().find((candidate) => candidate.dataset.date === activeResize.startDate)
+    || visibleDateCells().find((candidate) => candidate.dataset.date > activeResize.startDate)
+    || null;
+}
+
+function rowTopForPreview(row, fallbackOffset) {
+  if (!activeResize) return row.getBoundingClientRect().top + fallbackOffset;
+  const rowRect = row.getBoundingClientRect();
+  const existing = activeResize.segmentRects.find((item) => {
+    const middle = item.rect.top + item.rect.height / 2;
+    return middle >= rowRect.top && middle <= rowRect.bottom;
+  });
+  return existing ? existing.rect.top : rowRect.top + fallbackOffset;
+}
+
+function appendPreviewContent(segment, isFirstSegment) {
+  if (!activeResize || !isFirstSegment) return;
+  const content = activeResize.eventElement.querySelector(".nw-event-content")?.cloneNode(true);
+  if (!content) return;
+  content.classList.add("nw-duration-preview-content");
+  segment.appendChild(content);
+}
+
+function renderContinuousPreview(pointerX) {
+  if (!activeResize?.previewHost || !activeResize.targetCell) return;
+
+  const targetDate = activeResize.targetCell.getAttribute("data-date") || "";
+  const cells = visibleDateCells();
+  const startCell = cells.find((cell) => cell.dataset.date === activeResize.startDate)
+    || cells.find((cell) => cell.dataset.date > activeResize.startDate);
+  if (!startCell || !targetDate) return;
+
+  const visibleStartDate = startCell.dataset.date;
+  const rangeCells = cells.filter((cell) => {
+    const date = cell.dataset.date;
+    return date >= visibleStartDate && date <= targetDate;
+  });
+  if (!rangeCells.length) return;
+
+  const groupedRows = [];
+  rangeCells.forEach((cell) => {
+    const row = cell.closest("tr");
+    if (!row) return;
+    let group = groupedRows.find((item) => item.row === row);
+    if (!group) {
+      group = { row, cells: [] };
+      groupedRows.push(group);
+    }
+    group.cells.push(cell);
+  });
+
+  activeResize.previewHost.replaceChildren();
+
+  groupedRows.forEach((group, index) => {
+    group.cells.sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left);
+    const firstCell = group.cells[0];
+    const lastCell = group.cells[group.cells.length - 1];
+    const firstRect = firstCell.getBoundingClientRect();
+    const lastRect = lastCell.getBoundingClientRect();
+    const isTargetRow = group.row === activeResize.targetCell.closest("tr");
+
+    const left = firstRect.left + 3;
+    let right = lastRect.right - 3;
+    if (isTargetRow && targetDate !== visibleStartDate) {
+      right = Math.max(lastRect.left + 16, Math.min(pointerX, lastRect.right - 3));
+    }
+    if (targetDate === visibleStartDate) right = lastRect.right - 3;
+
+    const segment = document.createElement("div");
+    segment.className = "nw-duration-preview-segment";
+    segment.style.left = `${left}px`;
+    segment.style.top = `${rowTopForPreview(group.row, activeResize.laneOffset)}px`;
+    segment.style.width = `${Math.max(24, right - left)}px`;
+    segment.style.height = `${activeResize.eventRect.height}px`;
+    segment.style.setProperty("--nw-preview-background", activeResize.visual.backgroundColor);
+    segment.style.setProperty("--nw-preview-color", activeResize.visual.color);
+    segment.style.setProperty("--nw-preview-radius", activeResize.visual.borderRadius);
+    segment.style.setProperty("--nw-preview-shadow", activeResize.visual.boxShadow);
+    appendPreviewContent(segment, index === 0);
+    activeResize.previewHost.appendChild(segment);
+  });
 }
 
 function updateResizeTarget(x, y) {
+  if (!activeResize) return;
   clearResizeTargets();
-  const cell = dateCellAt(x, y);
+  const cell = normalizedTargetCell(dateCellAt(x, y));
   cell?.classList.add("is-duration-resize-target");
-  if (activeResize) activeResize.targetCell = cell;
+  activeResize.targetCell = cell;
+  activeResize.lastPointerX = x;
+  renderContinuousPreview(x);
 }
 
 function eventEndTime(calendarEvent) {
@@ -114,6 +251,14 @@ async function saveDuration(calendarEvent, targetDate) {
   }, { merge: true });
 }
 
+function restoreOriginalDuration(state) {
+  state.calendarEvent.setEnd(state.originalEnd);
+  state.calendarEvent.setExtendedProp("end", state.originalProps.end || state.startDate);
+  state.calendarEvent.setExtendedProp("allDay", state.originalProps.allDay);
+  state.calendarEvent.setExtendedProp("startTime", state.originalProps.startTime || "");
+  state.calendarEvent.setExtendedProp("endTime", state.originalProps.endTime || "");
+}
+
 function finishCustomResize({ save = false } = {}) {
   if (!activeResize) return;
   const state = activeResize;
@@ -121,21 +266,24 @@ function finishCustomResize({ save = false } = {}) {
 
   state.handle.classList.remove("is-active");
   state.eventElement.classList.remove("is-custom-resizing");
+  markSourceSegments(state.calendarEvent.id, false);
   document.body.classList.remove("is-calendar-duration-resizing");
   clearResizeTargets();
+  clearPreview();
 
   if (!save) return;
   const targetDate = state.targetCell?.getAttribute("data-date") || "";
   if (!targetDate) {
-    showToast("기간을 늘릴 날짜 칸에서 손을 떼어주세요.");
+    showToast("캘린더 안에서 손을 떼어주세요.");
     return;
   }
+  if (targetDate === state.originalEndDate) return;
 
   saveDuration(state.calendarEvent, targetDate)
-    .then(() => showToast(`일정 종료일을 ${targetDate}로 변경했습니다.`))
+    .then(() => showToast("일정 기간이 변경되었습니다."))
     .catch((error) => {
       console.warn("일정 기간 변경 실패", error);
-      state.calendarEvent.setEnd(state.originalEnd);
+      restoreOriginalDuration(state);
       showToast(error?.message || "일정 기간을 변경하지 못했습니다.");
     });
 }
@@ -146,25 +294,56 @@ function beginCustomResize(event, info, handle) {
   event.stopPropagation();
 
   finishCustomResize();
+
+  const props = info.event.extendedProps || {};
+  const eventRect = info.el.getBoundingClientRect();
+  const row = info.el.closest("tr");
+  const rowRect = row?.getBoundingClientRect();
+  const computed = getComputedStyle(info.el);
+  const originalEndDate = props.end
+    || (info.event.allDay && info.event.end ? addDaysKey(toDateKey(info.event.end), -1) : info.event.end ? toDateKey(info.event.end) : props.start || toDateKey(info.event.start));
+
   activeResize = {
     pointerId: event.pointerId,
     calendarEvent: info.event,
     eventElement: info.el,
     handle,
     originalEnd: info.event.end ? new Date(info.event.end) : null,
-    targetCell: info.el.closest("[data-date]")
+    originalEndDate,
+    originalProps: {
+      end: props.end || originalEndDate,
+      allDay: info.event.allDay,
+      startTime: props.startTime || "",
+      endTime: props.endTime || ""
+    },
+    startDate: props.start || toDateKey(info.event.start),
+    targetCell: null,
+    eventRect,
+    laneOffset: rowRect ? eventRect.top - rowRect.top : 34,
+    segmentRects: eventSegmentElements(info.event.id).map((element) => ({ element, rect: element.getBoundingClientRect() })),
+    previewHost: createPreviewHost(),
+    visual: {
+      backgroundColor: computed.backgroundColor,
+      color: computed.color,
+      borderRadius: computed.borderRadius,
+      boxShadow: computed.boxShadow
+    },
+    lastPointerX: event.clientX
   };
 
   handle.classList.add("is-active");
   info.el.classList.add("is-custom-resizing");
+  markSourceSegments(info.event.id, true);
   document.body.classList.add("is-calendar-duration-resizing");
   handle.setPointerCapture?.(event.pointerId);
   updateResizeTarget(event.clientX, event.clientY);
 }
 
 function addCustomResizeHandle(info) {
-  if (!info.el.classList.contains("fc-daygrid-event") || info.isEnd === false) return;
-  if (info.el.querySelector(".nw-duration-resize-handle")) return;
+  if (!info.el.classList.contains("fc-daygrid-event")) return;
+
+  info.el.dataset.nwEventId = info.event.id;
+  if (info.isEnd === false || info.el.querySelector(".nw-duration-resize-handle")) return;
 
   info.el.classList.add("nw-duration-resizable");
   const handle = document.createElement("span");
