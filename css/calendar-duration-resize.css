@@ -1,4 +1,4 @@
-/* Visible duration resize handle for month-view schedule bars */
+/* Visible duration resize handle and continuous preview for month-view schedules */
 .fc .fc-daygrid-event.nw-event-rendered,
 .fc .fc-daygrid-event.nw-duration-resizable {
   position: relative;
@@ -57,20 +57,6 @@
   z-index: 50 !important;
 }
 
-.fc .fc-daygrid-event.nw-duration-resizable:hover .fc-event-main::after {
-  position: absolute;
-  z-index: 9;
-  top: 50%;
-  right: 21px;
-  color: rgba(224, 230, 255, 0.76);
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1;
-  content: "기간";
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
 .fc .fc-daygrid-event.is-custom-resizing,
 .fc .fc-daygrid-event.fc-event-resizing,
 .fc .fc-daygrid-event.is-resizing {
@@ -78,32 +64,65 @@
   box-shadow: 0 0 0 2px rgba(91, 126, 255, 0.88), 0 12px 32px rgba(0, 0, 0, 0.36) !important;
 }
 
-.fc .fc-daygrid-day.is-duration-resize-target {
-  position: relative;
-  background: rgba(67, 104, 245, 0.13) !important;
-  box-shadow: inset 0 0 0 2px rgba(91, 126, 255, 0.68);
+.fc .fc-daygrid-event.is-duration-resize-source {
+  opacity: 0.22 !important;
 }
 
-.fc .fc-daygrid-day.is-duration-resize-target::after {
-  position: absolute;
-  z-index: 70;
-  inset: 7px;
-  display: grid;
-  place-items: center;
-  border: 1px dashed rgba(118, 145, 255, 0.86);
-  border-radius: 8px;
-  background: rgba(25, 34, 70, 0.62);
-  color: #c7d1ff;
-  font-size: 11px;
-  font-weight: 750;
-  content: "종료일";
+.fc .fc-daygrid-day.is-duration-resize-target {
+  position: relative;
+  background: rgba(67, 104, 245, 0.055) !important;
+  box-shadow: inset 0 0 0 1px rgba(91, 126, 255, 0.42);
+}
+
+.nw-duration-preview {
+  position: fixed;
+  z-index: 9998;
+  inset: 0;
   pointer-events: none;
+}
+
+.nw-duration-preview-segment {
+  position: fixed;
+  display: flex;
+  min-width: 24px;
+  align-items: center;
+  overflow: hidden;
+  border-radius: var(--nw-preview-radius, 6px);
+  background: var(--nw-preview-background, #2b365f);
+  box-shadow: var(--nw-preview-shadow, none), 0 0 0 2px rgba(91, 126, 255, 0.7), 0 12px 32px rgba(0, 0, 0, 0.34);
+  color: var(--nw-preview-color, #fff);
+  opacity: 0.96;
+  transform-origin: left center;
+  will-change: width, left, top;
+}
+
+.nw-duration-preview-segment::after {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  width: 4px;
+  height: 27px;
+  border-radius: 999px;
+  background: rgba(241, 244, 255, 0.94);
+  box-shadow: 0 0 0 1px rgba(20, 24, 38, 0.45);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.nw-duration-preview-content {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 24px 7px 9px;
 }
 
 body.is-calendar-duration-resizing {
   cursor: ew-resize !important;
   user-select: none;
   -webkit-user-select: none;
+}
+
+body.is-calendar-duration-resizing * {
+  cursor: ew-resize !important;
 }
 
 @media (hover: none), (pointer: coarse) {
@@ -120,12 +139,9 @@ body.is-calendar-duration-resizing {
     background: rgba(239, 242, 255, 0.92);
   }
 
-  .fc .fc-daygrid-event.nw-duration-resizable:hover .fc-event-main::after {
-    display: none;
-  }
-
-  .fc .fc-daygrid-day.is-duration-resize-target::after {
-    inset: 5px;
-    font-size: 11px;
+  .nw-duration-preview-segment::after {
+    right: 7px;
+    width: 5px;
+    height: 29px;
   }
 }
