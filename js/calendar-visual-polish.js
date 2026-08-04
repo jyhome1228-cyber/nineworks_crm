@@ -19,6 +19,23 @@ if (BaseCalendar && !window.FullCalendar.__nineworksVisualPolish) {
         background-image: linear-gradient(rgba(217, 120, 120, 0.018), rgba(217, 120, 120, 0.018));
       }
 
+      /* Current weekday: stronger header and a very subtle vertical guide. */
+      .fc .nw-current-weekday-header {
+        position: relative;
+        background: linear-gradient(180deg, rgba(67, 104, 245, 0.18), rgba(67, 104, 245, 0.08)) !important;
+        box-shadow: inset 0 -2px 0 rgba(94, 127, 255, 0.82);
+      }
+
+      .fc .nw-current-weekday-header .fc-col-header-cell-cushion {
+        color: #dbe3ff !important;
+        font-weight: 800 !important;
+        text-shadow: 0 0 16px rgba(89, 122, 255, 0.36);
+      }
+
+      .fc .nw-current-weekday-cell:not(.fc-day-today) {
+        background-color: rgba(67, 104, 245, 0.018) !important;
+      }
+
       /* Make schedule names easier to scan. */
       .fc .nw-event-title {
         font-size: 14.5px !important;
@@ -28,7 +45,13 @@ if (BaseCalendar && !window.FullCalendar.__nineworksVisualPolish) {
 
       /* Keep today subtly visible, then strongly pulse when the Today button is used. */
       .fc .fc-day-today {
-        background-color: rgba(67, 104, 245, 0.035) !important;
+        background-color: rgba(67, 104, 245, 0.075) !important;
+        box-shadow: inset 0 0 0 1px rgba(91, 126, 255, 0.2);
+      }
+
+      .fc .fc-day-today .fc-daygrid-day-number {
+        color: #dfe5ff !important;
+        font-weight: 800;
       }
 
       .fc .fc-day-today.nw-today-focus {
@@ -49,7 +72,7 @@ if (BaseCalendar && !window.FullCalendar.__nineworksVisualPolish) {
       @keyframes nw-today-cell-focus {
         0% {
           box-shadow: inset 0 0 0 0 rgba(85, 119, 255, 0);
-          background-color: rgba(67, 104, 245, 0.035);
+          background-color: rgba(67, 104, 245, 0.075);
         }
         24% {
           box-shadow: inset 0 0 0 3px rgba(85, 119, 255, 0.95), inset 0 0 48px rgba(67, 104, 245, 0.22);
@@ -57,11 +80,11 @@ if (BaseCalendar && !window.FullCalendar.__nineworksVisualPolish) {
         }
         62% {
           box-shadow: inset 0 0 0 2px rgba(85, 119, 255, 0.48), inset 0 0 30px rgba(67, 104, 245, 0.1);
-          background-color: rgba(67, 104, 245, 0.08);
+          background-color: rgba(67, 104, 245, 0.09);
         }
         100% {
-          box-shadow: inset 0 0 0 0 rgba(85, 119, 255, 0);
-          background-color: rgba(67, 104, 245, 0.035);
+          box-shadow: inset 0 0 0 1px rgba(91, 126, 255, 0.2);
+          background-color: rgba(67, 104, 245, 0.075);
         }
       }
 
@@ -93,6 +116,35 @@ if (BaseCalendar && !window.FullCalendar.__nineworksVisualPolish) {
   }
 
   const DAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+
+  function isSameDate(first, second) {
+    return first.getFullYear() === second.getFullYear()
+      && first.getMonth() === second.getMonth()
+      && first.getDate() === second.getDate();
+  }
+
+  function viewContainsToday(view) {
+    const today = new Date();
+    const start = view?.currentStart ? new Date(view.currentStart) : null;
+    const end = view?.currentEnd ? new Date(view.currentEnd) : null;
+    return Boolean(start && end && today >= start && today < end);
+  }
+
+  function shouldHighlightHeader(info) {
+    const today = new Date();
+    if (String(info.view?.type || "").includes("Month")) {
+      return viewContainsToday(info.view) && info.date.getDay() === today.getDay();
+    }
+    return isSameDate(info.date, today);
+  }
+
+  function shouldHighlightCell(info) {
+    const today = new Date();
+    if (String(info.view?.type || "").includes("Month")) {
+      return viewContainsToday(info.view) && info.date.getDay() === today.getDay();
+    }
+    return isSameDate(info.date, today);
+  }
 
   function activateTodayButton(calendarElement) {
     const button = calendarElement.querySelector(".fc-today-button");
@@ -133,10 +185,12 @@ if (BaseCalendar && !window.FullCalendar.__nineworksVisualPolish) {
         },
         dayHeaderDidMount(info) {
           info.el.classList.toggle("nw-sunday-header", info.date.getDay() === 0);
+          info.el.classList.toggle("nw-current-weekday-header", shouldHighlightHeader(info));
           originalDayHeaderDidMount?.(info);
         },
         dayCellDidMount(info) {
           info.el.classList.toggle("nw-sunday-cell", info.date.getDay() === 0);
+          info.el.classList.toggle("nw-current-weekday-cell", shouldHighlightCell(info));
           originalDayCellDidMount?.(info);
         },
         eventDidMount(info) {
