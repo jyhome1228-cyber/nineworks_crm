@@ -45,9 +45,12 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 
-setPersistence(auth, browserLocalPersistence).catch((error) => {
-  console.warn("Firebase 로그인 유지 설정 실패", error);
-});
+const authPersistenceReady = setPersistence(auth, browserLocalPersistence)
+  .then(() => true)
+  .catch((error) => {
+    console.warn("Firebase 로그인 유지 설정 실패", error);
+    return false;
+  });
 
 function authErrorMessage(error) {
   const code = String(error?.code || "");
@@ -85,8 +88,9 @@ function setLoginFeedback(message, type = "info") {
 async function signInWithEmailAndPassword(authInstance, email, password) {
   setLoginFeedback("계정 정보를 확인하고 있습니다.", "info");
   try {
+    await authPersistenceReady;
     const credential = await firebaseSignInWithEmailAndPassword(authInstance, email, password);
-    setLoginFeedback("로그인되었습니다.", "success");
+    setLoginFeedback("로그인 상태가 이 기기에 유지됩니다.", "success");
     return credential;
   } catch (error) {
     setLoginFeedback(authErrorMessage(error), "error");
@@ -120,6 +124,7 @@ const firebaseApi = {
   writeBatch,
   onSnapshot,
   serverTimestamp,
+  authPersistenceReady,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged
@@ -162,6 +167,7 @@ export {
   writeBatch,
   onSnapshot,
   serverTimestamp,
+  authPersistenceReady,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged
