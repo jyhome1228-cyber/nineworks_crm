@@ -5,6 +5,7 @@ import "./calendar-visual-polish.js?v=20260804-2";
 import "./calendar-card-hierarchy.js?v=20260803-3";
 import "./ui-enhancements.js";
 import "./ipad-touch-support.js?v=20260803-1";
+import "./sales-pipeline.js?v=20260807-1";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
   getAuth,
