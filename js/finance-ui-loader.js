@@ -63,6 +63,12 @@
     }
   };
 
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('#financeAddLedgerBottom')) return;
+    event.preventDefault();
+    document.querySelector('#financeAddLedger')?.click();
+  }, true);
+
   createFinanceUi();
   if (!document.querySelector('#financePage')) {
     const observer = new MutationObserver(() => {
