@@ -19,6 +19,11 @@ let api = null;
 let profile = null;
 let unsubscribe = null;
 let syncing = false;
+let refreshTimer = null;
+
+function setText(element, value) {
+  if (element && element.textContent !== value) element.textContent = value;
+}
 
 function currentMonth() {
   const date = new Date();
@@ -49,8 +54,7 @@ function contractMonthlyFee(contract) {
 }
 
 function autoAmount(contract) {
-  const count = elapsedMonths(contract?.monthly?.startMonth, contract?.monthly?.months);
-  return contractMonthlyFee(contract) * count;
+  return contractMonthlyFee(contract) * elapsedMonths(contract?.monthly?.startMonth, contract?.monthly?.months);
 }
 
 function isOwner() {
@@ -59,7 +63,7 @@ function isOwner() {
 
 function ensureAutoUi() {
   const section = $('#financeMonthlySection');
-  if (!section) return;
+  if (!section) return false;
 
   const manual = section.querySelector('.finance-payment-section');
   if (manual) manual.hidden = true;
@@ -77,6 +81,7 @@ function ensureAutoUi() {
     const settings = section.querySelector('.finance-monthly-settings');
     settings?.insertAdjacentElement('afterend', block);
   }
+  return true;
 }
 
 function formAutoValues() {
@@ -88,12 +93,13 @@ function formAutoValues() {
 }
 
 function refreshFormAuto() {
-  ensureAutoUi();
+  if (!ensureAutoUi()) return;
   if ($('#financeContractType')?.value !== 'monthly') return;
+
   const { count, fee, amount } = formAutoValues();
-  if ($('#financeMonthlyPaidMonths')) $('#financeMonthlyPaidMonths').textContent = `${count}개월`;
-  if ($('#financeMonthlyAutoFee')) $('#financeMonthlyAutoFee').textContent = won(fee);
-  if ($('#financeMonthlyAutoAmount')) $('#financeMonthlyAutoAmount').textContent = won(amount);
+  setText($('#financeMonthlyPaidMonths'), `${count}개월`);
+  setText($('#financeMonthlyAutoFee'), won(fee));
+  setText($('#financeMonthlyAutoAmount'), won(amount));
 
   const hiddenAmount = $('#finance_monthly_amount');
   if (hiddenAmount && Number(hiddenAmount.value || 0) !== amount) {
@@ -102,9 +108,13 @@ function refreshFormAuto() {
   }
 
   const totalLabel = $('#financePaymentPreview')?.previousElementSibling;
-  if (totalLabel) totalLabel.textContent = '입금 · 집행 자동계산';
-  const note = $('#financeModeNote');
-  if (note) note.textContent = '월단위 계약은 시작월부터 현재월까지의 경과 개월 × 월 계약금으로 입금·집행액을 자동 계산합니다.';
+  setText(totalLabel, '입금 · 집행 자동계산');
+  setText($('#financeModeNote'), '월단위 계약은 시작월부터 현재월까지의 경과 개월 × 월 계약금으로 입금·집행액을 자동 계산합니다.');
+}
+
+function scheduleRefresh(delay = 0) {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(refreshFormAuto, delay);
 }
 
 async function syncContracts(snapshot) {
@@ -112,10 +122,12 @@ async function syncContracts(snapshot) {
   const monthly = snapshot.docs
     .map((doc) => ({ id: doc.id, ...doc.data() }))
     .filter((contract) => contract.contractType === 'monthly');
+
   const changes = monthly.filter((contract) => {
     const next = autoAmount(contract);
+    const count = elapsedMonths(contract?.monthly?.startMonth, contract?.monthly?.months);
     return Number(contract?.payments?.monthly?.amount || 0) !== next
-      || Number(contract?.payments?.monthly?.autoMonths || -1) !== elapsedMonths(contract?.monthly?.startMonth, contract?.monthly?.months);
+      || Number(contract?.payments?.monthly?.autoMonths ?? -1) !== count;
   });
   if (!changes.length) return;
 
@@ -188,27 +200,17 @@ function init() {
   wait();
 
   document.addEventListener('click', (event) => {
-    if (event.target.closest('[data-finance-mode],#financeAddContract,[data-finance-contract]')) {
-      setTimeout(refreshFormAuto, 60);
-    }
+    if (event.target.closest('[data-finance-mode]')) scheduleRefresh(20);
+    if (event.target.closest('#financeAddContract,[data-finance-contract]')) scheduleRefresh(80);
   }, true);
 
   document.addEventListener('input', (event) => {
-    if (['financeMonthlyStart', 'financeMonthlyMonths', 'financeMonthlyFee'].includes(event.target?.id)) {
-      setTimeout(refreshFormAuto, 0);
-    }
-  }, true);
-  document.addEventListener('change', (event) => {
-    if (['financeMonthlyStart', 'financeMonthlyMonths'].includes(event.target?.id)) {
-      setTimeout(refreshFormAuto, 0);
-    }
+    if (['financeMonthlyStart', 'financeMonthlyMonths', 'financeMonthlyFee'].includes(event.target?.id)) scheduleRefresh();
   }, true);
 
-  const observer = new MutationObserver(() => {
-    ensureAutoUi();
-    if ($('#financeContractModal') && !$('#financeContractModal').hidden) refreshFormAuto();
-  });
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('change', (event) => {
+    if (['financeMonthlyStart', 'financeMonthlyMonths'].includes(event.target?.id)) scheduleRefresh();
+  }, true);
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
