@@ -9,6 +9,7 @@ import "./sales-pipeline.js?v=20260807-1";
 import "./finance-ui-loader.js?v=20260807-1";
 import "./finance-management-v3.js?v=20260807-1";
 import "./finance-monthly-simple.js?v=20260807-1";
+import "./finance-monthly-auto-received.js?v=20260807-1";
 import "./finance-receivable-semantics.js?v=20260807-1";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
