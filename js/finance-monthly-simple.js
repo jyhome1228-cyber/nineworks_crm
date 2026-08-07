@@ -30,9 +30,6 @@ function ensureMonthlyFeeUi(){
   total.className='finance-monthly-total-note';
   total.innerHTML='<span>전체 계약 공급가</span><strong id="financeMonthlyTotalAuto">0원</strong>';
   grid.insertAdjacentElement('afterend',total);
-
-  $('#financeMonthlyFee').addEventListener('input',syncMonthlyTotal);
-  $('#financeMonthlyMonths')?.addEventListener('input',syncMonthlyTotal);
 }
 
 function isMonthly(){return $('#financeContractType')?.value==='monthly'}
@@ -43,7 +40,7 @@ function syncMonthlyTotal(){
   const months=Math.max(0,Number($('#financeMonthlyMonths')?.value||0));
   const total=fee*months;
   const supply=$('#financeContractAmount');
-  if(supply){
+  if(supply&&Number(supply.value||0)!==total){
     supply.value=total||'';
     supply.dispatchEvent(new Event('input',{bubbles:true}));
   }
@@ -53,15 +50,15 @@ function syncMonthlyTotal(){
 function setSupplyMode(){
   const supply=$('#financeContractAmount');
   if(!supply)return;
+  const span=supply.closest('.finance-field')?.querySelector('span');
   if(isMonthly()){
     supply.readOnly=true;
     supply.classList.add('is-monthly-calculated');
-    supply.closest('.finance-field')?.querySelector('span')?.childNodes[0] && (supply.closest('.finance-field').querySelector('span').childNodes[0].textContent='전체 공급가액 · 자동계산 ');
+    if(span?.childNodes?.[0])span.childNodes[0].textContent='전체 공급가액 · 자동계산 ';
   }else{
     supply.readOnly=false;
     supply.classList.remove('is-monthly-calculated');
-    const span=supply.closest('.finance-field')?.querySelector('span');
-    if(span)span.childNodes[0].textContent='전체 공급가액 *';
+    if(span?.childNodes?.[0])span.childNodes[0].textContent='전체 공급가액 *';
   }
 }
 
@@ -83,16 +80,15 @@ function refresh(){
 
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-finance-mode]'))setTimeout(refresh,0);
-  if(e.target.closest('#financeAddContract,[data-finance-contract]'))setTimeout(refresh,30);
+  if(e.target.closest('#financeAddContract,[data-finance-contract]'))setTimeout(refresh,40);
 },true);
 
 document.addEventListener('input',e=>{
   if(e.target?.id==='financeMonthlyMonths'||e.target?.id==='financeMonthlyFee')syncMonthlyTotal();
 },true);
 
-const observer=new MutationObserver(()=>{
-  if($('#financeContractModal'))refresh();
-});
-observer.observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener('change',e=>{
+  if(e.target?.id==='financeMonthlyMonths')syncMonthlyTotal();
+},true);
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(refresh,0),{once:true});else setTimeout(refresh,0);
