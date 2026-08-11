@@ -40,20 +40,29 @@ let stateLoadedFor = '';
 let stateLoadToken = 0;
 let stateWriteQueue = Promise.resolve();
 
+function setText(el, value){
+  if(el && el.textContent !== value) el.textContent = value;
+}
+
 function schedule(){
   if(scheduled) return;
   scheduled = true;
-  requestAnimationFrame(()=>{scheduled=false; simplify();});
+  requestAnimationFrame(()=>{
+    scheduled = false;
+    simplify();
+  });
 }
 
 function fieldByInput(id){ return $('#'+id)?.closest('.qa-report-field'); }
 
 function replaceInputWithSelect(id, options, labelText){
   const old = $('#'+id);
-  if(!old || old.tagName === 'SELECT') return;
+  if(!old) return;
   const field = old.closest('.qa-report-field');
   const label = field?.querySelector(':scope > span');
-  if(label) label.textContent = labelText;
+  setText(label, labelText);
+  if(old.tagName === 'SELECT') return;
+
   const current = String(old.value || '');
   const select = document.createElement('select');
   select.id = id;
@@ -66,11 +75,13 @@ function replaceInputWithSelect(id, options, labelText){
 function simplifyReport(){
   const panel = $('.qa-report-panel');
   if(!panel) return;
-  panel.classList.add('is-simple');
+  if(!panel.classList.contains('is-simple')) panel.classList.add('is-simple');
 
   ['qaReportAccount','qaReportOrder'].forEach(id=>{
     const field = fieldByInput(id);
-    if(field){ field.classList.add('qa-simple-hidden'); const input=$('#'+id); if(input) input.value=''; }
+    if(field && !field.classList.contains('qa-simple-hidden')) field.classList.add('qa-simple-hidden');
+    const input = $('#'+id);
+    if(input && input.value) input.value = '';
   });
 
   replaceInputWithSelect('qaReportDesktop', ['Mac','Windows'], 'PC 테스트 환경');
@@ -79,14 +90,13 @@ function simplifyReport(){
   const conclusion = $('#qaReportConclusion');
   if(conclusion){
     const field = conclusion.closest('.qa-report-field');
-    field?.classList.add('qa-report-field--full');
-    const label = field?.querySelector(':scope > span');
-    if(label) label.textContent = 'QA 보고서 내용 · 종합 메모';
-    conclusion.placeholder = '자유롭게 적어주세요. 예) 회원가입 정상. 주문은 모바일에서 버튼 위치 수정 필요. 회원탈퇴 기능은 없음. 게시판 글쓰기는 WEB/MOBILE 모두 정상.';
+    if(field && !field.classList.contains('qa-report-field--full')) field.classList.add('qa-report-field--full');
+    setText(field?.querySelector(':scope > span'), 'QA 보고서 내용 · 종합 메모');
+    const placeholder = '자유롭게 적어주세요. 예) 회원가입 정상. 주문은 모바일에서 버튼 위치 수정 필요. 회원탈퇴 기능은 없음. 게시판 글쓰기는 WEB/MOBILE 모두 정상.';
+    if(conclusion.placeholder !== placeholder) conclusion.placeholder = placeholder;
   }
 
-  const head = panel.querySelector('.qa-report-panel-head p');
-  if(head) head.textContent = '환경만 간단히 선택하고, 아래 메모에 검수 결과를 보고서처럼 자유롭게 작성합니다.';
+  setText(panel.querySelector('.qa-report-panel-head p'), '환경만 간단히 선택하고, 아래 메모에 검수 결과를 보고서처럼 자유롭게 작성합니다.');
 }
 
 function stateValue(value){
@@ -121,8 +131,8 @@ function applyCachedStates(){
     const key = select.dataset.qaState || '';
     if(!hasCachedState(key)) return;
     const value = stateValue(stateCache[key]);
-    select.value = value;
-    select.dataset.state = value;
+    if(select.value !== value) select.value = value;
+    if(select.dataset.state !== value) select.dataset.state = value;
   });
 }
 
@@ -131,7 +141,7 @@ async function loadStates(siteId){
   const token = ++stateLoadToken;
   const api = window.NineworksFirebase;
   if(!api){
-    setTimeout(()=>{ if(siteId===currentSiteId) loadStates(siteId); },80);
+    setTimeout(()=>{ if(siteId===currentSiteId) loadStates(siteId); },120);
     return;
   }
   try{
@@ -140,7 +150,6 @@ async function loadStates(siteId){
     stateCache = snap.exists() ? (snap.data()?.checklist || {}) : {};
     stateLoadedFor = siteId;
     schedule();
-    requestAnimationFrame(applyCachedStates);
   }catch(error){
     console.error('QA 상태 불러오기 실패',error);
     if(token!==stateLoadToken || siteId!==currentSiteId) return;
@@ -153,11 +162,9 @@ async function loadStates(siteId){
 function simplifyChecklist(){
   const wrap = $('.qa-checklist-wrap');
   if(!wrap) return;
-  wrap.classList.add('is-simple');
-  const heading = wrap.querySelector('.qa-checklist-head h3');
-  const small = wrap.querySelector('.qa-checklist-head small');
-  if(heading) heading.textContent = '간단 QA 체크리스트';
-  if(small) small.textContent = '각 항목을 정상 · 문제 · 없음 중 하나로 선택합니다.';
+  if(!wrap.classList.contains('is-simple')) wrap.classList.add('is-simple');
+  setText(wrap.querySelector('.qa-checklist-head h3'), '간단 QA 체크리스트');
+  setText(wrap.querySelector('.qa-checklist-head small'), '각 항목을 정상 · 문제 · 없음 중 하나로 선택합니다.');
 
   if(currentSiteId && stateLoadedFor !== currentSiteId) return;
 
@@ -172,10 +179,12 @@ function simplifyChecklist(){
     const labelCell = desktopCell?.previousElementSibling;
     const mobileCell = desktopCell?.nextElementSibling;
     if(!KEEP[key]){
-      [labelCell, desktopCell, mobileCell].forEach(el=>el?.classList.add('qa-simple-hidden'));
+      [labelCell, desktopCell, mobileCell].forEach(el=>{
+        if(el && !el.classList.contains('qa-simple-hidden')) el.classList.add('qa-simple-hidden');
+      });
       return;
     }
-    if(labelCell) labelCell.textContent = KEEP[key];
+    setText(labelCell, KEEP[key]);
     const mobileInput = mobileCell?.querySelector('input[data-qa-check]');
     transformCell(input, `${key}_desktop`);
     transformCell(mobileInput, `${key}_mobile`);
@@ -199,8 +208,8 @@ function saveState(key, value, select){
   const normalized = stateValue(value);
   stateCache[key] = normalized;
   stateLoadedFor = siteId;
-  select.value = normalized;
-  select.dataset.state = normalized;
+  if(select.value !== normalized) select.value = normalized;
+  if(select.dataset.state !== normalized) select.dataset.state = normalized;
 
   stateWriteQueue = stateWriteQueue.then(async()=>{
     try{
@@ -211,7 +220,11 @@ function saveState(key, value, select){
     }catch(error){
       console.error('QA 상태 저장 실패',error);
       const toast = $('#toast');
-      if(toast){toast.textContent='QA 체크 상태를 저장하지 못했습니다.';toast.classList.add('is-visible');setTimeout(()=>toast.classList.remove('is-visible'),2500)}
+      if(toast){
+        toast.textContent='QA 체크 상태를 저장하지 못했습니다.';
+        toast.classList.add('is-visible');
+        setTimeout(()=>toast.classList.remove('is-visible'),2500);
+      }
     }
   });
 }
@@ -234,10 +247,16 @@ document.addEventListener('click', e=>{
   const site = e.target.closest('[data-qa-site]');
   if(site){
     const siteId = site.dataset.qaSite || '';
-    document.querySelectorAll('[data-qa-site]').forEach(card=>card.classList.toggle('is-selected',card===site));
+    document.querySelectorAll('[data-qa-site]').forEach(card=>{
+      const selected = card===site;
+      if(card.classList.contains('is-selected') !== selected) card.classList.toggle('is-selected', selected);
+    });
     if(siteId !== currentSiteId) setCurrentSite(siteId);
+    setTimeout(schedule, 0);
+    setTimeout(schedule, 60);
+    return;
   }
-  if(site || e.target.closest('#openQaManagement,#qaBackCalendar,#qaEditSite')) setTimeout(schedule, 30);
+  if(e.target.closest('#openQaManagement,#qaBackCalendar,#qaEditSite')) setTimeout(schedule, 30);
 }, true);
 
 document.addEventListener('change', e=>{
@@ -250,11 +269,22 @@ document.addEventListener('change', e=>{
   if(e.target.closest('#qaReportResult')) setTimeout(schedule, 20);
 }, true);
 
+function mutationContainsDetailStructure(mutation){
+  for(const node of mutation.addedNodes){
+    if(!(node instanceof Element)) continue;
+    if(node.matches('.qa-report-panel,.qa-checklist-wrap')) return true;
+    if(node.querySelector?.('.qa-report-panel,.qa-checklist-wrap')) return true;
+  }
+  return false;
+}
+
 function init(){
   schedule();
   const root = $('#qaPage');
   if(root){
-    const observer = new MutationObserver(()=>schedule());
+    const observer = new MutationObserver(mutations=>{
+      if(mutations.some(mutationContainsDetailStructure)) schedule();
+    });
     observer.observe(root,{childList:true,subtree:true});
   }
 }
