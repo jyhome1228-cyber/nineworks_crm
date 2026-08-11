@@ -31,6 +31,14 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
+    match /qaSites/{document=**} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /qaIssues/{document=**} {
+      allow read, write: if isSignedIn();
+    }
+
     match /financeContracts/{document=**} {
       allow read, write: if isOwner();
     }
