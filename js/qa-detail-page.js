@@ -45,6 +45,7 @@ document.head.appendChild(style);
 let reportDirty=false;
 let activeSiteId='';
 let listScrollY=0;
+let workbarEnsureScheduled=false;
 
 function toast(message){
   const el=$('#toast');
@@ -67,7 +68,17 @@ function currentInfo(){
   return {title,url};
 }
 
+function updateSaveState(){
+  const btn=$('#qaDetailSave');
+  if(!btn)return;
+  if(btn.classList.contains('is-dirty')!==reportDirty)btn.classList.toggle('is-dirty',reportDirty);
+  if(btn.textContent!=='저장하기')btn.textContent='저장하기';
+  const nextTitle=reportDirty?'저장하지 않은 보고서 내용이 있습니다.':'현재 보고서 내용을 저장합니다.';
+  if(btn.title!==nextTitle)btn.title=nextTitle;
+}
+
 function ensureWorkbar(){
+  workbarEnsureScheduled=false;
   const page=$('#qaPage');
   const detail=$('#qaSiteDetail');
   if(!page||!detail||!page.classList.contains('qa-detail-page-mode'))return;
@@ -89,17 +100,15 @@ function ensureWorkbar(){
   }
   const title=bar.querySelector('[data-qa-workbar-title]');
   const url=bar.querySelector('[data-qa-workbar-url]');
-  if(title)title.textContent=info.title;
-  if(url)url.textContent=info.url;
+  if(title&&title.textContent!==info.title)title.textContent=info.title;
+  if(url&&url.textContent!==info.url)url.textContent=info.url;
   updateSaveState();
 }
 
-function updateSaveState(){
-  const btn=$('#qaDetailSave');
-  if(!btn)return;
-  btn.classList.toggle('is-dirty',reportDirty);
-  btn.textContent='저장하기';
-  btn.title=reportDirty?'저장하지 않은 보고서 내용이 있습니다.':'현재 보고서 내용을 저장합니다.';
+function scheduleEnsureWorkbar(){
+  if(workbarEnsureScheduled)return;
+  workbarEnsureScheduled=true;
+  requestAnimationFrame(ensureWorkbar);
 }
 
 function enterDetail(card){
@@ -194,7 +203,7 @@ function bind(){
     const siteId=event.detail?.siteId||'';
     if(!siteId)return;
     activeSiteId=siteId;
-    setTimeout(ensureWorkbar,0);
+    scheduleEnsureWorkbar();
   });
 }
 
@@ -204,7 +213,10 @@ function init(){
     const page=$('#qaPage');
     if(!page)return setTimeout(wait,80);
     const observer=new MutationObserver(()=>{
-      if(page.classList.contains('qa-detail-page-mode'))ensureWorkbar();
+      if(!page.classList.contains('qa-detail-page-mode'))return;
+      const detail=$('#qaSiteDetail');
+      if(!detail)return;
+      if(!detail.querySelector(':scope>.qa-detail-workbar'))scheduleEnsureWorkbar();
     });
     observer.observe(page,{childList:true,subtree:true});
   };
