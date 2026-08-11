@@ -9,6 +9,7 @@ style.textContent=`
   #qaPage.qa-detail-page-mode>.qa-guide,
   #qaPage.qa-detail-page-mode>.qa-panel:not(#qaSiteDetail){display:none!important}
   #qaPage.qa-detail-page-mode #qaSiteDetail{display:block!important;margin-top:0}
+  #qaPage.qa-detail-page-mode #qaSaveReport{display:none!important}
 
   .qa-detail-workbar{position:sticky;top:0;z-index:45;display:flex;align-items:center;justify-content:space-between;gap:20px;margin:-1px -1px 18px;padding:14px 16px;border:1px solid #303139;border-radius:11px;background:rgba(28,29,33,.96);box-shadow:0 10px 30px rgba(0,0,0,.18);backdrop-filter:blur(14px)}
   .qa-detail-workbar-left{display:flex;align-items:center;gap:13px;min-width:0}
@@ -97,9 +98,8 @@ function updateSaveState(){
   const btn=$('#qaDetailSave');
   if(!btn)return;
   btn.classList.toggle('is-dirty',reportDirty);
-  btn.textContent=reportDirty?'저장하기':'저장됨';
-  if(!reportDirty)btn.dataset.clean='true';
-  else delete btn.dataset.clean;
+  btn.textContent='저장하기';
+  btn.title=reportDirty?'저장하지 않은 보고서 내용이 있습니다.':'현재 보고서 내용을 저장합니다.';
 }
 
 function enterDetail(card){
