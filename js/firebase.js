@@ -6,6 +6,7 @@ import "./calendar-visual-polish.js?v=20260804-2";
 import "./calendar-card-hierarchy.js?v=20260803-3";
 import "./ui-enhancements.js";
 import "./ipad-touch-support.js?v=20260803-1";
+import "./qa-management.js?v=20260811-1";
 import "./sales-pipeline.js?v=20260807-1";
 import "./finance-ui-loader.js?v=20260807-1";
 import "./finance-management-v3.js?v=20260807-1";
