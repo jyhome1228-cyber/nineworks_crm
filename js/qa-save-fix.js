@@ -132,5 +132,3 @@ function init(){
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-
-import('./qa-simple-mode.js?v=20260811-1').catch((error)=>console.warn('QA 단순 모드 로드 실패',error));
