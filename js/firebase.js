@@ -7,8 +7,9 @@ import "./calendar-card-hierarchy.js?v=20260803-3";
 import "./ui-enhancements.js";
 import "./ipad-touch-support.js?v=20260803-1";
 import "./qa-management-v2.js?v=20260811-2";
-import "./qa-save-fix.js?v=20260811-1";
-import "./qa-simple-mode.js?v=20260811-2";
+import "./qa-save-fix.js?v=20260811-2";
+import "./qa-simple-mode.js?v=20260811-3";
+import "./qa-report-screenshots.js?v=20260811-1";
 import "./sales-pipeline.js?v=20260807-1";
 import "./finance-ui-loader.js?v=20260807-1";
 import "./finance-management-v3.js?v=20260807-1";
@@ -153,7 +154,7 @@ queueMicrotask(async () => {
 
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
-  import("./calendar-resize-share.js").catch((error) => console.warn("캘린더 공유·크기 조절 모듈 로드 실패", error));
+  import("./calendar-resize-share.js?v=20260803-1").catch((error) => console.warn("캘린더 공유·크기 조절 모듈 로드 실패", error));
   import("./task-completion.js").catch((error) => console.warn("일정 완료 기능 모듈 로드 실패", error));
   import("./calendar-summary-grid.js?v=20260803-1").catch((error) => console.warn("캘린더 요약 레이아웃 모듈 로드 실패", error));
   import("./browser-reminders-v2.js?v=20260803-2")
