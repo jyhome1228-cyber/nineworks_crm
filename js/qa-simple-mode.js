@@ -10,7 +10,7 @@ simpleQaStyle.textContent = `
   .qa-checklist-wrap.is-simple .qa-checklist>div{min-height:50px}
   .qa-checklist-wrap.is-simple .qa-check-section-title.is-shop,
   .qa-checklist-wrap.is-simple .qa-checklist--shop{display:none!important}
-  .qa-state-select{width:100%;max-width:128px;height:34px;border:1px solid #3a3a42;border-radius:8px;padding:0 9px;background:#222227;color:#a9a9b2;font-size:11px;font-weight:650;outline:0;cursor:pointer}
+  .qa-state-select{width:100%;max-width:128px;height:34px;border:1px solid #3a3a42;border-radius:8px;padding:0 9px;background:#222227;color:#a9a9b2;font-size:11px;font-weight:650;outline:0;cursor:pointer;transition:border-color .18s ease,background .18s ease,color .18s ease}
   .qa-state-select[data-state="ok"]{border-color:rgba(78,190,126,.42);background:rgba(78,190,126,.08);color:#9ed9b7}
   .qa-state-select[data-state="issue"]{border-color:rgba(255,108,108,.45);background:rgba(255,108,108,.07);color:#ffaaaa}
   .qa-state-select[data-state="none"]{border-color:#3b3b43;background:#202024;color:#797982}
@@ -35,6 +35,11 @@ const KEEP = {
 
 let scheduled = false;
 let currentSiteId = '';
+let stateCache = {};
+let stateLoadedFor = '';
+let stateLoadToken = 0;
+let stateWriteQueue = Promise.resolve();
+
 function schedule(){
   if(scheduled) return;
   scheduled = true;
@@ -100,11 +105,49 @@ function stateSelect(key, value){
   </select>`;
 }
 
+function hasCachedState(key){
+  return Object.prototype.hasOwnProperty.call(stateCache,key);
+}
+
 function transformCell(input, key){
   const cell = input?.closest('div');
   if(!cell || cell.querySelector('[data-qa-state]')) return;
-  const checked = input.checked ? 'ok' : '';
-  cell.innerHTML = stateSelect(key, checked);
+  const stored = hasCachedState(key) ? stateCache[key] : (input.checked ? 'ok' : '');
+  cell.innerHTML = stateSelect(key, stored);
+}
+
+function applyCachedStates(){
+  document.querySelectorAll('[data-qa-state]').forEach(select=>{
+    const key = select.dataset.qaState || '';
+    if(!hasCachedState(key)) return;
+    const value = stateValue(stateCache[key]);
+    select.value = value;
+    select.dataset.state = value;
+  });
+}
+
+async function loadStates(siteId){
+  if(!siteId) return;
+  const token = ++stateLoadToken;
+  const api = window.NineworksFirebase;
+  if(!api){
+    setTimeout(()=>{ if(siteId===currentSiteId) loadStates(siteId); },80);
+    return;
+  }
+  try{
+    const snap = await api.getDoc(api.doc(api.db,'qaSites',siteId));
+    if(token!==stateLoadToken || siteId!==currentSiteId) return;
+    stateCache = snap.exists() ? (snap.data()?.checklist || {}) : {};
+    stateLoadedFor = siteId;
+    schedule();
+    requestAnimationFrame(applyCachedStates);
+  }catch(error){
+    console.error('QA 상태 불러오기 실패',error);
+    if(token!==stateLoadToken || siteId!==currentSiteId) return;
+    stateCache = {};
+    stateLoadedFor = siteId;
+    schedule();
+  }
 }
 
 function simplifyChecklist(){
@@ -115,6 +158,8 @@ function simplifyChecklist(){
   const small = wrap.querySelector('.qa-checklist-head small');
   if(heading) heading.textContent = '간단 QA 체크리스트';
   if(small) small.textContent = '각 항목을 정상 · 문제 · 없음 중 하나로 선택합니다.';
+
+  if(currentSiteId && stateLoadedFor !== currentSiteId) return;
 
   const list = [...wrap.querySelectorAll('.qa-checklist')].find(el=>!el.classList.contains('qa-checklist--shop'));
   if(!list) return;
@@ -136,32 +181,47 @@ function simplifyChecklist(){
     transformCell(mobileInput, `${key}_mobile`);
   });
 
+  applyCachedStates();
+
   if(!wrap.querySelector('.qa-simple-note')){
     const note = document.createElement('p');
     note.className = 'qa-simple-note';
-    note.textContent = '회원가입 · 주문 · 회원탈퇴 · 글쓰기처럼 사이트에 없는 기능은 “없음”으로 선택하세요. “문제”를 선택한 항목은 위의 문제 등록에서 설명과 스크린샷을 남기면 됩니다.';
+    note.textContent = '회원가입 · 주문 · 회원탈퇴 · 글쓰기처럼 사이트에 없는 기능은 “없음”으로 선택하세요. “문제”를 선택한 항목은 문제 등록 또는 위 보고서 스크린샷 기록에 남기면 됩니다.';
     list.insertAdjacentElement('afterend', note);
   }
 }
 
-async function saveState(key, value, select){
-  if(!currentSiteId){
-    const selected = document.querySelector('[data-qa-site].is-selected');
-    currentSiteId = selected?.dataset.qaSite || '';
-  }
+function saveState(key, value, select){
+  const siteId = currentSiteId || document.querySelector('[data-qa-site].is-selected')?.dataset.qaSite || '';
   const api = window.NineworksFirebase;
-  if(!api?.auth?.currentUser || !currentSiteId) return;
-  select.dataset.state = value;
-  try{
-    const ref = api.doc(api.db,'qaSites',currentSiteId);
-    const snap = await api.getDoc(ref);
-    const old = snap.exists() ? (snap.data()?.checklist || {}) : {};
-    await api.setDoc(ref,{checklist:{...old,[key]:value},updatedAt:api.serverTimestamp()},{merge:true});
-  }catch(error){
-    console.error('QA 상태 저장 실패',error);
-    const toast = $('#toast');
-    if(toast){toast.textContent='QA 체크 상태를 저장하지 못했습니다.';toast.classList.add('is-visible');setTimeout(()=>toast.classList.remove('is-visible'),2500)}
-  }
+  if(!api?.auth?.currentUser || !siteId) return;
+
+  const normalized = stateValue(value);
+  stateCache[key] = normalized;
+  stateLoadedFor = siteId;
+  select.value = normalized;
+  select.dataset.state = normalized;
+
+  stateWriteQueue = stateWriteQueue.then(async()=>{
+    try{
+      const ref = api.doc(api.db,'qaSites',siteId);
+      const snap = await api.getDoc(ref);
+      const old = snap.exists() ? (snap.data()?.checklist || {}) : {};
+      await api.setDoc(ref,{checklist:{...old,[key]:normalized},updatedAt:api.serverTimestamp()},{merge:true});
+    }catch(error){
+      console.error('QA 상태 저장 실패',error);
+      const toast = $('#toast');
+      if(toast){toast.textContent='QA 체크 상태를 저장하지 못했습니다.';toast.classList.add('is-visible');setTimeout(()=>toast.classList.remove('is-visible'),2500)}
+    }
+  });
+}
+
+function setCurrentSite(siteId){
+  currentSiteId = siteId || '';
+  stateCache = {};
+  stateLoadedFor = '';
+  if(currentSiteId) loadStates(currentSiteId);
+  window.dispatchEvent(new CustomEvent('nineworks:qa-site-change',{detail:{siteId:currentSiteId}}));
 }
 
 function simplify(){
@@ -173,8 +233,9 @@ function simplify(){
 document.addEventListener('click', e=>{
   const site = e.target.closest('[data-qa-site]');
   if(site){
-    currentSiteId = site.dataset.qaSite || '';
+    const siteId = site.dataset.qaSite || '';
     document.querySelectorAll('[data-qa-site]').forEach(card=>card.classList.toggle('is-selected',card===site));
+    if(siteId !== currentSiteId) setCurrentSite(siteId);
   }
   if(site || e.target.closest('#openQaManagement,#qaBackCalendar,#qaEditSite')) setTimeout(schedule, 30);
 }, true);
@@ -197,6 +258,12 @@ function init(){
     observer.observe(root,{childList:true,subtree:true});
   }
 }
+
+window.NineworksQAState = {
+  getSiteId:()=>currentSiteId,
+  getChecklist:()=>({...stateCache}),
+  refresh:()=>currentSiteId&&loadStates(currentSiteId)
+};
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
 else init();
