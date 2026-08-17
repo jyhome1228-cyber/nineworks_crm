@@ -1,4 +1,5 @@
 import "./fullcalendar-native-events.js?v=20260803-1";
+import "./calendar-save-guard.js?v=20260817-1";
 import "./calendar-past-week-collapse.js?v=20260810-1";
 import "./calendar-duration-resize.js?v=20260804-4";
 import "./time-setting-ui-v2.js?v=20260803-1";
