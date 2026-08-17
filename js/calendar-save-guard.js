@@ -1,4 +1,4 @@
-const SAVE_GUARD_VERSION = "20260817-1";
+const SAVE_GUARD_VERSION = "20260817-4";
 let bindTimer = null;
 
 function getApi() {
@@ -18,7 +18,7 @@ function showToast(message) {
   if (!toast) return;
   toast.textContent = message;
   toast.classList.add("is-visible");
-  window.setTimeout(() => toast.classList.remove("is-visible"), 3200);
+  window.setTimeout(() => toast.classList.remove("is-visible"), 3600);
 }
 
 function readSnapshot() {
@@ -69,8 +69,10 @@ function sameCoreFields(expected, actual = {}) {
 
 async function persistAndVerify(snapshot) {
   const api = getApi();
-  const user = api?.auth?.currentUser;
-  if (!api || !user || !isComplete(snapshot)) return;
+  if (!api) throw new Error("Firebase API가 아직 연결되지 않았습니다.");
+  const user = api.auth?.currentUser;
+  if (!user) throw new Error("로그인 정보를 확인하지 못했습니다.");
+  if (!isComplete(snapshot)) throw new Error("일정 필수값이 완성되지 않았습니다.");
 
   const ref = api.doc(api.db, "events", snapshot.id);
   const payload = {
@@ -82,11 +84,15 @@ async function persistAndVerify(snapshot) {
 
   await api.setDoc(ref, payload, { merge: true });
   const verified = await api.getDoc(ref);
-  if (!verified.exists() || !sameCoreFields(snapshot, verified.data())) {
+  const actual = verified.exists() ? verified.data() : null;
+
+  if (!actual || !sameCoreFields(snapshot, actual)) {
+    console.error("[NINEWORKS save mismatch]", { expected: snapshot, actual });
     throw new Error("저장 후 Firestore 값이 입력값과 일치하지 않습니다.");
   }
 
-  console.info("[NINEWORKS calendar save verified]", snapshot.id, SAVE_GUARD_VERSION);
+  console.info("[NINEWORKS calendar save verified]", snapshot.id, SAVE_GUARD_VERSION, actual);
+  showToast("Firestore 저장 확인 완료");
 }
 
 function handleSubmit(event) {
@@ -94,15 +100,19 @@ function handleSubmit(event) {
   if (!(form instanceof HTMLFormElement) || form.id !== "eventForm") return;
 
   const snapshot = readSnapshot();
-  if (!isComplete(snapshot)) return;
+  if (!isComplete(snapshot)) {
+    showToast("필수 일정 정보를 확인해주세요.");
+    return;
+  }
 
   window.setTimeout(() => {
     persistAndVerify(snapshot).catch((error) => {
       console.error("일정 확정 저장 실패", error);
       const code = String(error?.code || "").replace("firestore/", "");
-      showToast(`일정 저장 실패${code ? ` · ${code}` : ""}. 다시 시도해주세요.`);
+      const detail = code || error?.message || "unknown";
+      showToast(`일정 저장 실패 · ${detail}`);
     });
-  }, 180);
+  }, 220);
 }
 
 function bind() {
@@ -115,6 +125,7 @@ function bind() {
   if (form.dataset.calendarSaveGuard === SAVE_GUARD_VERSION) return;
   form.dataset.calendarSaveGuard = SAVE_GUARD_VERSION;
   form.addEventListener("submit", handleSubmit);
+  console.info("[NINEWORKS calendar save guard ready]", SAVE_GUARD_VERSION);
 }
 
 if (document.readyState === "loading") {
