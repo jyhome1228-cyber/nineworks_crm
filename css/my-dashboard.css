@@ -1,12 +1,28 @@
-.my-dashboard-page {
+.my-dashboard-page,
+.my-dashboard-panel {
   --mydash-line: rgba(255, 255, 255, 0.09);
   --mydash-line-strong: rgba(255, 255, 255, 0.15);
   --mydash-muted: #8b8b94;
   --mydash-soft: #b7b7bf;
 }
 
+.my-dashboard-title {
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.my-dashboard-title p:not(.eyebrow) {
+  margin-top: 8px;
+  color: #85858e;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .my-dashboard-shell {
   overflow: hidden;
+  border: 1px solid var(--mydash-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.012);
 }
 
 .my-dashboard-compose {
@@ -184,7 +200,6 @@
   display: inline-flex;
   align-items: center;
   min-height: 28px;
-  margin-top: 4px;
   color: #787881;
   font-size: 11px;
   font-weight: 650;
@@ -207,6 +222,10 @@
 }
 
 @media (max-width: 760px) {
+  .my-dashboard-title {
+    gap: 12px;
+  }
+
   .my-dashboard-compose {
     grid-template-columns: 1fr;
     padding: 16px;
