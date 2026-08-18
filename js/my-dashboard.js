@@ -6,7 +6,7 @@
     const link = document.createElement("link");
     link.id = cssId;
     link.rel = "stylesheet";
-    link.href = new URL("../css/my-dashboard.css?v=20260818-1", import.meta.url).href;
+    link.href = new URL("../css/my-dashboard.css?v=20260818-2", import.meta.url).href;
     document.head.appendChild(link);
   }
 
@@ -19,36 +19,41 @@
 
   const injectDashboardUi = () => {
     const nav = document.querySelector(".main-nav");
-    const calendarNav = nav?.querySelector('[data-route="calendar"]');
+    nav?.querySelector('[data-route="mydashboard"]')?.remove();
+    document.querySelector('[data-page="mydashboard"]')?.remove();
 
-    if (nav && calendarNav && !nav.querySelector('[data-route="mydashboard"]')) {
-      const button = document.createElement("button");
-      button.className = "nav-link";
-      button.type = "button";
-      button.dataset.route = "mydashboard";
-      button.textContent = "마이 대시보드";
-      calendarNav.insertAdjacentElement("afterend", button);
+    const tabs = document.querySelector("#mypagePage .workspace-tabs");
+    const content = document.querySelector("#mypagePage .workspace-content");
+    if (!tabs || !content) return;
+
+    let tab = tabs.querySelector('[data-workspace-tab="dashboard"]');
+    if (!tab) {
+      tab = document.createElement("button");
+      tab.className = "workspace-tab";
+      tab.type = "button";
+      tab.dataset.workspaceTab = "dashboard";
+      tab.textContent = "마이 대시보드";
+      const overviewTab = tabs.querySelector('[data-workspace-tab="overview"]');
+      if (overviewTab) overviewTab.insertAdjacentElement("afterend", tab);
+      else tabs.prepend(tab);
     }
 
-    const appContent = document.querySelector(".app-content");
-    const calendarPage = document.querySelector('#calendarPage[data-page="calendar"]');
-    if (!appContent || document.querySelector('[data-page="mydashboard"]')) return;
+    if (content.querySelector('[data-workspace-panel="dashboard"]')) return;
 
-    const page = document.createElement("main");
-    page.id = "myDashboardPage";
-    page.className = "page my-dashboard-page";
-    page.dataset.page = "mydashboard";
-    page.innerHTML = `
-      <section class="page-heading">
+    const panel = document.createElement("div");
+    panel.className = "workspace-panel my-dashboard-panel";
+    panel.dataset.workspacePanel = "dashboard";
+    panel.innerHTML = `
+      <div class="section-title my-dashboard-title">
         <div>
           <p class="eyebrow">MY DASHBOARD</p>
-          <h1>지금 하고 있는 일을 가볍게 기록합니다.</h1>
-          <p>클라이언트, 업무 내용, 일정만 적어두고 메모장처럼 빠르게 관리하세요.</p>
-          <span id="myDashboardCount" class="my-dashboard-count">0 NOTES</span>
+          <h2>지금 하고 있는 일</h2>
+          <p>클라이언트, 업무 내용, 일정만 가볍게 기록해두세요.</p>
         </div>
-      </section>
+        <span id="myDashboardCount" class="my-dashboard-count">0 NOTES</span>
+      </div>
 
-      <section class="panel my-dashboard-shell">
+      <section class="my-dashboard-shell">
         <form id="myDashboardForm" class="my-dashboard-compose" autocomplete="off">
           <label class="my-dashboard-field">
             <span>클라이언트</span>
@@ -81,8 +86,9 @@
       </section>
     `;
 
-    if (calendarPage) calendarPage.insertAdjacentElement("afterend", page);
-    else appContent.prepend(page);
+    const goalsPanel = content.querySelector('[data-workspace-panel="goals"]');
+    if (goalsPanel) content.insertBefore(panel, goalsPanel);
+    else content.appendChild(panel);
   };
 
   injectDashboardUi();
