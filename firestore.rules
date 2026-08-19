@@ -39,16 +39,8 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
-    match /workLogs/{logId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn()
-        && request.resource.data.authorUid == request.auth.uid;
-      allow update: if isOwner()
-        || (isSignedIn()
-          && resource.data.authorUid == request.auth.uid
-          && request.resource.data.authorUid == resource.data.authorUid);
-      allow delete: if isOwner()
-        || (isSignedIn() && resource.data.authorUid == request.auth.uid);
+    match /workLogs/{document=**} {
+      allow read, write: if isSignedIn();
     }
 
     match /financeContracts/{document=**} {
