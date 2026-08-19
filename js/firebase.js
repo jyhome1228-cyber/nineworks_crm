@@ -7,6 +7,7 @@ import "./calendar-visual-polish.js?v=20260804-2";
 import "./calendar-card-hierarchy.js?v=20260803-3";
 import "./my-dashboard.js?v=20260818-2";
 import "./mypage-structure.js?v=20260818-1";
+import "./work-journal.js?v=20260819-1";
 import "./ui-enhancements.js";
 import "./ipad-touch-support.js?v=20260803-1";
 import "./qa-management-v2.js?v=20260811-2";
