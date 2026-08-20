@@ -1,3 +1,5 @@
+import "./qa-detail-ux-polish.js?v=20260820-1";
+
 const $=(s,r=document)=>r.querySelector(s);
 const uid=(p='qa')=>`${p}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
 const nowText=()=>new Date().toISOString();
