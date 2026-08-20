@@ -1,299 +1,315 @@
-const simpleQaStyle = document.createElement('style');
-simpleQaStyle.textContent = `
-  .qa-simple-hidden{display:none!important}
-  .qa-simple-note{margin:10px 0 0;padding:11px 13px;border:1px solid rgba(85,119,255,.18);border-radius:9px;background:rgba(67,104,245,.045);color:#8f93a3;font-size:11px;line-height:1.55}
-  .qa-report-panel.is-simple .qa-report-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .qa-report-panel.is-simple .qa-report-field--full{grid-column:1/-1}
-  .qa-report-panel.is-simple #qaReportConclusion{min-height:180px;font-size:13px;line-height:1.65}
-  .qa-report-panel.is-simple .qa-report-field select{width:100%;height:44px;border:1px solid var(--line);border-radius:8px;padding:0 12px;background:#252529;color:#f2f2f4;outline:0}
-  .qa-checklist-wrap.is-simple .qa-checklist{margin-top:10px;grid-template-columns:minmax(230px,1.4fr) minmax(150px,.8fr) minmax(150px,.8fr)}
-  .qa-checklist-wrap.is-simple .qa-checklist>div{min-height:50px}
-  .qa-checklist-wrap.is-simple .qa-check-section-title.is-shop,
-  .qa-checklist-wrap.is-simple .qa-checklist--shop{display:none!important}
-  .qa-state-select{width:100%;max-width:128px;height:34px;border:1px solid #3a3a42;border-radius:8px;padding:0 9px;background:#222227;color:#a9a9b2;font-size:11px;font-weight:650;outline:0;cursor:pointer;transition:border-color .18s ease,background .18s ease,color .18s ease}
-  .qa-state-select[data-state="ok"]{border-color:rgba(78,190,126,.42);background:rgba(78,190,126,.08);color:#9ed9b7}
-  .qa-state-select[data-state="issue"]{border-color:rgba(255,108,108,.45);background:rgba(255,108,108,.07);color:#ffaaaa}
-  .qa-state-select[data-state="none"]{border-color:#3b3b43;background:#202024;color:#797982}
-  .qa-checklist-wrap.is-simple .qa-check-head.qa-check-center{font-size:10px}
-  @media(max-width:1000px){.qa-report-panel.is-simple .qa-report-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:760px){.qa-checklist-wrap.is-simple .qa-checklist{grid-template-columns:minmax(150px,1fr) 108px 108px}.qa-state-select{max-width:96px;padding:0 5px}}
-  @media(max-width:620px){.qa-report-panel.is-simple .qa-report-grid{grid-template-columns:1fr}.qa-checklist-wrap.is-simple{overflow-x:auto}.qa-checklist-wrap.is-simple .qa-checklist{min-width:560px}}
+const qaCompactStyle=document.createElement('style');
+qaCompactStyle.textContent=`
+.qa-page.qa-compact-active>.qa-summary,
+.qa-page.qa-compact-active>.qa-guide,
+.qa-page.qa-compact-active>.qa-panel{display:none!important}
+.qa-page.qa-compact-active .qa-heading{margin-bottom:24px;align-items:flex-end}
+.qa-page.qa-compact-active .qa-heading .eyebrow{font-size:11px;letter-spacing:.12em}
+.qa-page.qa-compact-active .qa-heading h1{margin-top:7px;font-size:34px;line-height:1.08;letter-spacing:-.045em}
+.qa-page.qa-compact-active .qa-heading p:not(.eyebrow){max-width:720px;margin-top:10px;color:#8f8f98;font-size:14px;line-height:1.65}
+.qa-page.qa-compact-active .qa-heading-actions #qaAddSite{display:none!important}
+.qa-compact-root{display:grid;gap:15px}
+.qa-compact-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border:1px solid var(--line-soft);border-radius:12px;background:#1c1c20}
+.qa-compact-toolbar__title{display:flex;align-items:baseline;gap:10px}
+.qa-compact-toolbar__title strong{color:#f2f2f4;font-size:18px;letter-spacing:-.025em}
+.qa-compact-toolbar__title span{color:#73737d;font-size:12px}
+.qa-compact-toolbar__actions{display:flex;gap:8px;align-items:center}
+.qa-compact-search{width:250px;height:40px;border:1px solid #34343b;border-radius:8px;padding:0 12px;background:#232328;color:#efeff2;font-size:12.5px;outline:0}
+.qa-compact-search:focus{border-color:rgba(85,119,255,.7);box-shadow:0 0 0 3px rgba(67,104,245,.08)}
+.qa-compact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.qa-compact-card{display:flex;min-height:310px;flex-direction:column;border:1px solid var(--line-soft);border-radius:12px;padding:18px;background:linear-gradient(145deg,rgba(31,31,35,.98),rgba(25,25,28,.98));transition:border-color .16s ease,transform .16s ease}
+.qa-compact-card:hover{border-color:#3a3a42;transform:translateY(-1px)}
+.qa-compact-card__top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.qa-compact-card__index{color:#5f5f69;font-size:10.5px;font-weight:700;letter-spacing:.06em}
+.qa-compact-card__category{overflow:hidden;max-width:68%;color:#797983;font-size:10px;font-weight:700;letter-spacing:.055em;text-overflow:ellipsis;white-space:nowrap}
+.qa-compact-card h3{margin:0;color:#f3f3f5;font-size:18px;line-height:1.25;font-weight:720;letter-spacing:-.03em}
+.qa-compact-card__client{min-height:20px;margin:5px 0 0;color:#8d8d96;font-size:12px;line-height:1.45}
+.qa-compact-card__link{display:inline-flex;width:max-content;max-width:100%;align-items:center;gap:5px;margin-top:11px;color:#b7c2ff;font-size:12.5px;font-weight:650;text-decoration:none}
+.qa-compact-card__link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qa-compact-card__link:hover{color:#d8deff}
+.qa-compact-note{display:grid;gap:7px;margin-top:auto;padding-top:18px}
+.qa-compact-note label{color:#aaaab2;font-size:11px;font-weight:650}
+.qa-compact-note textarea{width:100%;min-height:94px;border:1px solid #34343b;border-radius:8px;padding:11px 12px;background:#232328;color:#e9e9ed;font-family:"Pretendard",sans-serif;font-size:12.5px;line-height:1.58;resize:vertical;outline:0}
+.qa-compact-note textarea:focus{border-color:rgba(85,119,255,.68);box-shadow:0 0 0 3px rgba(67,104,245,.07)}
+.qa-compact-note textarea::placeholder{color:#62626b}
+.qa-compact-note__footer{display:flex;min-height:32px;align-items:center;justify-content:space-between;gap:8px}
+.qa-compact-note__state{overflow:hidden;color:#666670;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.qa-compact-save{height:32px;border:1px solid #3b3b44;border-radius:7px;padding:0 11px;background:#29292f;color:#c9c9d0;font-size:10.5px;font-weight:700;cursor:pointer}
+.qa-compact-save:hover{border-color:#4a4a56;color:#fff}
+.qa-compact-save:disabled{opacity:.55;cursor:default}
+.qa-compact-empty{grid-column:1/-1;padding:60px 20px;border:1px solid var(--line-soft);border-radius:12px;color:#707079;text-align:center;font-size:13px}
+@media(max-width:1120px){.qa-compact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+  .qa-page.qa-compact-active .qa-heading{align-items:flex-start}
+  .qa-page.qa-compact-active .qa-heading h1{font-size:29px}
+  .qa-compact-toolbar{align-items:stretch;flex-direction:column}
+  .qa-compact-toolbar__actions{width:100%}
+  .qa-compact-search{width:auto;flex:1}
+  .qa-compact-grid{grid-template-columns:1fr}
+}
 `;
-document.head.appendChild(simpleQaStyle);
+document.head.appendChild(qaCompactStyle);
 
-const $ = (s, r=document) => r.querySelector(s);
+const $=(s,r=document)=>r.querySelector(s);
+const esc=(v='')=>String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
+const nowIso=()=>new Date().toISOString();
 
-const KEEP = {
-  navigation: '메뉴 · 버튼 · 링크',
-  responsive: '화면 · 반응형 · 디자인',
-  content: '글자 · 이미지 · 정보',
-  forms: '회원가입 · 로그인',
-  interaction: '주문 · 결제',
-  browser: '회원탈퇴',
-  errorstate: '글쓰기 · 문의 / 폼'
-};
+const SOST_SITES=[
+  {id:'recelleclore',title:'RECELLÉCLORE',client:'RECELLÉCLORE / 리셀에클로',url:'https://recelleclore.co.kr/',domain:'recelleclore.co.kr',category:'COMMERCE · CONTENT',type:'shop'},
+  {id:'thomastone',title:'THOMASTONE',client:'THOMASTONE / 토마스톤',url:'https://thomastone.co.kr/',domain:'thomastone.co.kr',category:'CORPORATE WEBSITE',type:'general'},
+  {id:'kekomi',title:'KEKOMI',client:'KEKOMI / 깨꼬미',url:'https://kekomi.co.kr/',domain:'kekomi.co.kr',category:'CAFE24 COMMERCE',type:'shop'},
+  {id:'aesost',title:'AESOST',client:'AESOST / 에이소스트',url:'https://aesost.com/index.html',domain:'aesost.com',category:'COMMUNITY PLATFORM',type:'general'},
+  {id:'relim',title:'RE:LIM',client:'RE:LIM / 리림',url:'https://re-lim.com/',domain:'re-lim.com',category:'WEB · OPERATIONS',type:'reservation'},
+  {id:'tne-epc',title:'TNE',client:'TNE / 티엔이',url:'https://tneepc.com/',domain:'tneepc.com',category:'CORPORATE · DATA',type:'general'},
+  {id:'terracle',title:'TERRACLE',client:'TERRACLE / 테라클',url:'https://kr.terracle.im/?redirect=no',domain:'kr.terracle.im',category:'CORPORATE · TECHNOLOGY',type:'general'},
+  {id:'the-petrichor',title:'THE PETRICHOR',client:'THE PETRICHOR / 더 페트리셔',url:'https://thepetrichor.co.kr/',domain:'thepetrichor.co.kr',category:'BRAND · COMMERCE',type:'shop'},
+  {id:'taepyeong-paper',title:'TAEPYEONG PAPER',client:'TAEPYEONG PAPER / 태평제지',url:'http://tp1977.com/',domain:'tp1977.com',category:'CORPORATE · MANUFACTURING',type:'general'},
+  {id:'pentagon-law-office-corporate-center',title:'PTG LAW',client:'PTG LAW / 펜타곤 법률세무회계',url:'https://www.ptglaw.co.kr/',domain:'ptglaw.co.kr',category:'LEGAL · CONSULTING',type:'general'},
+  {id:'fineb',title:'FINE.B',client:'FINE.B / 파인비',url:'https://finebpkg.com/',domain:'finebpkg.com',category:'WEB · DIGITAL SYSTEM',type:'general'}
+];
 
-let scheduled = false;
-let currentSiteId = '';
-let stateCache = {};
-let stateLoadedFor = '';
-let stateLoadToken = 0;
-let stateWriteQueue = Promise.resolve();
+let api=null,currentUser=null,sites=[],unsubscribe=null,searchText='',seededFor='';
 
-function setText(el, value){
-  if(el && el.textContent !== value) el.textContent = value;
-}
-
-function schedule(){
-  if(scheduled) return;
-  scheduled = true;
-  requestAnimationFrame(()=>{
-    scheduled = false;
-    simplify();
-  });
-}
-
-function fieldByInput(id){ return $('#'+id)?.closest('.qa-report-field'); }
-
-function replaceInputWithSelect(id, options, labelText){
-  const old = $('#'+id);
-  if(!old) return;
-  const field = old.closest('.qa-report-field');
-  const label = field?.querySelector(':scope > span');
-  setText(label, labelText);
-  if(old.tagName === 'SELECT') return;
-
-  const current = String(old.value || '');
-  const select = document.createElement('select');
-  select.id = id;
-  select.innerHTML = '<option value="">선택</option>' + options.map(v=>`<option value="${v}">${v}</option>`).join('');
-  const match = options.find(v=>current.toLowerCase().includes(v.toLowerCase()));
-  if(match) select.value = match;
-  old.replaceWith(select);
-}
-
-function simplifyReport(){
-  const panel = $('.qa-report-panel');
-  if(!panel) return;
-  if(!panel.classList.contains('is-simple')) panel.classList.add('is-simple');
-
-  ['qaReportAccount','qaReportOrder'].forEach(id=>{
-    const field = fieldByInput(id);
-    if(field && !field.classList.contains('qa-simple-hidden')) field.classList.add('qa-simple-hidden');
-    const input = $('#'+id);
-    if(input && input.value) input.value = '';
-  });
-
-  replaceInputWithSelect('qaReportDesktop', ['Mac','Windows'], 'PC 테스트 환경');
-  replaceInputWithSelect('qaReportMobile', ['iOS','Android'], '모바일 테스트 환경');
-
-  const conclusion = $('#qaReportConclusion');
-  if(conclusion){
-    const field = conclusion.closest('.qa-report-field');
-    if(field && !field.classList.contains('qa-report-field--full')) field.classList.add('qa-report-field--full');
-    setText(field?.querySelector(':scope > span'), 'QA 보고서 내용 · 종합 메모');
-    const placeholder = '자유롭게 적어주세요. 예) 회원가입 정상. 주문은 모바일에서 버튼 위치 수정 필요. 회원탈퇴 기능은 없음. 게시판 글쓰기는 WEB/MOBILE 모두 정상.';
-    if(conclusion.placeholder !== placeholder) conclusion.placeholder = placeholder;
-  }
-
-  setText(panel.querySelector('.qa-report-panel-head p'), '환경만 간단히 선택하고, 아래 메모에 검수 결과를 보고서처럼 자유롭게 작성합니다.');
-}
-
-function stateValue(value){
-  if(value === true) return 'ok';
-  if(['ok','issue','none'].includes(String(value||''))) return String(value);
-  return '';
-}
-
-function stateSelect(key, value){
-  const state = stateValue(value);
-  return `<select class="qa-state-select" data-qa-state="${key}" data-state="${state}">
-    <option value="" ${!state?'selected':''}>미확인</option>
-    <option value="ok" ${state==='ok'?'selected':''}>정상</option>
-    <option value="issue" ${state==='issue'?'selected':''}>문제</option>
-    <option value="none" ${state==='none'?'selected':''}>없음</option>
-  </select>`;
-}
-
-function hasCachedState(key){
-  return Object.prototype.hasOwnProperty.call(stateCache,key);
-}
-
-function transformCell(input, key){
-  const cell = input?.closest('div');
-  if(!cell || cell.querySelector('[data-qa-state]')) return;
-  const stored = hasCachedState(key) ? stateCache[key] : (input.checked ? 'ok' : '');
-  cell.innerHTML = stateSelect(key, stored);
-}
-
-function applyCachedStates(){
-  document.querySelectorAll('[data-qa-state]').forEach(select=>{
-    const key = select.dataset.qaState || '';
-    if(!hasCachedState(key)) return;
-    const value = stateValue(stateCache[key]);
-    if(select.value !== value) select.value = value;
-    if(select.dataset.state !== value) select.dataset.state = value;
-  });
-}
-
-async function loadStates(siteId){
-  if(!siteId) return;
-  const token = ++stateLoadToken;
-  const api = window.NineworksFirebase;
-  if(!api){
-    setTimeout(()=>{ if(siteId===currentSiteId) loadStates(siteId); },120);
-    return;
-  }
+function normalizeUrl(value=''){
   try{
-    const snap = await api.getDoc(api.doc(api.db,'qaSites',siteId));
-    if(token!==stateLoadToken || siteId!==currentSiteId) return;
-    stateCache = snap.exists() ? (snap.data()?.checklist || {}) : {};
-    stateLoadedFor = siteId;
-    schedule();
-  }catch(error){
-    console.error('QA 상태 불러오기 실패',error);
-    if(token!==stateLoadToken || siteId!==currentSiteId) return;
-    stateCache = {};
-    stateLoadedFor = siteId;
-    schedule();
-  }
+    const url=new URL(/^https?:\/\//i.test(value)?value:`https://${value}`);
+    return `${url.hostname.replace(/^www\./,'')}${url.pathname.replace(/\/$/,'')}`.toLowerCase();
+  }catch{return String(value||'').trim().toLowerCase()}
 }
 
-function simplifyChecklist(){
-  const wrap = $('.qa-checklist-wrap');
-  if(!wrap) return;
-  if(!wrap.classList.contains('is-simple')) wrap.classList.add('is-simple');
-  setText(wrap.querySelector('.qa-checklist-head h3'), '간단 QA 체크리스트');
-  setText(wrap.querySelector('.qa-checklist-head small'), '각 항목을 정상 · 문제 · 없음 중 하나로 선택합니다.');
-
-  if(currentSiteId && stateLoadedFor !== currentSiteId) return;
-
-  const list = [...wrap.querySelectorAll('.qa-checklist')].find(el=>!el.classList.contains('qa-checklist--shop'));
-  if(!list) return;
-
-  const checks = [...list.querySelectorAll('input[data-qa-check$="_desktop"]')];
-  checks.forEach(input=>{
-    const full = input.dataset.qaCheck || '';
-    const key = full.replace(/_desktop$/,'');
-    const desktopCell = input.closest('div');
-    const labelCell = desktopCell?.previousElementSibling;
-    const mobileCell = desktopCell?.nextElementSibling;
-    if(!KEEP[key]){
-      [labelCell, desktopCell, mobileCell].forEach(el=>{
-        if(el && !el.classList.contains('qa-simple-hidden')) el.classList.add('qa-simple-hidden');
-      });
-      return;
-    }
-    setText(labelCell, KEEP[key]);
-    const mobileInput = mobileCell?.querySelector('input[data-qa-check]');
-    transformCell(input, `${key}_desktop`);
-    transformCell(mobileInput, `${key}_mobile`);
-  });
-
-  applyCachedStates();
-
-  if(!wrap.querySelector('.qa-simple-note')){
-    const note = document.createElement('p');
-    note.className = 'qa-simple-note';
-    note.textContent = '회원가입 · 주문 · 회원탈퇴 · 글쓰기처럼 사이트에 없는 기능은 “없음”으로 선택하세요. “문제”를 선택한 항목은 문제 등록 또는 위 보고서 스크린샷 기록에 남기면 됩니다.';
-    list.insertAdjacentElement('afterend', note);
-  }
+function toast(message){
+  const el=$('#toast');
+  if(!el)return;
+  el.textContent=message;
+  el.classList.add('is-visible');
+  clearTimeout(window.__qaCompactToast);
+  window.__qaCompactToast=setTimeout(()=>el.classList.remove('is-visible'),2200);
 }
 
-function saveState(key, value, select){
-  const siteId = currentSiteId || document.querySelector('[data-qa-site].is-selected')?.dataset.qaSite || '';
-  const api = window.NineworksFirebase;
-  if(!api?.auth?.currentUser || !siteId) return;
+function ensurePage(){
+  const page=$('#qaPage');
+  if(!page)return false;
+  page.classList.add('qa-compact-active');
+  const heading=page.querySelector('.qa-heading');
+  if(heading){
+    const eyebrow=heading.querySelector('.eyebrow');
+    const title=heading.querySelector('h1');
+    const desc=heading.querySelector('p:not(.eyebrow)');
+    if(eyebrow)eyebrow.textContent='WEBSITE MANAGEMENT';
+    if(title)title.textContent='웹사이트 관리';
+    if(desc)desc.textContent='운영 중인 사이트를 한눈에 보고 바로 접속하거나, 필요한 메모만 간단히 기록합니다.';
+  }
+  const entry=$('#openQaManagement');
+  if(entry)entry.textContent='사이트 관리';
+  if(!$('#qaCompactRoot')){
+    const root=document.createElement('section');
+    root.id='qaCompactRoot';
+    root.className='qa-compact-root';
+    root.innerHTML=`
+      <div class="qa-compact-toolbar">
+        <div class="qa-compact-toolbar__title"><strong>관리 사이트</strong><span id="qaCompactCount">0개</span></div>
+        <div class="qa-compact-toolbar__actions">
+          <input id="qaCompactSearch" class="qa-compact-search" type="search" placeholder="사이트 검색">
+          <button id="qaCompactAdd" class="button button--ghost" type="button">＋ 사이트</button>
+        </div>
+      </div>
+      <div id="qaCompactGrid" class="qa-compact-grid"><div class="qa-compact-empty">사이트 목록을 불러오는 중입니다.</div></div>`;
+    heading?.insertAdjacentElement('afterend',root);
+    $('#qaCompactSearch')?.addEventListener('input',e=>{searchText=e.target.value.trim().toLowerCase();render()});
+    $('#qaCompactAdd')?.addEventListener('click',()=>$('#qaAddSite')?.click());
+    root.addEventListener('click',handleRootClick);
+  }
+  return true;
+}
 
-  const normalized = stateValue(value);
-  stateCache[key] = normalized;
-  stateLoadedFor = siteId;
-  if(select.value !== normalized) select.value = normalized;
-  if(select.dataset.state !== normalized) select.dataset.state = normalized;
+function matchProject(project,rows){
+  const targetUrl=normalizeUrl(project.url);
+  return rows.find(row=>
+    row.sostProjectId===project.id
+    ||normalizeUrl(row.url||row.siteUrl||'')===targetUrl
+    ||String(row.name||row.siteName||'').trim().toLowerCase()===project.title.toLowerCase()
+  );
+}
 
-  stateWriteQueue = stateWriteQueue.then(async()=>{
-    try{
-      const ref = api.doc(api.db,'qaSites',siteId);
-      const snap = await api.getDoc(ref);
-      const old = snap.exists() ? (snap.data()?.checklist || {}) : {};
-      await api.setDoc(ref,{checklist:{...old,[key]:normalized},updatedAt:api.serverTimestamp()},{merge:true});
-    }catch(error){
-      console.error('QA 상태 저장 실패',error);
-      const toast = $('#toast');
-      if(toast){
-        toast.textContent='QA 체크 상태를 저장하지 못했습니다.';
-        toast.classList.add('is-visible');
-        setTimeout(()=>toast.classList.remove('is-visible'),2500);
+async function seedPortfolioSites(){
+  if(!api?.auth?.currentUser||seededFor===api.auth.currentUser.uid)return;
+  seededFor=api.auth.currentUser.uid;
+  try{
+    const snap=await api.getDocs(api.collection(api.db,'qaSites'));
+    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const writes=[];
+    SOST_SITES.forEach(project=>{
+      const existing=matchProject(project,rows);
+      if(existing){
+        if(!existing.sostProjectId){
+          writes.push(api.setDoc(api.doc(api.db,'qaSites',existing.id),{
+            sostProjectId:project.id,
+            source:'sost-portfolio',
+            displayDomain:project.domain,
+            categoryLabel:project.category
+          },{merge:true}));
+        }
+        return;
       }
-    }
+      const id=`sost_${project.id.replace(/[^a-z0-9_-]/gi,'_')}`;
+      writes.push(api.setDoc(api.doc(api.db,'qaSites',id),{
+        id,
+        name:project.title,
+        siteName:project.title,
+        client:project.client,
+        url:project.url,
+        siteUrl:project.url,
+        siteType:project.type,
+        status:'testing',
+        tester:'',
+        note:'',
+        quickNote:'',
+        sostProjectId:project.id,
+        source:'sost-portfolio',
+        displayDomain:project.domain,
+        categoryLabel:project.category,
+        createdAt:api.serverTimestamp(),
+        createdAtText:nowIso(),
+        updatedAt:api.serverTimestamp(),
+        updatedAtText:nowIso()
+      },{merge:true}));
+    });
+    if(writes.length)await Promise.all(writes);
+  }catch(error){
+    console.error('SOST 포트폴리오 사이트 등록 실패',error);
+    toast('사이트 목록을 준비하지 못했습니다.');
+  }
+}
+
+function projectMeta(site){
+  const project=SOST_SITES.find(p=>p.id===site.sostProjectId)||SOST_SITES.find(p=>normalizeUrl(p.url)===normalizeUrl(site.url||site.siteUrl||''));
+  if(project)return project;
+  let domain='';
+  try{domain=new URL(site.url||site.siteUrl||'').hostname.replace(/^www\./,'')}catch{domain=site.displayDomain||''}
+  return {
+    id:site.id,
+    title:site.name||site.siteName||'사이트',
+    client:site.client||'',
+    url:site.url||site.siteUrl||'#',
+    domain:site.displayDomain||domain,
+    category:site.categoryLabel||'CUSTOM SITE'
+  };
+}
+
+function orderedSites(){
+  const rank=new Map(SOST_SITES.map((p,i)=>[p.id,i]));
+  return [...sites].sort((a,b)=>{
+    const ar=rank.has(a.sostProjectId)?rank.get(a.sostProjectId):999;
+    const br=rank.has(b.sostProjectId)?rank.get(b.sostProjectId):999;
+    if(ar!==br)return ar-br;
+    return String(a.name||a.siteName||'').localeCompare(String(b.name||b.siteName||''),'ko');
   });
 }
 
-function setCurrentSite(siteId){
-  currentSiteId = siteId || '';
-  stateCache = {};
-  stateLoadedFor = '';
-  if(currentSiteId) loadStates(currentSiteId);
-  window.dispatchEvent(new CustomEvent('nineworks:qa-site-change',{detail:{siteId:currentSiteId}}));
-}
-
-function simplify(){
-  if(!$('#qaPage') || !$('#qaSiteDetail')) return;
-  simplifyReport();
-  simplifyChecklist();
-}
-
-document.addEventListener('click', e=>{
-  const site = e.target.closest('[data-qa-site]');
-  if(site){
-    const siteId = site.dataset.qaSite || '';
-    document.querySelectorAll('[data-qa-site]').forEach(card=>{
-      const selected = card===site;
-      if(card.classList.contains('is-selected') !== selected) card.classList.toggle('is-selected', selected);
-    });
-    if(siteId !== currentSiteId) setCurrentSite(siteId);
-    setTimeout(schedule, 0);
-    setTimeout(schedule, 60);
+function render(){
+  if(!ensurePage())return;
+  const grid=$('#qaCompactGrid');
+  if(!grid)return;
+  const list=orderedSites().filter(site=>{
+    if(!searchText)return true;
+    const meta=projectMeta(site);
+    return `${meta.title} ${meta.client} ${meta.domain}`.toLowerCase().includes(searchText);
+  });
+  $('#qaCompactCount').textContent=`${sites.length}개`;
+  if(!list.length){
+    grid.innerHTML='<div class="qa-compact-empty">검색 결과가 없습니다.</div>';
     return;
   }
-  if(e.target.closest('#openQaManagement,#qaBackCalendar,#qaEditSite')) setTimeout(schedule, 30);
-}, true);
+  grid.innerHTML=list.map((site,index)=>{
+    const meta=projectMeta(site);
+    const note=site.quickNote??site.note??'';
+    const updated=site.quickNoteUpdatedAtText||site.updatedAtText||'';
+    const state=updated?`최근 기록 ${esc(updated.slice(0,10))}`:'아직 기록 없음';
+    return `<article class="qa-compact-card" data-compact-site-id="${esc(site.id)}">
+      <div class="qa-compact-card__top"><span class="qa-compact-card__index">${String(index+1).padStart(2,'0')}</span><span class="qa-compact-card__category">${esc(meta.category)}</span></div>
+      <h3>${esc(meta.title)}</h3>
+      <p class="qa-compact-card__client">${esc(meta.client)}</p>
+      <a class="qa-compact-card__link" href="${esc(meta.url)}" target="_blank" rel="noopener noreferrer"><span>${esc(meta.domain||meta.url)}</span>↗</a>
+      <div class="qa-compact-note">
+        <label>기록</label>
+        <textarea data-compact-note placeholder="수정사항이나 확인할 내용을 간단히 기록하세요.">${esc(note)}</textarea>
+        <div class="qa-compact-note__footer"><span class="qa-compact-note__state" data-compact-state>${state}</span><button class="qa-compact-save" type="button" data-compact-save>기록 저장</button></div>
+      </div>
+    </article>`;
+  }).join('');
+}
 
-document.addEventListener('change', e=>{
-  const state = e.target.closest('[data-qa-state]');
-  if(state){
-    e.stopImmediatePropagation();
-    saveState(state.dataset.qaState,state.value,state);
-    return;
+async function saveNote(card){
+  const id=card?.dataset.compactSiteId;
+  const textarea=card?.querySelector('[data-compact-note]');
+  const button=card?.querySelector('[data-compact-save]');
+  const state=card?.querySelector('[data-compact-state]');
+  if(!id||!textarea||!api?.auth?.currentUser)return;
+  const oldText=button?.textContent||'기록 저장';
+  if(button){button.disabled=true;button.textContent='저장 중...'}
+  try{
+    const text=textarea.value.trim();
+    const stamp=nowIso();
+    await api.setDoc(api.doc(api.db,'qaSites',id),{
+      quickNote:text,
+      quickNoteUpdatedAt:api.serverTimestamp(),
+      quickNoteUpdatedAtText:stamp,
+      updatedAt:api.serverTimestamp(),
+      updatedAtText:stamp,
+      updatedByUid:currentUser.uid
+    },{merge:true});
+    if(state)state.textContent=`최근 기록 ${stamp.slice(0,10)}`;
+    toast('사이트 기록을 저장했습니다.');
+  }catch(error){
+    console.error('사이트 기록 저장 실패',error);
+    toast(String(error?.code||'').includes('permission-denied')?'사이트 기록 저장 권한을 확인해주세요.':'사이트 기록을 저장하지 못했습니다.');
+  }finally{
+    if(button){button.disabled=false;button.textContent=oldText}
   }
-  if(e.target.closest('#qaReportResult')) setTimeout(schedule, 20);
-}, true);
+}
 
-function mutationContainsDetailStructure(mutation){
-  for(const node of mutation.addedNodes){
-    if(!(node instanceof Element)) continue;
-    if(node.matches('.qa-report-panel,.qa-checklist-wrap')) return true;
-    if(node.querySelector?.('.qa-report-panel,.qa-checklist-wrap')) return true;
+function handleRootClick(event){
+  const save=event.target.closest('[data-compact-save]');
+  if(save){
+    saveNote(save.closest('[data-compact-site-id]'));
   }
-  return false;
+}
+
+function stop(){
+  unsubscribe?.();
+  unsubscribe=null;
+  sites=[];
+  render();
+}
+
+async function start(user){
+  stop();
+  currentUser=user;
+  if(!user)return;
+  await seedPortfolioSites();
+  unsubscribe=api.onSnapshot(api.collection(api.db,'qaSites'),snap=>{
+    sites=snap.docs.map(d=>({id:d.id,...d.data()}));
+    render();
+  },error=>{
+    console.error('사이트 관리 목록 불러오기 실패',error);
+    toast('사이트 목록을 불러오지 못했습니다.');
+  });
 }
 
 function init(){
-  schedule();
-  const root = $('#qaPage');
-  if(root){
-    const observer = new MutationObserver(mutations=>{
-      if(mutations.some(mutationContainsDetailStructure)) schedule();
-    });
-    observer.observe(root,{childList:true,subtree:true});
-  }
+  const wait=()=>{
+    api=window.NineworksFirebase;
+    if(!api)return setTimeout(wait,80);
+    const pageWait=()=>{
+      if(!ensurePage())return setTimeout(pageWait,80);
+      api.onAuthStateChanged(api.auth,start);
+    };
+    pageWait();
+  };
+  wait();
 }
 
-window.NineworksQAState = {
-  getSiteId:()=>currentSiteId,
-  getChecklist:()=>({...stateCache}),
-  refresh:()=>currentSiteId&&loadStates(currentSiteId)
-};
+window.NineworksQAState={getSiteId:()=>'',getChecklist:()=>({}),refresh:()=>render()};
 
-if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
 else init();
