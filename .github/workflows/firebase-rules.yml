@@ -8,6 +8,13 @@ on:
       - "firebase.json"
       - ".firebaserc"
       - ".github/workflows/firebase-rules.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "firestore.rules"
+      - "firebase.json"
+      - ".firebaserc"
+      - ".github/workflows/firebase-rules.yml"
   workflow_dispatch:
 
 permissions:
