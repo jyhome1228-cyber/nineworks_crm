@@ -12,7 +12,7 @@ import "./work-journal-save-ux.js?v=20260820-1";
 import "./ui-enhancements.js";
 import "./ipad-touch-support.js?v=20260803-1";
 import "./qa-management-v2.js?v=20260811-2";
-import "./qa-save-fix.js?v=20260811-2";
+import "./qa-save-fix.js?v=20260820-1";
 import "./qa-simple-mode.js?v=20260820-2";
 import "./qa-report-screenshots.js?v=20260811-1";
 import "./qa-detail-page.js?v=20260811-3";
