@@ -23,22 +23,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check Firebase credential
+        id: firebase_credential
+        shell: bash
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM" ] || [ -n "$FIREBASE_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "Firebase deployment credential is available."
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "Firebase deployment credential is not configured yet. Rules deployment is skipped safely."
+          fi
+
       - name: Configure Firebase service account
-        if: ${{ env.FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM != '' }}
+        if: ${{ steps.firebase_credential.outputs.available == 'true' && env.FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM != '' }}
         shell: bash
         run: |
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM" > "$RUNNER_TEMP/firebase-service-account.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
 
-      - name: Verify Firebase credential
-        shell: bash
-        run: |
-          if [ -z "$FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM" ] && [ -z "$FIREBASE_TOKEN" ]; then
-            echo "Firebase credential is missing. Add FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM or FIREBASE_TOKEN to repository Actions secrets."
-            exit 1
-          fi
-
       - name: Deploy Firestore rules
+        if: ${{ steps.firebase_credential.outputs.available == 'true' }}
         shell: bash
         run: |
           if [ -n "$FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM" ]; then
