@@ -1,0 +1,48 @@
+name: Deploy Firebase Rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "firestore.rules"
+      - "firebase.json"
+      - ".firebaserc"
+      - ".github/workflows/firebase-rules.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-firestore-rules:
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Firebase service account
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM != '' }}
+        shell: bash
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM" > "$RUNNER_TEMP/firebase-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
+
+      - name: Verify Firebase credential
+        shell: bash
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM" ] && [ -z "$FIREBASE_TOKEN" ]; then
+            echo "Firebase credential is missing. Add FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM or FIREBASE_TOKEN to repository Actions secrets."
+            exit 1
+          fi
+
+      - name: Deploy Firestore rules
+        shell: bash
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT_NINEWORKS_CRM" ]; then
+            npx --yes firebase-tools@latest deploy --only firestore:rules --project nineworks-crm --non-interactive
+          else
+            npx --yes firebase-tools@latest deploy --only firestore:rules --project nineworks-crm --non-interactive --token "$FIREBASE_TOKEN"
+          fi
