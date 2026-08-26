@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "clients": [
+    {
+      "id": "phyto",
+      "slug": "phyto",
+      "clientName": "파이토레볼루션",
+      "clientNameEn": "PhytoRevolution",
+      "brandName": "고스란",
+      "projectName": "기능성 식물유래 바디케어 제품",
+      "businessType": "정부지원사업",
+      "contractStart": "2026-08-27",
+      "contractEnd": "2026-10-27",
+      "maintenanceStart": "2026-10-28",
+      "maintenanceEnd": "2026-12-27",
+      "status": "preparing",
+      "dashboardPath": "/client/phyto/",
+      "documents": {
+        "contract": "/client/phyto/contract.html",
+        "quote": "/client/phyto/quote.html"
+      }
+    }
+  ]
+}
