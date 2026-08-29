@@ -9,6 +9,7 @@
   let currentUser = null;
   let calendarInstance = null;
   let settingsTab = "requests";
+  let uiSyncQueued = false;
 
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
@@ -88,7 +89,7 @@
 
   function routeTo(route) {
     const nav = $(`.main-nav [data-route="${route}"]`);
-    if (nav) nav.click();
+    nav?.click();
   }
 
   function normalizeNav() {
@@ -102,7 +103,8 @@
     }
 
     const requestNav = nav.querySelector('[data-route="requests"], [data-route="settings"]');
-    if (requestNav) {
+    if (requestNav && requestNav.dataset.v2SettingsNav !== "true") {
+      requestNav.dataset.v2SettingsNav = "true";
       requestNav.dataset.route = "settings";
       requestNav.innerHTML = '설정 <span id="requestBadge" class="nav-badge v2-hidden-badge">0</span>';
     }
@@ -110,20 +112,20 @@
     $$('[data-route="requests"]').forEach((button) => { button.dataset.route = "settings"; });
 
     const reminderNav = nav.querySelector('[data-route="reminder-settings"]');
-    if (reminderNav) reminderNav.hidden = true;
+    if (reminderNav && !reminderNav.hidden) reminderNav.hidden = true;
 
     const bell = $("#notificationButton");
-    if (bell) bell.hidden = true;
+    if (bell && !bell.hidden) bell.hidden = true;
   }
 
   function transformSettingsPage() {
     const page = $("#requestsPage");
     if (!page) return false;
-    page.dataset.page = "settings";
+    if (page.dataset.page !== "settings") page.dataset.page = "settings";
     page.classList.add("settings-page");
 
     const heading = page.querySelector(".page-heading");
-    if (heading && !heading.dataset.v2Ready) {
+    if (heading && heading.dataset.v2Ready !== "true") {
       heading.dataset.v2Ready = "true";
       const eyebrow = heading.querySelector(".eyebrow");
       const title = heading.querySelector("h1");
@@ -197,12 +199,12 @@
     const page = $("#requestsPage");
     if (!page) return;
     $$("[data-v2-settings]", page).forEach((button) => button.classList.toggle("is-active", button.dataset.v2Settings === settingsTab));
-    const map = {
+    const sections = {
       requests: $("#v2SettingsRequests", page),
       notifications: $("#v2SettingsNotifications", page),
       appearance: $("#v2SettingsAppearance", page)
     };
-    Object.entries(map).forEach(([key, section]) => section?.classList.toggle("is-active", key === settingsTab));
+    Object.entries(sections).forEach(([key, section]) => section?.classList.toggle("is-active", key === settingsTab));
     const addRequest = $("#addRequestButton");
     if (addRequest) addRequest.hidden = settingsTab !== "requests";
   }
@@ -284,9 +286,9 @@
       if (event.target.closest("[data-v2-focus-todo]")) {
         $("#v2TodoTitle")?.focus();
         $("#v2QuickTodoPanel")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
       }
-      const request = event.target.closest("[data-v2-request]");
-      if (request) {
+      if (event.target.closest("[data-v2-request]")) {
         settingsTab = "requests";
         routeTo("settings");
         setTimeout(renderSettingsTab, 0);
@@ -297,7 +299,7 @@
       const checkbox = event.target.closest("[data-v2-toggle-todo]");
       if (checkbox) toggleTodo(checkbox.dataset.v2ToggleTodo, checkbox.checked);
     });
-    $("#v2TodoDue").value = todayKey();
+    if ($("#v2TodoDue")) $("#v2TodoDue").value = todayKey();
     renderAll();
     return true;
   }
@@ -451,54 +453,60 @@
 
   function patchCalendar() {
     if (!window.FullCalendar?.Calendar || window.FullCalendar.Calendar.__nineworksWorkspaceV2) return;
-    const OriginalCalendar = window.FullCalendar.Calendar;
-    class WorkspaceCalendar extends OriginalCalendar {
-      constructor(element, options = {}) {
-        const originalEvents = options.events;
-        const originalClassNames = options.eventClassNames;
-        const originalClick = options.eventClick;
-        const originalDidMount = options.eventDidMount;
-        const mergedOptions = {
-          ...options,
-          events(fetchInfo, successCallback, failureCallback) {
-            const done = (baseEvents = []) => successCallback([...(baseEvents || []), ...todoCalendarEvents()]);
-            if (typeof originalEvents === "function") {
-              try {
-                const result = originalEvents(fetchInfo, done, failureCallback);
-                if (result && typeof result.then === "function") result.then((value) => { if (Array.isArray(value)) done(value); }).catch(failureCallback);
-              } catch (error) {
-                failureCallback?.(error);
+    try {
+      const OriginalCalendar = window.FullCalendar.Calendar;
+      class WorkspaceCalendar extends OriginalCalendar {
+        constructor(element, options = {}) {
+          const originalEvents = options.events;
+          const originalClassNames = options.eventClassNames;
+          const originalClick = options.eventClick;
+          const originalDidMount = options.eventDidMount;
+          const mergedOptions = {
+            ...options,
+            events(fetchInfo, successCallback, failureCallback) {
+              const done = (baseEvents = []) => successCallback([...(baseEvents || []), ...todoCalendarEvents()]);
+              if (typeof originalEvents === "function") {
+                try {
+                  const result = originalEvents(fetchInfo, done, failureCallback);
+                  if (result && typeof result.then === "function") {
+                    result.then((value) => { if (Array.isArray(value)) done(value); }).catch((error) => failureCallback?.(error));
+                  }
+                } catch (error) {
+                  failureCallback?.(error);
+                }
+              } else if (Array.isArray(originalEvents)) done(originalEvents);
+              else done([]);
+            },
+            eventClassNames(info) {
+              if (info.event.extendedProps?.__nineworksTodo) return ["calendar-todo-event"];
+              const result = typeof originalClassNames === "function" ? originalClassNames(info) : originalClassNames;
+              return Array.isArray(result) ? result : result ? [result] : [];
+            },
+            eventClick(info) {
+              if (info.event.extendedProps?.__nineworksTodo) {
+                routeTo("dashboard");
+                setTimeout(() => $("#v2QuickTodoPanel")?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+                return;
               }
-            } else if (Array.isArray(originalEvents)) done(originalEvents);
-            else done([]);
-          },
-          eventClassNames(info) {
-            if (info.event.extendedProps?.__nineworksTodo) return ["calendar-todo-event"];
-            const result = typeof originalClassNames === "function" ? originalClassNames(info) : originalClassNames;
-            return Array.isArray(result) ? result : result ? [result] : [];
-          },
-          eventClick(info) {
-            if (info.event.extendedProps?.__nineworksTodo) {
-              routeTo("dashboard");
-              setTimeout(() => $("#v2QuickTodoPanel")?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
-              return;
+              originalClick?.(info);
+            },
+            eventDidMount(info) {
+              if (info.event.extendedProps?.__nineworksTodo) {
+                info.el.title = `해야 할 일 · ${info.event.extendedProps.title || info.event.title}\n${shortDate(info.event.extendedProps.due)}`;
+                return;
+              }
+              originalDidMount?.(info);
             }
-            originalClick?.(info);
-          },
-          eventDidMount(info) {
-            if (info.event.extendedProps?.__nineworksTodo) {
-              info.el.title = `해야 할 일 · ${info.event.extendedProps.title || info.event.title}\n${shortDate(info.event.extendedProps.due)}`;
-              return;
-            }
-            originalDidMount?.(info);
-          }
-        };
-        super(element, mergedOptions);
-        calendarInstance = this;
+          };
+          super(element, mergedOptions);
+          calendarInstance = this;
+        }
       }
+      WorkspaceCalendar.__nineworksWorkspaceV2 = true;
+      window.FullCalendar.Calendar = WorkspaceCalendar;
+    } catch (error) {
+      console.warn("캘린더-할 일 연동 확장 실패", error);
     }
-    WorkspaceCalendar.__nineworksWorkspaceV2 = true;
-    window.FullCalendar.Calendar = WorkspaceCalendar;
   }
 
   function subscribeCollection(name) {
@@ -531,14 +539,25 @@
     });
   }
 
-  function observeDynamicUi() {
-    const observer = new MutationObserver(() => {
-      normalizeNav();
-      transformDashboard();
-      transformSettingsPage();
-      moveReminderSettingsIntoSettings();
-      addThemeToggle();
+  function syncUi() {
+    normalizeNav();
+    transformDashboard();
+    transformSettingsPage();
+    moveReminderSettingsIntoSettings();
+    addThemeToggle();
+  }
+
+  function scheduleUiSync() {
+    if (uiSyncQueued) return;
+    uiSyncQueued = true;
+    requestAnimationFrame(() => {
+      uiSyncQueued = false;
+      syncUi();
     });
+  }
+
+  function observeDynamicUi() {
+    const observer = new MutationObserver(scheduleUiSync);
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
@@ -546,10 +565,7 @@
     loadStyle();
     initTheme();
     patchCalendar();
-    normalizeNav();
-    transformDashboard();
-    transformSettingsPage();
-    addThemeToggle();
+    syncUi();
     observeDynamicUi();
     connectFirebase();
   }
