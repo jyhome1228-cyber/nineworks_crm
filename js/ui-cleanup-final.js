@@ -50,10 +50,11 @@
     }
   }
 
-  function removeSalesUi() {
-    document.querySelectorAll('[data-route="sales"], #salesNavButton').forEach((element) => element.remove());
-    document.querySelectorAll('[data-page="sales"], #salesPage').forEach((element) => element.remove());
-    document.querySelectorAll('[data-client-sales]').forEach((element) => element.remove());
+  function hideSalesUi() {
+    document.querySelectorAll('[data-route="sales"], #salesNavButton, [data-page="sales"], #salesPage, [data-client-sales]').forEach((element) => {
+      element.hidden = true;
+      element.setAttribute("aria-hidden", "true");
+    });
   }
 
   function fixReadableProfile() {
@@ -65,7 +66,7 @@
 
   function normalize() {
     ensureStyle();
-    removeSalesUi();
+    hideSalesUi();
     fixReadableProfile();
   }
 
