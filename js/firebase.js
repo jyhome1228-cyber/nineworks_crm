@@ -7,6 +7,7 @@ import "./calendar-visual-polish.js?v=20260804-2";
 import "./calendar-card-hierarchy.js?v=20260803-3";
 import "./my-dashboard.js?v=20260824-1";
 import "./workspace-v2.js?v=20260830-1";
+import "./light-theme-polish.js?v=20260830-1";
 import "./mypage-structure.js?v=20260818-1";
 import "./work-journal.js?v=20260819-2";
 import "./work-journal-save-ux.js?v=20260820-1";
