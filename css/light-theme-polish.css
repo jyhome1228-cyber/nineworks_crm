@@ -1,0 +1,398 @@
+/* NINEWORKS CRM — light theme final polish */
+
+html[data-theme="light"] {
+  --bg: #f5f7fa;
+  --bg-deep: #eef2f6;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #f2f4f7;
+  --line: #e4e7ec;
+  --line-soft: #edf1f5;
+  --text: #111827;
+  --text-soft: #475467;
+  --muted: #667085;
+  --primary: #315eea;
+  --primary-hover: #244fda;
+  --primary-soft: #eef4ff;
+  --success: #12865f;
+  --warning: #c07800;
+  --review: #7555c7;
+  --danger: #d64545;
+  --shadow: 0 12px 32px rgba(15, 23, 42, 0.055);
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body,
+html[data-theme="light"] .app,
+html[data-theme="light"] .app-content {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .ambient {
+  opacity: .025 !important;
+}
+
+/* Global text contrast */
+html[data-theme="light"] .page-heading h1,
+html[data-theme="light"] .page-heading h2,
+html[data-theme="light"] .section-title h2,
+html[data-theme="light"] .panel-heading h2,
+html[data-theme="light"] .client-drag-section h2,
+html[data-theme="light"] .fc .fc-toolbar-title {
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .page-heading p,
+html[data-theme="light"] .section-title p,
+html[data-theme="light"] .panel-heading p,
+html[data-theme="light"] .client-drag-section p,
+html[data-theme="light"] .client-drag-section__hint,
+html[data-theme="light"] .calendar-legend,
+html[data-theme="light"] .calendar-legend span {
+  color: var(--text-soft) !important;
+}
+
+html[data-theme="light"] .eyebrow {
+  color: var(--muted) !important;
+}
+
+html[data-theme="light"] .panel,
+html[data-theme="light"] .calendar-main,
+html[data-theme="light"] .side-panel {
+  border-color: var(--line) !important;
+  background: var(--surface) !important;
+  box-shadow: none !important;
+}
+
+/* Quick Schedule — remove legacy black surface */
+html[data-theme="light"] #clientDragSection,
+html[data-theme="light"] .client-drag-section {
+  border: 1px solid var(--line) !important;
+  border-radius: 18px !important;
+  padding: 24px 22px 18px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%) !important;
+  color: var(--text) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+html[data-theme="light"] .client-drag-section__head {
+  margin-bottom: 15px !important;
+}
+
+html[data-theme="light"] .client-drag-section__head h2 {
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .client-drag-list {
+  gap: 8px !important;
+  padding-bottom: 4px !important;
+  scrollbar-color: #cfd5df transparent;
+}
+
+html[data-theme="light"] .client-drag-chip {
+  min-height: 38px !important;
+  border: 1px solid #d9dee7 !important;
+  border-radius: 999px !important;
+  padding: 0 17px !important;
+  background: #ffffff !important;
+  color: #344054 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .client-drag-chip:hover,
+html[data-theme="light"] .client-drag-chip:focus-visible {
+  border-color: #b9c9fb !important;
+  background: var(--primary-soft) !important;
+  color: var(--primary) !important;
+}
+
+html[data-theme="light"] .client-drag-chip.is-dragging {
+  border-color: var(--primary) !important;
+  background: var(--primary-soft) !important;
+  color: var(--primary) !important;
+  opacity: .72;
+}
+
+/* Filters */
+html[data-theme="light"] .calendar-toolbar {
+  color: var(--text-soft) !important;
+}
+
+html[data-theme="light"] .select-control > span,
+html[data-theme="light"] .field > span {
+  color: #667085 !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="light"] select,
+html[data-theme="light"] input,
+html[data-theme="light"] textarea,
+html[data-theme="light"] .search-box {
+  border-color: #d9dee7 !important;
+  background: #ffffff !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] select:focus,
+html[data-theme="light"] input:focus,
+html[data-theme="light"] textarea:focus {
+  border-color: #9db3fa !important;
+  box-shadow: 0 0 0 3px rgba(49, 94, 234, .08) !important;
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #98a2b3 !important;
+}
+
+/* Buttons */
+html[data-theme="light"] .button--ghost,
+html[data-theme="light"] .icon-button,
+html[data-theme="light"] .profile-button {
+  border-color: #d9dee7 !important;
+  background: #ffffff !important;
+  color: #344054 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .button--ghost:hover,
+html[data-theme="light"] .icon-button:hover,
+html[data-theme="light"] .profile-button:hover {
+  border-color: #c8ced8 !important;
+  background: #f8fafc !important;
+  color: #101828 !important;
+}
+
+html[data-theme="light"] .button--primary {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] .button--primary:hover {
+  border-color: var(--primary-hover) !important;
+  background: var(--primary-hover) !important;
+}
+
+/* Legacy dark action buttons in calendar extensions */
+html[data-theme="light"] #calendarPage button:not(.button--primary):not(.client-drag-chip):not(.nav-link),
+html[data-theme="light"] #calendarPage .past-events-toggle,
+html[data-theme="light"] #calendarPage .calendar-past-toggle,
+html[data-theme="light"] #calendarPage [class*="past"][class*="button"] {
+  border-color: #d9dee7 !important;
+  background-color: #ffffff !important;
+  color: #475467 !important;
+}
+
+html[data-theme="light"] #calendarPage button:not(.button--primary):not(.client-drag-chip):not(.nav-link):hover {
+  background-color: #f8fafc !important;
+  color: #101828 !important;
+}
+
+/* FullCalendar shell */
+html[data-theme="light"] #calendar,
+html[data-theme="light"] .fc,
+html[data-theme="light"] .fc .fc-scrollgrid,
+html[data-theme="light"] .fc-theme-standard td,
+html[data-theme="light"] .fc-theme-standard th {
+  border-color: var(--line) !important;
+  background-color: #ffffff !important;
+}
+
+html[data-theme="light"] .fc .fc-toolbar {
+  padding: 3px 0 15px !important;
+}
+
+html[data-theme="light"] .fc .fc-toolbar-title {
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.035em !important;
+}
+
+html[data-theme="light"] .fc .fc-button-primary {
+  min-height: 40px !important;
+  border: 1px solid #d9dee7 !important;
+  border-radius: 9px !important;
+  background: #ffffff !important;
+  color: #475467 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .fc .fc-button-primary:hover {
+  border-color: #c8ced8 !important;
+  background: #f8fafc !important;
+  color: #101828 !important;
+}
+
+html[data-theme="light"] .fc .fc-button-primary.fc-button-active,
+html[data-theme="light"] .fc .fc-button-primary:not(:disabled).fc-button-active {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] .fc .fc-button-primary:disabled {
+  border-color: #e4e7ec !important;
+  background: #f9fafb !important;
+  color: #98a2b3 !important;
+  opacity: 1 !important;
+}
+
+/* Remove black weekday strip */
+html[data-theme="light"] .fc .fc-col-header-cell,
+html[data-theme="light"] .fc .fc-scrollgrid-section-header th,
+html[data-theme="light"] .fc .fc-day-header {
+  background: #f8fafc !important;
+  color: #344054 !important;
+}
+
+html[data-theme="light"] .fc .fc-col-header-cell-cushion,
+html[data-theme="light"] .fc .fc-day-header a {
+  color: #475467 !important;
+  font-weight: 650 !important;
+  text-decoration: none !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-day-number,
+html[data-theme="light"] .fc .fc-timegrid-slot-label-cushion,
+html[data-theme="light"] .fc .fc-list-day-text,
+html[data-theme="light"] .fc .fc-list-day-side-text {
+  color: #667085 !important;
+  text-decoration: none !important;
+}
+
+html[data-theme="light"] .fc .fc-day-other .fc-daygrid-day-number {
+  color: #b7bdc8 !important;
+}
+
+html[data-theme="light"] .fc .fc-day-today,
+html[data-theme="light"] .fc .fc-daygrid-day.fc-day-today {
+  background: #f5f8ff !important;
+}
+
+html[data-theme="light"] .fc .fc-day-today .fc-daygrid-day-number {
+  color: var(--primary) !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-day-frame {
+  min-height: 112px;
+}
+
+html[data-theme="light"] .fc .fc-list-table td {
+  background: #ffffff !important;
+  color: var(--text-soft) !important;
+}
+
+html[data-theme="light"] .fc .fc-list-event:hover td {
+  background: #f8fafc !important;
+}
+
+/* Calendar event readability */
+html[data-theme="light"] .fc .fc-event {
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .fc .event-status-planned,
+html[data-theme="light"] .fc .fc-event.event-status-planned {
+  border-color: #d9dee7 !important;
+  background: #f2f4f7 !important;
+  color: #344054 !important;
+}
+
+html[data-theme="light"] .fc .event-status-progress,
+html[data-theme="light"] .fc .fc-event.event-status-progress {
+  border-color: #c7d7fe !important;
+  background: #eaf1ff !important;
+  color: #2852c7 !important;
+}
+
+html[data-theme="light"] .fc .event-status-review,
+html[data-theme="light"] .fc .fc-event.event-status-review {
+  border-color: #ddd1fa !important;
+  background: #f3efff !important;
+  color: #6847bd !important;
+}
+
+html[data-theme="light"] .fc .event-status-done,
+html[data-theme="light"] .fc .fc-event.event-status-done {
+  border-color: #b9e6d2 !important;
+  background: #eaf8f1 !important;
+  color: #157653 !important;
+}
+
+html[data-theme="light"] .fc .calendar-todo-event {
+  border: 1px dashed #9db3fa !important;
+  background: #eef4ff !important;
+  color: #315eea !important;
+}
+
+html[data-theme="light"] .fc .fc-event-title,
+html[data-theme="light"] .fc .fc-event-time {
+  color: inherit !important;
+}
+
+/* Side lists */
+html[data-theme="light"] .compact-item,
+html[data-theme="light"] .line-item,
+html[data-theme="light"] .request-row,
+html[data-theme="light"] .todo-item {
+  border-color: var(--line-soft) !important;
+  background: #ffffff !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .compact-item strong,
+html[data-theme="light"] .line-item strong,
+html[data-theme="light"] .request-row strong,
+html[data-theme="light"] .todo-item strong {
+  color: #101828 !important;
+}
+
+html[data-theme="light"] .compact-item small,
+html[data-theme="light"] .line-item small,
+html[data-theme="light"] .request-row p,
+html[data-theme="light"] .todo-item small {
+  color: #667085 !important;
+}
+
+/* topbar */
+html[data-theme="light"] .topbar {
+  border-bottom: 1px solid var(--line) !important;
+  background: rgba(255, 255, 255, .93) !important;
+  box-shadow: 0 1px 0 rgba(16, 24, 40, .025) !important;
+}
+
+html[data-theme="light"] .main-nav .nav-link {
+  color: #667085 !important;
+}
+
+html[data-theme="light"] .main-nav .nav-link.is-active {
+  color: #101828 !important;
+}
+
+/* keep dark mode untouched */
+html[data-theme="dark"] .client-drag-section,
+html[data-theme="dark"] .client-drag-chip,
+html[data-theme="dark"] .fc .fc-col-header-cell {
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+
+@media (max-width: 760px) {
+  html[data-theme="light"] #clientDragSection,
+  html[data-theme="light"] .client-drag-section {
+    border-radius: 14px !important;
+    padding: 18px 15px 14px !important;
+  }
+
+  html[data-theme="light"] .client-drag-chip {
+    min-height: 36px !important;
+    padding: 0 14px !important;
+  }
+
+  html[data-theme="light"] .fc .fc-toolbar-title {
+    font-size: 17px !important;
+  }
+}
