@@ -1,0 +1,699 @@
+/* NINEWORKS CRM — final light theme unification
+   Keeps dark mode intact. This file intentionally uses !important to override
+   legacy feature-level CSS that hard-codes dark colors. */
+
+html[data-theme="light"] {
+  --bg: #f4f6f8;
+  --bg-deep: #eef1f4;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #f2f4f7;
+  --line: #dfe3e8;
+  --line-soft: #eaedf1;
+  --text: #17191d;
+  --text-soft: #4f5968;
+  --muted: #6f7886;
+  --primary: #315eea;
+  --primary-hover: #244fda;
+  --primary-soft: #eef3ff;
+  --success: #147a55;
+  --warning: #b56e00;
+  --review: #6f4fc2;
+  --danger: #cf4545;
+  --shadow: 0 8px 26px rgba(15, 23, 42, .045);
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body,
+html[data-theme="light"] .app,
+html[data-theme="light"] .app-content,
+html[data-theme="light"] .page {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .ambient { opacity: .015 !important; }
+
+/* Hide the discontinued sales workspace everywhere. */
+html [data-route="sales"],
+html [data-page="sales"],
+html #salesNavButton,
+html .sales-nav-badge,
+html [data-client-sales],
+html #salesLeadModal,
+html #salesCrmBackdrop {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------
+   Global readability
+   --------------------------------------------------------- */
+html[data-theme="light"] .page-heading h1,
+html[data-theme="light"] .page-heading h2,
+html[data-theme="light"] .panel h1,
+html[data-theme="light"] .panel h2,
+html[data-theme="light"] .panel h3,
+html[data-theme="light"] .section-title h2,
+html[data-theme="light"] .panel-heading h2,
+html[data-theme="light"] .profile-info h2,
+html[data-theme="light"] .profile-button__text strong,
+html[data-theme="light"] .client-name,
+html[data-theme="light"] .data-table strong,
+html[data-theme="light"] [class*="summary-card"] strong,
+html[data-theme="light"] [class*="summary-card"] b {
+  color: #17191d !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .page-heading > div > p:not(.eyebrow),
+html[data-theme="light"] .panel-heading p,
+html[data-theme="light"] .section-title p,
+html[data-theme="light"] .profile-info p,
+html[data-theme="light"] .profile-button__text small,
+html[data-theme="light"] [class*="summary-card"] span,
+html[data-theme="light"] [class*="summary-card"] small,
+html[data-theme="light"] .empty-state,
+html[data-theme="light"] .table-toolbar span,
+html[data-theme="light"] .line-item__meta,
+html[data-theme="light"] .count-badge {
+  color: #667085 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .eyebrow {
+  color: #596273 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .profile-button,
+html[data-theme="light"] .profile-button * {
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .profile-button__avatar {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .profile-button__text strong { color: #344054 !important; }
+html[data-theme="light"] .profile-button__text small { color: #667085 !important; }
+
+html[data-theme="light"] .panel,
+html[data-theme="light"] .summary-card,
+html[data-theme="light"] .workspace-content,
+html[data-theme="light"] .table-panel,
+html[data-theme="light"] .side-panel,
+html[data-theme="light"] .calendar-main,
+html[data-theme="light"] [class*="summary-card"] {
+  border-color: var(--line) !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea,
+html[data-theme="light"] .search-box {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #20242a !important;
+  caret-color: #20242a !important;
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder { color: #8993a1 !important; }
+
+html[data-theme="light"] input:focus,
+html[data-theme="light"] select:focus,
+html[data-theme="light"] textarea:focus {
+  border-color: #9cb1f7 !important;
+  box-shadow: 0 0 0 3px rgba(49, 94, 234, .08) !important;
+}
+
+html[data-theme="light"] .button--ghost,
+html[data-theme="light"] .icon-button,
+html[data-theme="light"] .profile-button {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #3f4957 !important;
+}
+
+html[data-theme="light"] .button--ghost:hover,
+html[data-theme="light"] .icon-button:hover,
+html[data-theme="light"] .profile-button:hover {
+  border-color: #c7cdd6 !important;
+  background: #f8fafc !important;
+  color: #17191d !important;
+}
+
+html[data-theme="light"] .button--primary {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .button--danger {
+  border-color: #f3c4c4 !important;
+  background: #fff6f6 !important;
+  color: #b42318 !important;
+}
+
+/* ---------------------------------------------------------
+   Header / navigation
+   --------------------------------------------------------- */
+html[data-theme="light"] .topbar {
+  border-bottom-color: #dfe3e8 !important;
+  background: rgba(255, 255, 255, .96) !important;
+  box-shadow: 0 1px 0 rgba(16,24,40,.025) !important;
+}
+
+html[data-theme="light"] .main-nav .nav-link {
+  color: #667085 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .main-nav .nav-link:hover,
+html[data-theme="light"] .main-nav .nav-link.is-active {
+  background: #f5f6f8 !important;
+  color: #17191d !important;
+}
+
+/* ---------------------------------------------------------
+   Settings / request management — remove remaining black boards
+   --------------------------------------------------------- */
+html[data-theme="light"] .settings-page,
+html[data-theme="light"] .settings-page .request-board {
+  background: transparent !important;
+}
+
+html[data-theme="light"] .settings-page .request-column,
+html[data-theme="light"] .request-column {
+  border: 1px solid var(--line) !important;
+  background: #fff !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .request-column__heading {
+  border-bottom-color: var(--line-soft) !important;
+  background: #fbfcfd !important;
+  color: #344054 !important;
+}
+
+html[data-theme="light"] .request-column__heading span,
+html[data-theme="light"] .request-column__heading b {
+  color: #344054 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .request-column__heading b {
+  border: 1px solid #d9e2ff !important;
+  background: #eef3ff !important;
+  color: var(--primary) !important;
+}
+
+html[data-theme="light"] .request-card {
+  border: 1px solid #e2e6eb !important;
+  background: #f9fafb !important;
+  background-image: none !important;
+  color: #344054 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .request-card:hover {
+  border-color: #cfd5de !important;
+  background: #fff !important;
+}
+
+html[data-theme="light"] .request-card strong,
+html[data-theme="light"] .request-card__client,
+html[data-theme="light"] .request-card__meta span {
+  color: #344054 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .request-card p,
+html[data-theme="light"] .request-card small,
+html[data-theme="light"] .request-card__meta {
+  color: #667085 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .settings-page .v2-settings-tab { color: #667085 !important; }
+html[data-theme="light"] .settings-page .v2-settings-tab.is-active { color: #17191d !important; }
+html[data-theme="light"] .settings-page .v2-settings-card {
+  border-color: var(--line) !important;
+  background: #fff !important;
+  color: var(--text) !important;
+}
+
+/* ---------------------------------------------------------
+   Calendar / quick scheduling
+   --------------------------------------------------------- */
+html[data-theme="light"] #clientDragSection,
+html[data-theme="light"] .client-drag-section {
+  border: 1px solid var(--line) !important;
+  background: #fff !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+html[data-theme="light"] .client-drag-section h2,
+html[data-theme="light"] .client-drag-section strong { color: #17191d !important; }
+html[data-theme="light"] .client-drag-section p,
+html[data-theme="light"] .client-drag-section__hint { color: #667085 !important; }
+
+html[data-theme="light"] .client-drag-chip {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #344054 !important;
+}
+html[data-theme="light"] .client-drag-chip:hover {
+  border-color: #b8c6f5 !important;
+  background: #eef3ff !important;
+  color: var(--primary) !important;
+}
+
+html[data-theme="light"] #calendarPage button:not(.button--primary):not(.client-drag-chip):not(.nav-link),
+html[data-theme="light"] #calendarPage [class*="past"][class*="button"] {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #475467 !important;
+}
+
+html[data-theme="light"] #calendar,
+html[data-theme="light"] .fc,
+html[data-theme="light"] .fc .fc-scrollgrid,
+html[data-theme="light"] .fc-theme-standard td,
+html[data-theme="light"] .fc-theme-standard th {
+  border-color: var(--line) !important;
+  background: #fff !important;
+  color: #344054 !important;
+}
+
+html[data-theme="light"] .fc .fc-col-header-cell,
+html[data-theme="light"] .fc .fc-scrollgrid-section-header th,
+html[data-theme="light"] .fc .fc-day-header {
+  background: #f7f8fa !important;
+  color: #475467 !important;
+}
+
+html[data-theme="light"] .fc .fc-col-header-cell-cushion,
+html[data-theme="light"] .fc .fc-day-header a,
+html[data-theme="light"] .fc .fc-toolbar-title {
+  color: #344054 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-day-number,
+html[data-theme="light"] .fc .fc-timegrid-slot-label-cushion,
+html[data-theme="light"] .fc .fc-list-day-text,
+html[data-theme="light"] .fc .fc-list-day-side-text { color: #667085 !important; }
+
+html[data-theme="light"] .fc .fc-day-other .fc-daygrid-day-number { color: #a7afbb !important; }
+html[data-theme="light"] .fc .fc-day-today { background: #f5f8ff !important; }
+html[data-theme="light"] .fc .fc-day-today .fc-daygrid-day-number { color: var(--primary) !important; }
+
+html[data-theme="light"] .fc .fc-button-primary {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #475467 !important;
+  box-shadow: none !important;
+}
+html[data-theme="light"] .fc .fc-button-primary:hover { background: #f8fafc !important; color: #17191d !important; }
+html[data-theme="light"] .fc .fc-button-primary.fc-button-active,
+html[data-theme="light"] .fc .fc-button-primary:not(:disabled).fc-button-active {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+/* ---------------------------------------------------------
+   QA — align every legacy dark surface with the main light UI
+   --------------------------------------------------------- */
+html[data-theme="light"] .qa-page,
+html[data-theme="light"] .qa-compact-root,
+html[data-theme="light"] .qa-detail { color: var(--text) !important; }
+
+html[data-theme="light"] .qa-qa-guide,
+html[data-theme="light"] .qa-compact-toolbar,
+html[data-theme="light"] .qa-compact-card,
+html[data-theme="light"] .qa-detail-head,
+html[data-theme="light"] .qa-detail-panel,
+html[data-theme="light"] .qa-guide,
+html[data-theme="light"] .qa-method,
+html[data-theme="light"] .qa-beginner-check,
+html[data-theme="light"] .qa-shop-guide,
+html[data-theme="light"] .qa-panel,
+html[data-theme="light"] .qa-site-card,
+html[data-theme="light"] .qa-report-panel,
+html[data-theme="light"] .qa-checklist,
+html[data-theme="light"] .qa-modal,
+html[data-theme="light"] .qa-shot-zone,
+html[data-theme="light"] .qa-shot-preview,
+html[data-theme="light"] .qa-issue-thumb {
+  border-color: var(--line) !important;
+  background: #fff !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .qa-qa-guide__body {
+  border-color: var(--line) !important;
+  background: var(--line) !important;
+}
+
+html[data-theme="light"] .qa-qa-guide__item,
+html[data-theme="light"] .qa-site-metrics div,
+html[data-theme="light"] .qa-checklist .qa-check-head,
+html[data-theme="light"] .qa-filter-chip,
+html[data-theme="light"] .qa-flow-step,
+html[data-theme="light"] .qa-detail-select,
+html[data-theme="light"] .qa-detail-field select,
+html[data-theme="light"] .qa-detail-field textarea,
+html[data-theme="light"] .qa-report-field input,
+html[data-theme="light"] .qa-report-field select,
+html[data-theme="light"] .qa-report-field textarea,
+html[data-theme="light"] .qa-field input,
+html[data-theme="light"] .qa-field select,
+html[data-theme="light"] .qa-field textarea,
+html[data-theme="light"] .qa-compact-search,
+html[data-theme="light"] .qa-search,
+html[data-theme="light"] .qa-detail-link,
+html[data-theme="light"] .qa-modal-close,
+html[data-theme="light"] .qa-button {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #344054 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .qa-shop-guide,
+html[data-theme="light"] .qa-checklist.qa-checklist--shop .qa-check-head {
+  background: #f6f8ff !important;
+}
+
+html[data-theme="light"] .qa-compact-card:hover,
+html[data-theme="light"] .qa-site-card:hover,
+html[data-theme="light"] .qa-filter-chip:hover,
+html[data-theme="light"] .qa-detail-link:hover {
+  border-color: #c7cdd6 !important;
+  background: #f8fafc !important;
+  color: #17191d !important;
+}
+
+html[data-theme="light"] .qa-filter-chip.is-active {
+  border-color: #b7c7f7 !important;
+  background: #eef3ff !important;
+  color: var(--primary) !important;
+}
+
+html[data-theme="light"] .qa-page.qa-compact-active .qa-heading p:not(.eyebrow),
+html[data-theme="light"] .qa-qa-guide__copy span,
+html[data-theme="light"] .qa-qa-guide__item p,
+html[data-theme="light"] .qa-compact-toolbar__title span,
+html[data-theme="light"] .qa-compact-card__index,
+html[data-theme="light"] .qa-compact-card__category,
+html[data-theme="light"] .qa-compact-card__client,
+html[data-theme="light"] .qa-compact-card__hint,
+html[data-theme="light"] .qa-detail-head__meta,
+html[data-theme="light"] .qa-detail-head p,
+html[data-theme="light"] .qa-detail-panel__head p,
+html[data-theme="light"] .qa-detail-check-label span,
+html[data-theme="light"] .qa-detail-check-title,
+html[data-theme="light"] .qa-detail-updated,
+html[data-theme="light"] .qa-guide summary p,
+html[data-theme="light"] .qa-panel-head p,
+html[data-theme="light"] .qa-site-top small,
+html[data-theme="light"] .qa-site-url,
+html[data-theme="light"] .qa-site-metrics span,
+html[data-theme="light"] .qa-site-foot span,
+html[data-theme="light"] .qa-report-panel-head p,
+html[data-theme="light"] .qa-report-field span,
+html[data-theme="light"] .qa-check-section-title small,
+html[data-theme="light"] .qa-report-result,
+html[data-theme="light"] .qa-issue-main small,
+html[data-theme="light"] .qa-platform,
+html[data-theme="light"] .qa-issue-desc,
+html[data-theme="light"] .qa-issue-owner,
+html[data-theme="light"] .qa-modal-head p,
+html[data-theme="light"] .qa-shot-copy p,
+html[data-theme="light"] .qa-empty-detail,
+html[data-theme="light"] .qa-compact-empty,
+html[data-theme="light"] .qa-site-empty,
+html[data-theme="light"] .qa-issue-empty {
+  color: #667085 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .qa-qa-guide__copy strong,
+html[data-theme="light"] .qa-qa-guide__item b,
+html[data-theme="light"] .qa-compact-toolbar__title strong,
+html[data-theme="light"] .qa-compact-card h3,
+html[data-theme="light"] .qa-detail-head h2,
+html[data-theme="light"] .qa-detail-panel__head h3,
+html[data-theme="light"] .qa-detail-check-label strong,
+html[data-theme="light"] .qa-site-top strong,
+html[data-theme="light"] .qa-issue-main strong,
+html[data-theme="light"] .qa-method li strong,
+html[data-theme="light"] .qa-method h3,
+html[data-theme="light"] .qa-beginner-check h3,
+html[data-theme="light"] .qa-shop-guide h3,
+html[data-theme="light"] .qa-report-panel-head h3,
+html[data-theme="light"] .qa-field > span,
+html[data-theme="light"] .qa-detail-field > span {
+  color: #20242a !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .qa-method li,
+html[data-theme="light"] .qa-beginner-check li,
+html[data-theme="light"] .qa-checklist > div {
+  color: #475467 !important;
+}
+
+html[data-theme="light"] .qa-checklist > div,
+html[data-theme="light"] .qa-detail-check-row,
+html[data-theme="light"] .qa-detail-check-row > div + div,
+html[data-theme="light"] .qa-issue-row {
+  border-color: var(--line-soft) !important;
+}
+
+html[data-theme="light"] .qa-issue-row:hover { background: #f8fafc !important; }
+
+html[data-theme="light"] .qa-status,
+html[data-theme="light"] .qa-severity,
+html[data-theme="light"] .qa-site-type-badge,
+html[data-theme="light"] .qa-compact-card__status,
+html[data-theme="light"] .qa-author-badge,
+html[data-theme="light"] .qa-flow-step {
+  border-color: #d7dce3 !important;
+  background: #f8fafc !important;
+  color: #596273 !important;
+}
+
+html[data-theme="light"] .qa-detail-select[data-state="ok"],
+html[data-theme="light"] .qa-status[data-status="done"],
+html[data-theme="light"] .qa-compact-card__status.is-done {
+  border-color: #b7dfcd !important;
+  background: #edf8f3 !important;
+  color: #147a55 !important;
+}
+
+html[data-theme="light"] .qa-detail-select[data-state="issue"],
+html[data-theme="light"] .qa-compact-card__status.is-issue {
+  border-color: #f2c5c5 !important;
+  background: #fff4f4 !important;
+  color: #b42318 !important;
+}
+
+html[data-theme="light"] .qa-compact-card__domain,
+html[data-theme="light"] .qa-site-foot a,
+html[data-theme="light"] .qa-qa-guide__more,
+html[data-theme="light"] .qa-url-help strong {
+  color: var(--primary) !important;
+}
+
+html[data-theme="light"] .qa-modal-backdrop { background: rgba(17, 24, 39, .28) !important; }
+
+/* ---------------------------------------------------------
+   Work journal
+   --------------------------------------------------------- */
+html[data-theme="light"] .worklog-summary-card,
+html[data-theme="light"] .worklog-panel,
+html[data-theme="light"] .worklog-editor,
+html[data-theme="light"] .worklog-view {
+  border-color: var(--line) !important;
+  background: #fff !important;
+  background-image: none !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .worklog-filter input,
+html[data-theme="light"] .worklog-filter select,
+html[data-theme="light"] .worklog-field input,
+html[data-theme="light"] .worklog-field select,
+html[data-theme="light"] .worklog-field textarea {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #20242a !important;
+}
+
+html[data-theme="light"] .worklog-card:hover,
+html[data-theme="light"] .worklog-card.is-active { background: #f8fafc !important; }
+
+html[data-theme="light"] .worklog-card-top strong,
+html[data-theme="light"] .worklog-view-head h2,
+html[data-theme="light"] .worklog-markdown h1,
+html[data-theme="light"] .worklog-markdown h2,
+html[data-theme="light"] .worklog-markdown h3,
+html[data-theme="light"] .worklog-markdown strong { color: #20242a !important; }
+
+html[data-theme="light"] .worklog-card-meta,
+html[data-theme="light"] .worklog-card-preview,
+html[data-theme="light"] .worklog-editor-note,
+html[data-theme="light"] .worklog-author-badge,
+html[data-theme="light"] .worklog-markdown { color: #596273 !important; }
+
+html[data-theme="light"] .worklog-type,
+html[data-theme="light"] .worklog-author-badge {
+  border-color: #d7dce3 !important;
+  background: #f8fafc !important;
+}
+
+html[data-theme="light"] .worklog-tag,
+html[data-theme="light"] .worklog-type.is-day,
+html[data-theme="light"] .worklog-type.is-night {
+  border-color: #cbd6fb !important;
+  background: #eef3ff !important;
+  color: var(--primary) !important;
+}
+
+html[data-theme="light"] .worklog-markdown code {
+  border-color: #d7dce3 !important;
+  background: #f2f4f7 !important;
+  color: #315eea !important;
+}
+
+/* ---------------------------------------------------------
+   Finance / payment management
+   --------------------------------------------------------- */
+html[data-theme="light"] .finance-summary-card,
+html[data-theme="light"] .finance-summary-card--reserve,
+html[data-theme="light"] .finance-panel,
+html[data-theme="light"] .finance-modal,
+html[data-theme="light"] .finance-payment-row,
+html[data-theme="light"] .finance-contract-type-select,
+html[data-theme="light"] .finance-month-input,
+html[data-theme="light"] .finance-monthly-preview > div {
+  border-color: var(--line) !important;
+  background: #fff !important;
+  background-image: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .finance-summary-card strong,
+html[data-theme="light"] .finance-summary-card--reserve strong,
+html[data-theme="light"] .finance-contract-client strong,
+html[data-theme="light"] .finance-contract-total strong,
+html[data-theme="light"] .finance-contract-money strong,
+html[data-theme="light"] .finance-ledger-copy strong,
+html[data-theme="light"] .finance-monthly-preview strong,
+html[data-theme="light"] .finance-monthly-line strong,
+html[data-theme="light"] .finance-payment-label {
+  color: #20242a !important;
+}
+
+html[data-theme="light"] .finance-summary-card span,
+html[data-theme="light"] .finance-summary-card small,
+html[data-theme="light"] .finance-contract-client small,
+html[data-theme="light"] .finance-contract-total small,
+html[data-theme="light"] .finance-contract-money small,
+html[data-theme="light"] .finance-phase > span:first-child,
+html[data-theme="light"] .finance-phase time,
+html[data-theme="light"] .finance-ledger-date,
+html[data-theme="light"] .finance-ledger-copy small,
+html[data-theme="light"] .finance-ledger-client,
+html[data-theme="light"] .finance-form-note,
+html[data-theme="light"] .finance-owner-note,
+html[data-theme="light"] .finance-monthly-preview span,
+html[data-theme="light"] .finance-monthly-range,
+html[data-theme="light"] .finance-monthly-line small {
+  color: #667085 !important;
+}
+
+html[data-theme="light"] .finance-contract-row:hover,
+html[data-theme="light"] .finance-ledger-row:hover { background: #f8fafc !important; }
+
+html[data-theme="light"] .finance-search,
+html[data-theme="light"] .finance-field input,
+html[data-theme="light"] .finance-field select,
+html[data-theme="light"] .finance-field textarea,
+html[data-theme="light"] .finance-mini-field input,
+html[data-theme="light"] .finance-month-input input {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #20242a !important;
+}
+
+html[data-theme="light"] .finance-modal-close,
+html[data-theme="light"] .finance-contract-type-select button {
+  border-color: #d7dce3 !important;
+  background: #fff !important;
+  color: #596273 !important;
+}
+
+html[data-theme="light"] .finance-contract-type-select button.is-active {
+  background: #eef3ff !important;
+  color: var(--primary) !important;
+  box-shadow: inset 0 0 0 1px #cbd6fb !important;
+}
+
+html[data-theme="light"] .finance-backdrop { background: rgba(17,24,39,.28) !important; }
+
+/* ---------------------------------------------------------
+   Generic list / table / client readability
+   --------------------------------------------------------- */
+html[data-theme="light"] .data-table,
+html[data-theme="light"] .data-table th,
+html[data-theme="light"] .data-table td {
+  border-color: var(--line-soft) !important;
+  background: #fff !important;
+  color: #475467 !important;
+}
+html[data-theme="light"] .data-table thead th { background: #f8fafc !important; color: #596273 !important; }
+html[data-theme="light"] .data-table tbody tr:hover td { background: #fbfcfd !important; }
+
+html[data-theme="light"] .compact-item,
+html[data-theme="light"] .line-item,
+html[data-theme="light"] .todo-item,
+html[data-theme="light"] .request-row {
+  border-color: var(--line-soft) !important;
+  background: #fff !important;
+  color: #344054 !important;
+}
+html[data-theme="light"] .compact-item strong,
+html[data-theme="light"] .line-item strong,
+html[data-theme="light"] .todo-item strong,
+html[data-theme="light"] .request-row strong { color: #20242a !important; }
+html[data-theme="light"] .compact-item small,
+html[data-theme="light"] .line-item small,
+html[data-theme="light"] .todo-item small,
+html[data-theme="light"] .request-row p { color: #667085 !important; }
+
+/* Avoid washed-out disabled-looking text except actual disabled controls. */
+html[data-theme="light"] .page :not(button):not(input):not(select):not(textarea)[style*="opacity"] { opacity: 1; }
+
+@media (max-width: 760px) {
+  html[data-theme="light"] .qa-compact-card,
+  html[data-theme="light"] .qa-detail-head,
+  html[data-theme="light"] .qa-detail-panel,
+  html[data-theme="light"] .request-column {
+    border-radius: 10px !important;
+  }
+}
