@@ -77,6 +77,54 @@
   max-width: 84px;
 }
 
+/* Light theme: remove legacy dark-only event text colors. */
+html[data-theme="light"] .fc .nw-client-badge {
+  border-color: #c8d5fb !important;
+  background: #eef3ff !important;
+  color: #3157bd !important;
+}
+
+html[data-theme="light"] .fc .nw-task-title {
+  color: #263244 !important;
+}
+
+html[data-theme="light"] .fc .nw-event-note {
+  color: #667085 !important;
+}
+
+html[data-theme="light"] .fc .event-status-planned .nw-client-badge {
+  border-color: #d7dce3 !important;
+  background: #f2f4f7 !important;
+  color: #475467 !important;
+}
+
+html[data-theme="light"] .fc .event-status-progress .nw-client-badge {
+  border-color: #c8d5fb !important;
+  background: #eaf1ff !important;
+  color: #2852c7 !important;
+}
+
+html[data-theme="light"] .fc .event-status-review .nw-client-badge {
+  border-color: #ddd1fa !important;
+  background: #f3efff !important;
+  color: #6847bd !important;
+}
+
+html[data-theme="light"] .fc .event-status-done .nw-client-badge {
+  border-color: #cde8db !important;
+  background: #edf8f2 !important;
+  color: #157653 !important;
+}
+
+html[data-theme="light"] .fc .event-status-done .nw-task-title {
+  color: #667085 !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-event,
+html[data-theme="light"] .fc .fc-timegrid-event {
+  opacity: 1 !important;
+}
+
 @media (max-width: 760px) {
   .nw-event-title {
     gap: 6px;
