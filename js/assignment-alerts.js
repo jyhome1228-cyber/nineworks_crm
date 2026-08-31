@@ -1,9 +1,7 @@
 (() => {
   "use strict";
 
-  const api = window.NineworksFirebase;
-  if (!api) return;
-
+  let api = null;
   let currentUser = null;
   let currentProfileName = "";
   let unsubscribeEvents = null;
@@ -64,7 +62,7 @@
 
   async function loadProfile(user) {
     currentProfileName = "";
-    if (!user) return;
+    if (!user || !api) return;
     try {
       const snapshot = await api.getDoc(api.doc(api.db, "users", user.uid));
       if (snapshot.exists()) currentProfileName = String(snapshot.data()?.name || "").trim();
@@ -82,7 +80,7 @@
 
   function subscribeAssignments() {
     stopSubscription();
-    if (!currentUser || !currentProfileName) return;
+    if (!api || !currentUser || !currentProfileName) return;
 
     unsubscribeEvents = api.onSnapshot(
       api.collection(api.db, "events"),
@@ -116,14 +114,24 @@
     );
   }
 
-  api.onAuthStateChanged(api.auth, async (user) => {
-    currentUser = user;
-    stopSubscription();
-    if (!user) {
-      currentProfileName = "";
+  function connectFirebase() {
+    api = window.NineworksFirebase;
+    if (!api?.auth || !api?.db || !api?.onAuthStateChanged) {
+      window.setTimeout(connectFirebase, 80);
       return;
     }
-    await loadProfile(user);
-    subscribeAssignments();
-  });
+
+    api.onAuthStateChanged(api.auth, async (user) => {
+      currentUser = user;
+      stopSubscription();
+      if (!user) {
+        currentProfileName = "";
+        return;
+      }
+      await loadProfile(user);
+      subscribeAssignments();
+    });
+  }
+
+  connectFirebase();
 })();
