@@ -1,0 +1,258 @@
+/* NINEWORKS CRM — settings request management v2 */
+
+.settings-page #v2SettingsRequests .request-board {
+  display: none !important;
+}
+
+.nw-settings-requests {
+  display: grid;
+  gap: 14px;
+}
+
+.nw-request-panel {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.nw-request-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 74px;
+  padding: 17px 20px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.nw-request-panel__title {
+  min-width: 0;
+}
+
+.nw-request-panel__eyebrow {
+  display: block;
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .12em;
+}
+
+.nw-request-panel__title h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 720;
+  letter-spacing: -.035em;
+}
+
+.nw-request-count {
+  display: inline-flex;
+  min-width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 8px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.nw-request-panel__body {
+  display: grid;
+}
+
+.nw-request-empty {
+  margin: 0;
+  padding: 34px 20px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.nw-request-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) 118px 110px auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 82px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.nw-request-row:last-child {
+  border-bottom: 0;
+}
+
+.nw-request-row:hover {
+  background: var(--surface-2);
+}
+
+.nw-request-row__main {
+  min-width: 0;
+}
+
+.nw-request-row__client {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 5px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nw-request-row__main strong {
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 680;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nw-request-row__main p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.nw-request-row__meta {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.nw-request-row__meta strong {
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.nw-request-status {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 25px;
+  align-items: center;
+  border: 1px solid #d7dce3;
+  border-radius: 999px;
+  padding: 0 9px;
+  background: #fff;
+  color: #667085;
+  font-size: 9.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.nw-request-status[data-status="new"] {
+  border-color: #c9d6ff;
+  background: #f3f6ff;
+  color: #315eea;
+}
+
+.nw-request-status[data-status="confirmed"] {
+  border-color: #d6dce5;
+  background: #f8fafc;
+  color: #475467;
+}
+
+.nw-request-status[data-status="working"] {
+  border-color: #c8d5ff;
+  background: #eef3ff;
+  color: #244fda;
+}
+
+.nw-request-status[data-status="done"] {
+  border-color: #bfe6d3;
+  background: #effaf5;
+  color: #147a55;
+}
+
+.nw-request-row__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.nw-request-action {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #fff;
+  color: var(--text-soft);
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+.nw-request-action:hover {
+  border-color: #c8ced8;
+  background: #f8fafc;
+  color: var(--text);
+}
+
+.nw-request-action.is-primary {
+  border-color: #c8d5ff;
+  background: #eef3ff;
+  color: #315eea;
+}
+
+html[data-theme="dark"] .nw-request-panel,
+html[data-theme="dark"] .nw-request-action,
+html[data-theme="dark"] .nw-request-status {
+  background: var(--surface);
+}
+
+@media (max-width: 900px) {
+  .nw-request-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 14px;
+  }
+
+  .nw-request-row__meta {
+    grid-column: 1;
+    display: flex;
+    gap: 10px;
+  }
+
+  .nw-request-row__actions {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (max-width: 620px) {
+  .nw-request-panel__head {
+    min-height: 66px;
+    padding: 14px 15px;
+  }
+
+  .nw-request-row {
+    grid-template-columns: 1fr;
+    padding: 14px 15px;
+  }
+
+  .nw-request-row__meta,
+  .nw-request-row__actions {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .nw-request-row__actions {
+    justify-content: flex-start;
+  }
+}
