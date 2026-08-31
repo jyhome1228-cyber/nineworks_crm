@@ -1,4 +1,80 @@
-const SAVE_GUARD_VERSION = "20260817-4";
+import "./calendar-layout-order.js?v=20260831-1";
+
+const THEME_KEY = "nineworks-crm-theme";
+const EARLY_THEME_STYLE_ID = "nineworks-early-theme-style";
+const FINAL_LIGHT_STYLE_ID = "nineworks-light-theme-final";
+
+function bootstrapThemeBeforeApp() {
+  const stored = localStorage.getItem(THEME_KEY);
+  const theme = stored === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = theme;
+
+  const colorScheme = document.querySelector('meta[name="color-scheme"]');
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  colorScheme?.setAttribute("content", "light dark");
+  themeColor?.setAttribute("content", theme === "dark" ? "#171719" : "#f4f6f8");
+
+  if (!document.getElementById(EARLY_THEME_STYLE_ID)) {
+    const style = document.createElement("style");
+    style.id = EARLY_THEME_STYLE_ID;
+    style.textContent = `
+      html[data-theme="light"],
+      html[data-theme="light"] body {
+        background:#f4f6f8 !important;
+        color:#17191d !important;
+      }
+      html[data-theme="light"] #loginView,
+      html[data-theme="light"] .login-view {
+        background:#f4f6f8 !important;
+        color:#17191d !important;
+      }
+      html[data-theme="light"] .login-copy h1,
+      html[data-theme="light"] .login-copy p,
+      html[data-theme="light"] .login-footer,
+      html[data-theme="light"] .field > span {
+        color:#344054 !important;
+      }
+      html[data-theme="light"] .login-form input {
+        border-color:#d7dce3 !important;
+        background:#fff !important;
+        color:#17191d !important;
+      }
+      html[data-theme="light"] .brand-logo {
+        filter:none !important;
+      }
+      html[data-theme="light"]:not(.nw-theme-ready) #appView:not([hidden]) {
+        visibility:hidden !important;
+      }
+      html.nw-theme-ready #appView:not([hidden]) {
+        visibility:visible !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  if (theme === "dark") {
+    document.documentElement.classList.add("nw-theme-ready");
+    return;
+  }
+
+  let link = document.getElementById(FINAL_LIGHT_STYLE_ID);
+  if (!link) {
+    link = document.createElement("link");
+    link.id = FINAL_LIGHT_STYLE_ID;
+    link.rel = "stylesheet";
+    link.href = "./css/light-theme-final.css?v=20260831-2";
+    document.head.appendChild(link);
+  }
+
+  const markReady = () => document.documentElement.classList.add("nw-theme-ready");
+  if (link.sheet) markReady();
+  else link.addEventListener("load", markReady, { once: true });
+  window.setTimeout(markReady, 1400);
+}
+
+bootstrapThemeBeforeApp();
+
+const SAVE_GUARD_VERSION = "20260831-1";
 let bindTimer = null;
 
 function getApi() {
