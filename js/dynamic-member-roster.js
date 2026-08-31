@@ -1,5 +1,8 @@
 const api = window.NineworksFirebase;
 
+const CORE_MEMBER_ORDER = ["박재영", "박상혁", "박지완"];
+const CORE_MEMBER_KEYS = new Set(CORE_MEMBER_ORDER.map((name) => name.replace(/\s+/g, "").toLowerCase()));
+
 let currentUser = null;
 let currentUserName = "";
 let members = [];
@@ -30,24 +33,21 @@ function activeMemberNames() {
   const unique = new Map();
 
   members
-    .filter((member) => member.active !== false && member.name)
-    .sort((a, b) => {
-      if (a.role === "owner" && b.role !== "owner") return -1;
-      if (a.role !== "owner" && b.role === "owner") return 1;
-      return String(a.name).localeCompare(String(b.name), "ko");
-    })
+    .filter((member) => member.active !== false && member.name && CORE_MEMBER_KEYS.has(normalizedName(member.name)))
     .forEach((member) => {
       const name = String(member.name).trim();
       const key = normalizedName(name);
       if (key && !unique.has(key)) unique.set(key, name);
     });
 
-  if (currentUserName) {
+  if (currentUserName && CORE_MEMBER_KEYS.has(normalizedName(currentUserName))) {
     const key = normalizedName(currentUserName);
     if (key && !unique.has(key)) unique.set(key, currentUserName);
   }
 
-  return [...unique.values()];
+  return CORE_MEMBER_ORDER
+    .map((preferred) => unique.get(normalizedName(preferred)))
+    .filter(Boolean);
 }
 
 function optionMarkup(value, label = value, disabled = false) {
@@ -59,7 +59,7 @@ function expectedOptions(config, names) {
   if (config.includeAll) options.push({ value: "all", label: "전체 담당자" });
   names.forEach((name) => options.push({ value: name, label: name }));
   if (config.includeUnassigned) options.push({ value: "미지정", label: "미지정" });
-  if (!options.length) options.push({ value: "", label: "가입된 팀원이 없습니다", disabled: true });
+  if (!options.length) options.push({ value: "", label: "연결된 담당자가 없습니다", disabled: true });
   return options;
 }
 
@@ -110,7 +110,7 @@ function renderMemberRoster() {
   const names = activeMemberNames();
   SELECT_CONFIGS.forEach((config) => updateSelect(config, names));
   window.dispatchEvent(new CustomEvent("nineworks:members-updated", {
-    detail: { names, members: members.map((member) => ({ ...member })) }
+    detail: { names, members: members.filter((member) => names.includes(member.name)).map((member) => ({ ...member })) }
   }));
 }
 
