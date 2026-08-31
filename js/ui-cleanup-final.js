@@ -1,5 +1,6 @@
 import "./simple-event-form.js?v=20260831-2";
 import "./assignment-alerts.js?v=20260831-1";
+import "./settings-requests-v2.js?v=20260831-1";
 
 (() => {
   "use strict";
