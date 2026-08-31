@@ -1,6 +1,6 @@
 const summaryStyle = document.createElement("link");
 summaryStyle.rel = "stylesheet";
-summaryStyle.href = new URL("../css/calendar-summary-grid.css?v=20260803-1", import.meta.url).href;
+summaryStyle.href = new URL("../css/calendar-summary-grid.css?v=20260831-2", import.meta.url).href;
 document.head.appendChild(summaryStyle);
 
 let unsubscribeWeeklyEvents = null;
@@ -61,8 +61,9 @@ function ensureSummaryLayout() {
   layout.dataset.summaryLayout = "true";
   layout.querySelectorAll(".calendar-resize-handle").forEach((element) => element.remove());
 
-  if (!document.querySelector("#weeklyWorkPanel")) {
-    const panel = document.createElement("section");
+  let panel = document.querySelector("#weeklyWorkPanel");
+  if (!panel) {
+    panel = document.createElement("section");
     panel.id = "weeklyWorkPanel";
     panel.className = "panel side-panel";
     panel.innerHTML = `
@@ -75,8 +76,10 @@ function ensureSummaryLayout() {
       </div>
       <div id="weeklyWorkList" class="compact-list"></div>
     `;
-    side.appendChild(panel);
   }
+
+  // Weekly work is the primary summary, so keep it first even when other modules re-render the side area.
+  if (side.firstElementChild !== panel) side.insertBefore(panel, side.firstElementChild);
 
   window.setTimeout(() => window.dispatchEvent(new Event("resize")), 80);
   return true;
@@ -84,10 +87,6 @@ function ensureSummaryLayout() {
 
 function weeklyEventMarkup(event) {
   const start = event.start || event.end;
-  const time = event.allDay === false || event.startTime
-    ? `${event.startTime || ""}${event.endTime ? `–${event.endTime}` : ""}`
-    : "종일";
-  const star = event.category === "미팅" ? '<span class="weekly-work-item__star">★</span>' : "";
   return `
     <button class="weekly-work-item" type="button" data-open-event="${escapeHtml(event.id)}">
       <span class="weekly-work-item__date">
@@ -95,8 +94,8 @@ function weeklyEventMarkup(event) {
         <strong>${escapeHtml(shortDateLabel(start))}</strong>
       </span>
       <span class="weekly-work-item__body">
-        <strong class="weekly-work-item__title">${star}${escapeHtml(event.title || "일정")}</strong>
-        <small class="weekly-work-item__meta">${escapeHtml([event.client, event.member, time].filter(Boolean).join(" · "))}</small>
+        <strong class="weekly-work-item__title">${escapeHtml(event.title || "일정")}</strong>
+        <small class="weekly-work-item__meta">${escapeHtml([event.client, event.member].filter(Boolean).join(" · "))}</small>
       </span>
     </button>
   `;
@@ -114,11 +113,7 @@ function renderWeeklyEvents() {
       const eventEnd = event.end || event.start || "";
       return event.status !== "done" && eventStart <= end && eventEnd >= start;
     })
-    .sort((a, b) => {
-      const dateCompare = String(a.start || "").localeCompare(String(b.start || ""));
-      if (dateCompare) return dateCompare;
-      return String(a.startTime || "00:00").localeCompare(String(b.startTime || "00:00"));
-    });
+    .sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")));
 
   count.textContent = String(events.length);
   list.innerHTML = events.length
@@ -164,7 +159,7 @@ function initializeSummaryGrid() {
       layout.querySelectorAll(".calendar-resize-handle").forEach((element) => element.remove());
       ensureSummaryLayout();
     });
-    observer.observe(layout, { childList: true, subtree: false });
+    observer.observe(layout, { childList: true, subtree: true });
   }
 
   renderWeeklyEvents();
