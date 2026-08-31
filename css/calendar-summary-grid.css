@@ -40,7 +40,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: #3b3b43 transparent;
+  scrollbar-color: #c8ced8 transparent;
 }
 
 .calendar-layout[data-summary-layout="true"] .schedule-side .compact-list::-webkit-scrollbar {
@@ -49,7 +49,7 @@
 
 .calendar-layout[data-summary-layout="true"] .schedule-side .compact-list::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: #3b3b43;
+  background: #c8ced8;
 }
 
 .calendar-resize-handle {
@@ -75,22 +75,22 @@
 }
 
 .weekly-work-item:hover .weekly-work-item__title {
-  color: #ffffff;
+  color: var(--primary);
 }
 
 .weekly-work-item__date {
   display: grid;
   gap: 1px;
-  color: #879cff;
+  color: var(--primary);
   font-size: 11px;
   font-weight: 650;
   line-height: 1.3;
 }
 
 .weekly-work-item__date strong {
-  color: #d8dfff;
+  color: var(--text);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .weekly-work-item__body {
@@ -106,22 +106,30 @@
 }
 
 .weekly-work-item__title {
-  color: #eeeeF2;
+  color: var(--text);
   font-size: 13px;
-  font-weight: 550;
+  font-weight: 600;
   line-height: 1.4;
   transition: color 140ms ease;
 }
 
 .weekly-work-item__meta {
   margin-top: 4px;
-  color: #8e8e98;
+  color: var(--muted);
   font-size: 11px;
 }
 
 .weekly-work-item__star {
   margin-right: 4px;
-  color: #ffd166;
+  color: #d9a000;
+}
+
+html[data-theme="dark"] .calendar-layout[data-summary-layout="true"] .schedule-side .compact-list {
+  scrollbar-color: #3b3b43 transparent;
+}
+
+html[data-theme="dark"] .calendar-layout[data-summary-layout="true"] .schedule-side .compact-list::-webkit-scrollbar-thumb {
+  background: #3b3b43;
 }
 
 @media (max-width: 1080px) {
