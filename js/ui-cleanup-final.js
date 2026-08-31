@@ -1,4 +1,5 @@
-import "./simple-event-form.js?v=20260831-1";
+import "./simple-event-form.js?v=20260831-2";
+import "./assignment-alerts.js?v=20260831-1";
 
 (() => {
   "use strict";
@@ -47,6 +48,40 @@ import "./simple-event-form.js?v=20260831-1";
         }
         html[data-theme="light"] .client-progress-button strong { color:#344054 !important; }
         html[data-theme="light"] .client-progress-button small { color:#667085 !important; }
+
+        /* Calendar filter labels are wrappers, not input boxes. Remove the inherited white outer box. */
+        html[data-theme="light"] #calendarPage .calendar-toolbar .filter-group .select-control {
+          display:grid !important;
+          gap:6px !important;
+          border:0 !important;
+          border-radius:0 !important;
+          padding:0 !important;
+          background:transparent !important;
+          box-shadow:none !important;
+          color:#475467 !important;
+        }
+        html[data-theme="light"] #calendarPage .calendar-toolbar .filter-group .select-control > span {
+          margin:0 !important;
+          color:#596273 !important;
+          font-size:11px !important;
+          font-weight:650 !important;
+          line-height:1.2 !important;
+        }
+        html[data-theme="light"] #calendarPage .calendar-toolbar .filter-group .select-control select {
+          min-width:145px !important;
+          min-height:40px !important;
+          margin:0 !important;
+          border:1px solid #d7dce3 !important;
+          border-radius:9px !important;
+          padding:0 34px 0 12px !important;
+          background-color:#fff !important;
+          color:#344054 !important;
+          box-shadow:none !important;
+        }
+        #calendarPage .calendar-toolbar .filter-group {
+          align-items:end !important;
+          gap:10px !important;
+        }
       `;
       document.head.appendChild(style);
     }
