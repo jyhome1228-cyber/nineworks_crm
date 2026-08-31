@@ -83,6 +83,61 @@ import "./settings-requests-v2.js?v=20260831-2";
           align-items:end !important;
           gap:10px !important;
         }
+
+        /* Calendar events need to stand apart from the tinted today cell. */
+        html[data-theme="light"] #calendar .fc-daygrid-event,
+        html[data-theme="light"] #calendar .fc-timegrid-event,
+        html[data-theme="light"] #calendar .fc-event {
+          border:1px solid #d7dde6 !important;
+          border-left:3px solid #98a2b3 !important;
+          border-radius:9px !important;
+          background:#ffffff !important;
+          background-image:none !important;
+          color:#1f2937 !important;
+          box-shadow:0 1px 2px rgba(16,24,40,.06) !important;
+          opacity:1 !important;
+        }
+        html[data-theme="light"] #calendar .fc-event.event-status-progress { border-left-color:#315eea !important; }
+        html[data-theme="light"] #calendar .fc-event.event-status-review { border-left-color:#7555c7 !important; }
+        html[data-theme="light"] #calendar .fc-event.event-status-done { border-left-color:#17825b !important; }
+        html[data-theme="light"] #calendar .fc-event.event-status-planned { border-left-color:#667085 !important; }
+
+        html[data-theme="light"] #calendar .nw-client-badge {
+          border:1px solid #cfd5de !important;
+          background:#f2f4f7 !important;
+          color:#344054 !important;
+          font-weight:700 !important;
+        }
+        html[data-theme="light"] #calendar .event-status-progress .nw-client-badge {
+          border-color:#b8c8fb !important;
+          background:#e8efff !important;
+          color:#234fc4 !important;
+        }
+        html[data-theme="light"] #calendar .event-status-review .nw-client-badge {
+          border-color:#d8c8f7 !important;
+          background:#f0eaff !important;
+          color:#6241b1 !important;
+        }
+        html[data-theme="light"] #calendar .event-status-done .nw-client-badge {
+          border-color:#b9ddcc !important;
+          background:#e7f5ed !important;
+          color:#116847 !important;
+        }
+        html[data-theme="light"] #calendar .nw-task-title,
+        html[data-theme="light"] #calendar .nw-event-title {
+          color:#182230 !important;
+          font-weight:650 !important;
+          opacity:1 !important;
+        }
+        html[data-theme="light"] #calendar .nw-event-note {
+          color:#586474 !important;
+          opacity:1 !important;
+        }
+        html[data-theme="light"] #calendar .fc-event:hover {
+          border-color:#b9c2cf !important;
+          background:#fbfcfe !important;
+          box-shadow:0 2px 6px rgba(16,24,40,.09) !important;
+        }
       `;
       document.head.appendChild(style);
     }
