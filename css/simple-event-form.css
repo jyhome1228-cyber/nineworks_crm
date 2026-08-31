@@ -5,7 +5,8 @@
 }
 
 #eventForm.simple-event-form .simple-client-grid {
-  grid-template-columns: 1fr !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
 }
 
 #eventForm.simple-event-form .simple-hidden-field,
@@ -88,4 +89,10 @@ html[data-theme="light"] #eventForm.simple-event-form textarea {
 html[data-theme="light"] #eventForm.simple-event-form input::placeholder,
 html[data-theme="light"] #eventForm.simple-event-form textarea::placeholder {
   color: #98a2b3 !important;
+}
+
+@media (max-width: 640px) {
+  #eventForm.simple-event-form .simple-client-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
