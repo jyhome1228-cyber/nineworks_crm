@@ -1,0 +1,91 @@
+/* NINEWORKS CRM — simple date-only schedule form */
+
+#eventForm.simple-event-form {
+  gap: 18px;
+}
+
+#eventForm.simple-event-form .simple-client-grid {
+  grid-template-columns: 1fr !important;
+}
+
+#eventForm.simple-event-form .simple-hidden-field,
+#eventForm.simple-event-form #eventTimeSection,
+#eventForm.simple-event-form #eventReminderSection,
+#eventForm.simple-event-form .event-period-guide,
+#eventForm.simple-event-form .nw-time-section,
+#eventForm.simple-event-form .nw-event-reminder-section,
+#eventForm.simple-event-form .nw-time-section__optional-help,
+#eventForm.simple-event-form .nw-event-reminder-optional-help {
+  display: none !important;
+}
+
+#eventForm.simple-event-form .field > span {
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+#eventForm.simple-event-form input,
+#eventForm.simple-event-form select,
+#eventForm.simple-event-form textarea {
+  border-radius: 10px;
+}
+
+#eventForm.simple-event-form #eventTitle {
+  min-height: 48px;
+  font-size: 14px;
+}
+
+#eventForm.simple-event-form #eventMemo,
+#eventForm.simple-event-form #eventReferenceText {
+  min-height: 132px;
+  line-height: 1.65;
+}
+
+#eventForm.simple-event-form #eventReferenceText {
+  min-height: 110px;
+}
+
+#eventForm.simple-event-form .event-reference-help {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+#eventForm.simple-event-form .drawer__actions {
+  margin-top: 4px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+}
+
+/* No hourly scheduling UI anywhere in the drawer. */
+#eventDrawer #eventTimeSection,
+#eventDrawer #eventReminderSection {
+  display: none !important;
+}
+
+/* Week view is day-grid based; hide accidental time-grid remnants if a stale instance survives cache. */
+#calendar .fc-timegrid-slot,
+#calendar .fc-timegrid-axis,
+#calendar .fc-timegrid-divider {
+  color: var(--muted);
+}
+
+html[data-theme="light"] #eventForm.simple-event-form .field > span {
+  color: #475467 !important;
+}
+
+html[data-theme="light"] #eventForm.simple-event-form input,
+html[data-theme="light"] #eventForm.simple-event-form select,
+html[data-theme="light"] #eventForm.simple-event-form textarea {
+  border-color: #d8dde5 !important;
+  background: #fff !important;
+  color: #17191d !important;
+}
+
+html[data-theme="light"] #eventForm.simple-event-form input::placeholder,
+html[data-theme="light"] #eventForm.simple-event-form textarea::placeholder {
+  color: #98a2b3 !important;
+}
