@@ -24,6 +24,7 @@ import "./finance-monthly-simple.js?v=20260807-1";
 import "./finance-monthly-auto-received.js?v=20260807-2";
 import "./finance-receivable-semantics.js?v=20260807-1";
 import "./ui-cleanup-final.js?v=20260831-2";
+import "./client-business-registry.js?v=20260831-1";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
   getAuth,
