@@ -11,7 +11,7 @@
     const link = document.createElement("link");
     link.id = STYLE_ID;
     link.rel = "stylesheet";
-    link.href = new URL("../css/simple-event-form.css?v=20260831-1", import.meta.url).href;
+    link.href = new URL("../css/simple-event-form.css?v=20260831-2", import.meta.url).href;
     document.head.appendChild(link);
   }
 
@@ -127,7 +127,7 @@
 
     const member = $("#eventMember");
     if (member) {
-      member.required = false;
+      member.required = true;
       if (!member.value && member.options.length) member.value = member.options[0].value;
     }
 
@@ -175,6 +175,7 @@
 
     setFieldLabel("#eventTitle", "업무 제목", "업무 제목을 입력하세요");
     setFieldLabel("#eventClient", "클라이언트");
+    setFieldLabel("#eventMember", "담당자");
     setFieldLabel("#eventMemo", "내용", "해야 할 업무 내용이나 전달사항을 입력하세요.");
 
     const reference = ensureReferenceField();
@@ -189,11 +190,15 @@
 
     const client = $("#eventClient")?.closest(".field");
     const category = $("#eventCategory")?.closest(".field");
+    const member = $("#eventMember")?.closest(".field");
     const clientGrid = client?.parentElement;
-    if (clientGrid?.classList.contains("form-grid")) clientGrid.classList.add("simple-client-grid");
+    if (clientGrid?.classList.contains("form-grid")) {
+      clientGrid.classList.add("simple-client-grid");
+      if (member && member.parentElement !== clientGrid) clientGrid.appendChild(member);
+    }
     category?.classList.add("simple-hidden-field");
+    member?.classList.remove("simple-hidden-field");
 
-    hideField("#eventMember");
     hideField("#eventStatus");
     hideField("#eventLink");
 
