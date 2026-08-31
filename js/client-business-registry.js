@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const REGISTRY_VERSION = "20260831-1";
+  const REGISTRY_VERSION = "20260831-2";
   const REGISTRATIONS = [
     {
       displayName: "건강미",
@@ -52,6 +52,8 @@
   let clients = [];
   let unsubscribeClients = null;
   let syncRunning = false;
+  let tableObserver = null;
+  let modalObserver = null;
 
   function normalize(value = "") {
     return String(value)
@@ -172,13 +174,23 @@
 
   function enhanceClientRows() {
     document.querySelectorAll("#clientTableBody tr").forEach((row) => {
-      if (row.dataset.businessRegistryReady === "true") return;
       const nameNode = row.querySelector(".client-name");
       if (!nameNode) return;
       const client = clients.find((item) => normalize(item.name) === normalize(nameNode.textContent));
       const businessNumber = client?.businessNumber || client?.businessRegistrationNumber;
-      if (!businessNumber) return;
-      row.dataset.businessRegistryReady = "true";
+      const existingLabel = row.querySelector(".client-business-number");
+
+      if (!businessNumber) {
+        existingLabel?.remove();
+        return;
+      }
+
+      if (existingLabel) {
+        const nextText = `사업자 ${businessNumber}`;
+        if (existingLabel.textContent !== nextText) existingLabel.textContent = nextText;
+        return;
+      }
+
       const label = document.createElement("small");
       label.className = "client-business-number";
       label.textContent = `사업자 ${businessNumber}`;
@@ -186,10 +198,28 @@
     });
   }
 
+  function businessPanelMarkup(client, registry) {
+    const value = (key, fallback = "-") => client[key] || registry[key] || fallback;
+    return `
+      <div class="client-business-panel__head"><strong>사업자등록 정보</strong><span>사업자등록증 확인</span></div>
+      <div class="client-business-grid">
+        <div class="client-business-item"><span>등록번호</span><strong>${value("businessNumber", registry.businessNumber)}</strong></div>
+        <div class="client-business-item"><span>상호</span><strong>${value("legalName", registry.legalName)}</strong></div>
+        <div class="client-business-item"><span>대표자</span><strong>${value("representative", registry.representative)}</strong></div>
+        <div class="client-business-item"><span>개업일</span><strong>${value("openingDate", registry.openingDate)}</strong></div>
+        <div class="client-business-item is-wide"><span>사업장 주소</span><strong>${value("businessAddress", registry.address)}</strong></div>
+        <div class="client-business-item"><span>업태</span><strong>${value("businessType", registry.businessType)}</strong></div>
+        <div class="client-business-item"><span>종목</span><strong>${value("businessItem", registry.businessItem)}</strong></div>
+        <div class="client-business-item"><span>발급일</span><strong>${value("businessRegistrationIssueDate", registry.issueDate)}</strong></div>
+        <div class="client-business-item"><span>관할 세무서</span><strong>${value("taxOffice", registry.taxOffice)}</strong></div>
+      </div>`;
+  }
+
   function renderBusinessPanel() {
     const modal = document.querySelector("#clientQuickModal");
     const grid = modal?.querySelector(".crm-form-grid");
     if (!modal || !grid || modal.hidden) return;
+
     const id = document.querySelector("#clientQuickId")?.value || "";
     const client = clients.find((item) => item.id === id);
     const registry = registrationForClient(client);
@@ -207,31 +237,35 @@
       grid.appendChild(panel);
     }
 
-    const value = (key, fallback = "-") => client[key] || registry[key] || fallback;
-    panel.innerHTML = `
-      <div class="client-business-panel__head"><strong>사업자등록 정보</strong><span>사업자등록증 확인</span></div>
-      <div class="client-business-grid">
-        <div class="client-business-item"><span>등록번호</span><strong>${value("businessNumber", registry.businessNumber)}</strong></div>
-        <div class="client-business-item"><span>상호</span><strong>${value("legalName", registry.legalName)}</strong></div>
-        <div class="client-business-item"><span>대표자</span><strong>${value("representative", registry.representative)}</strong></div>
-        <div class="client-business-item"><span>개업일</span><strong>${value("openingDate", registry.openingDate)}</strong></div>
-        <div class="client-business-item is-wide"><span>사업장 주소</span><strong>${value("businessAddress", registry.address)}</strong></div>
-        <div class="client-business-item"><span>업태</span><strong>${value("businessType", registry.businessType)}</strong></div>
-        <div class="client-business-item"><span>종목</span><strong>${value("businessItem", registry.businessItem)}</strong></div>
-        <div class="client-business-item"><span>발급일</span><strong>${value("businessRegistrationIssueDate", registry.issueDate)}</strong></div>
-        <div class="client-business-item"><span>관할 세무서</span><strong>${value("taxOffice", registry.taxOffice)}</strong></div>
-      </div>`;
+    const nextMarkup = businessPanelMarkup(client, registry);
+    if (panel.innerHTML !== nextMarkup) panel.innerHTML = nextMarkup;
   }
 
-  function observeUi() {
-    const observer = new MutationObserver(() => {
-      enhanceClientRows();
-      renderBusinessPanel();
-    });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
+  function bindTargetedObservers() {
+    tableObserver?.disconnect();
+    modalObserver?.disconnect();
+
+    const tableBody = document.querySelector("#clientTableBody");
+    if (tableBody) {
+      tableObserver = new MutationObserver(() => requestAnimationFrame(enhanceClientRows));
+      tableObserver.observe(tableBody, { childList: true, subtree: true });
+    }
+
+    const modal = document.querySelector("#clientQuickModal");
+    if (modal) {
+      modalObserver = new MutationObserver(() => {
+        if (!modal.hidden) requestAnimationFrame(renderBusinessPanel);
+      });
+      modalObserver.observe(modal, { attributes: true, attributeFilter: ["hidden"] });
+    }
+  }
+
+  function bindClicks() {
+    if (document.documentElement.dataset.businessRegistryClicksBound === "true") return;
+    document.documentElement.dataset.businessRegistryClicksBound = "true";
     document.addEventListener("click", (event) => {
       if (event.target.closest("[data-client-progress], #addClientButton")) {
-        window.setTimeout(renderBusinessPanel, 100);
+        window.setTimeout(renderBusinessPanel, 80);
       }
     }, true);
   }
@@ -248,6 +282,7 @@
         requestAnimationFrame(() => {
           enhanceClientRows();
           renderBusinessPanel();
+          bindTargetedObservers();
         });
       },
       (error) => console.warn("사업자정보용 클라이언트 구독 실패", error)
@@ -270,7 +305,8 @@
 
   function init() {
     injectStyle();
-    observeUi();
+    bindClicks();
+    bindTargetedObservers();
     connect();
   }
 
