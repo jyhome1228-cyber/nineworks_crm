@@ -1,3 +1,5 @@
+import "./simple-event-form.js?v=20260831-1";
+
 (() => {
   "use strict";
 
