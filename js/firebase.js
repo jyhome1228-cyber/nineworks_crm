@@ -23,7 +23,7 @@ import "./finance-management-v3.js?v=20260807-1";
 import "./finance-monthly-simple.js?v=20260807-1";
 import "./finance-monthly-auto-received.js?v=20260807-2";
 import "./finance-receivable-semantics.js?v=20260807-1";
-import "./ui-cleanup-final.js?v=20260831-1";
+import "./ui-cleanup-final.js?v=20260831-2";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
   getAuth,
@@ -157,14 +157,14 @@ queueMicrotask(async () => {
   import("./team-signup.js?v=20260803-1").catch((error) => console.warn("팀원 가입 모듈 로드 실패", error));
 
   import("./team-enhancements.js")
-    .then(() => import("./dynamic-member-roster.js?v=20260803-1"))
+    .then(() => import("./dynamic-member-roster.js?v=20260831-1"))
     .catch((error) => console.warn("가입 팀원 담당자 목록 모듈 로드 실패", error));
 
   import("./interface-fixes.js").catch((error) => console.warn("인터페이스 보정 모듈 로드 실패", error));
   import("./goals.js").catch((error) => console.warn("목표일정 모듈 로드 실패", error));
   import("./calendar-resize-share.js?v=20260803-1").catch((error) => console.warn("캘린더 공유·크기 조절 모듈 로드 실패", error));
   import("./task-completion.js").catch((error) => console.warn("일정 완료 기능 모듈 로드 실패", error));
-  import("./calendar-summary-grid.js?v=20260803-1").catch((error) => console.warn("캘린더 요약 레이아웃 모듈 로드 실패", error));
+  import("./calendar-summary-grid.js?v=20260831-2").catch((error) => console.warn("캘린더 요약 레이아웃 모듈 로드 실패", error));
   import("./browser-reminders-v2.js?v=20260803-2")
     .then(() => Promise.all([
       import("./reminder-settings-page.js?v=20260803-1"),
