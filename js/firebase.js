@@ -2,7 +2,6 @@ import "./fullcalendar-native-events.js?v=20260803-1";
 import "./calendar-save-guard.js?v=20260817-1";
 import "./calendar-past-week-collapse.js?v=20260810-1";
 import "./calendar-duration-resize.js?v=20260804-4";
-import "./time-setting-ui-v2.js?v=20260803-1";
 import "./calendar-visual-polish.js?v=20260804-2";
 import "./calendar-card-hierarchy.js?v=20260803-3";
 import "./my-dashboard.js?v=20260824-1";
@@ -24,7 +23,7 @@ import "./finance-management-v3.js?v=20260807-1";
 import "./finance-monthly-simple.js?v=20260807-1";
 import "./finance-monthly-auto-received.js?v=20260807-2";
 import "./finance-receivable-semantics.js?v=20260807-1";
-import "./ui-cleanup-final.js?v=20260830-4";
+import "./ui-cleanup-final.js?v=20260831-1";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
   getAuth,
@@ -169,8 +168,7 @@ queueMicrotask(async () => {
   import("./browser-reminders-v2.js?v=20260803-2")
     .then(() => Promise.all([
       import("./reminder-settings-page.js?v=20260803-1"),
-      import("./reminder-sound-repeat.js?v=20260803-1"),
-      import("./optional-schedule-settings.js?v=20260803-1")
+      import("./reminder-sound-repeat.js?v=20260803-1")
     ]))
     .catch((error) => console.warn("개인 알림 관리 모듈 로드 실패", error));
 });
