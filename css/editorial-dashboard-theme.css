@@ -1,0 +1,853 @@
+/* NINEWORKS CRM — Editorial Project Dashboard Theme
+   Reference direction: document-led project dashboard, hairline grid, restrained grayscale.
+   Applies to light theme only. Dark theme remains available. */
+
+html[data-theme="light"] {
+  --editorial-bg: #f3f3f0;
+  --editorial-surface: #fafaf7;
+  --editorial-surface-strong: #ffffff;
+  --editorial-subtle: #f0f0ec;
+  --editorial-line: #d9d9d3;
+  --editorial-line-soft: #e7e7e2;
+  --editorial-text: #161616;
+  --editorial-text-soft: #545450;
+  --editorial-muted: #969690;
+  --editorial-accent: #171717;
+  --editorial-blue: #315eea;
+  --editorial-green: #21815b;
+  --editorial-purple: #7554b8;
+  --editorial-orange: #b97722;
+
+  --bg: var(--editorial-bg) !important;
+  --bg-deep: #ecece8 !important;
+  --surface: var(--editorial-surface) !important;
+  --surface-2: #f5f5f1 !important;
+  --surface-3: #efefeb !important;
+  --line: var(--editorial-line) !important;
+  --line-soft: var(--editorial-line-soft) !important;
+  --text: var(--editorial-text) !important;
+  --text-soft: var(--editorial-text-soft) !important;
+  --muted: var(--editorial-muted) !important;
+  --primary: var(--editorial-accent) !important;
+  --primary-hover: #000 !important;
+  --primary-soft: #ecece7 !important;
+  --radius-sm: 3px !important;
+  --radius: 3px !important;
+  --radius-lg: 4px !important;
+  --shadow: none !important;
+}
+
+/* ---------------------------------------------------------
+   Global canvas / typography
+   --------------------------------------------------------- */
+html[data-theme="light"],
+html[data-theme="light"] body,
+html[data-theme="light"] .app,
+html[data-theme="light"] .app-content,
+html[data-theme="light"] .page {
+  background: var(--editorial-bg) !important;
+  color: var(--editorial-text) !important;
+}
+
+html[data-theme="light"] body {
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -0.022em;
+}
+
+html[data-theme="light"] .ambient { display: none !important; }
+
+html[data-theme="light"] .app-content {
+  width: min(calc(100% - 64px), 1460px) !important;
+  padding: 46px 0 96px !important;
+}
+
+html[data-theme="light"] .eyebrow,
+html[data-theme="light"] [class*="__eyebrow"] {
+  margin-bottom: 8px !important;
+  color: #85857f !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  line-height: 1.3 !important;
+  letter-spacing: .13em !important;
+  text-transform: uppercase;
+}
+
+html[data-theme="light"] .page-heading {
+  align-items: end !important;
+  margin-bottom: 28px !important;
+  padding: 0 0 26px !important;
+  border-bottom: 1px solid var(--editorial-line) !important;
+}
+
+html[data-theme="light"] .page-heading h1 {
+  max-width: 920px;
+  color: var(--editorial-text) !important;
+  font-size: clamp(38px, 4vw, 56px) !important;
+  font-weight: 720 !important;
+  line-height: 1.06 !important;
+  letter-spacing: -.055em !important;
+}
+
+html[data-theme="light"] .page-heading p:not(.eyebrow) {
+  max-width: 760px;
+  margin-top: 14px !important;
+  color: #686862 !important;
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+}
+
+html[data-theme="light"] .section-title h2,
+html[data-theme="light"] .panel-heading h2,
+html[data-theme="light"] .v2-panel-head h2,
+html[data-theme="light"] .qa-panel-head h2,
+html[data-theme="light"] .worklog-panel-head h2,
+html[data-theme="light"] .finance-panel-head h2 {
+  color: var(--editorial-text) !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
+  letter-spacing: -.025em !important;
+}
+
+/* ---------------------------------------------------------
+   Header / navigation
+   --------------------------------------------------------- */
+html[data-theme="light"] .topbar {
+  height: 70px !important;
+  border-bottom: 1px solid var(--editorial-line) !important;
+  background: rgba(248, 248, 245, .96) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+html[data-theme="light"] .topbar__inner {
+  width: min(calc(100% - 64px), 1460px) !important;
+}
+
+html[data-theme="light"] .brand-logo {
+  filter: none !important;
+}
+
+html[data-theme="light"] .main-nav {
+  gap: 1px !important;
+  margin-left: 42px !important;
+}
+
+html[data-theme="light"] .main-nav .nav-link {
+  min-height: 36px !important;
+  border: 0 !important;
+  border-radius: 2px !important;
+  padding: 0 12px !important;
+  background: transparent !important;
+  color: #6d6d68 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="light"] .main-nav .nav-link:hover {
+  background: #efefeb !important;
+  color: #20201f !important;
+}
+
+html[data-theme="light"] .main-nav .nav-link.is-active {
+  background: #e9e9e5 !important;
+  color: #121212 !important;
+}
+
+html[data-theme="light"] .search-box {
+  height: 36px !important;
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 2px !important;
+  background: #fbfbf8 !important;
+}
+
+html[data-theme="light"] .icon-button,
+html[data-theme="light"] .v2-theme-toggle {
+  border-color: var(--editorial-line) !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .profile-button {
+  border: 0 !important;
+  border-radius: 2px !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .profile-button__avatar {
+  background: #171717 !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .profile-button__text strong { color: #2a2a28 !important; }
+html[data-theme="light"] .profile-button__text small { color: #8e8e88 !important; }
+
+/* ---------------------------------------------------------
+   Core surfaces / controls
+   --------------------------------------------------------- */
+html[data-theme="light"] .panel,
+html[data-theme="light"] .summary-card,
+html[data-theme="light"] [class*="summary-card"],
+html[data-theme="light"] .table-panel,
+html[data-theme="light"] .workspace-content,
+html[data-theme="light"] .calendar-main,
+html[data-theme="light"] .side-panel,
+html[data-theme="light"] .v2-stat,
+html[data-theme="light"] .v2-dashboard-panel,
+html[data-theme="light"] .qa-compact-card,
+html[data-theme="light"] .qa-detail-panel,
+html[data-theme="light"] .qa-compact-toolbar,
+html[data-theme="light"] .qa-qa-guide,
+html[data-theme="light"] .finance-summary-card,
+html[data-theme="light"] .worklog-summary-card {
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 0 !important;
+  background: var(--editorial-surface) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .button {
+  min-height: 39px !important;
+  border-radius: 2px !important;
+  padding-inline: 14px !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html[data-theme="light"] .button--primary {
+  border: 1px solid #171717 !important;
+  background: #171717 !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .button--primary:hover {
+  border-color: #000 !important;
+  background: #000 !important;
+}
+
+html[data-theme="light"] .button--ghost,
+html[data-theme="light"] .text-button {
+  border-color: var(--editorial-line) !important;
+  background: transparent !important;
+  color: #575752 !important;
+}
+
+html[data-theme="light"] .button--ghost:hover {
+  border-color: #b9b9b2 !important;
+  background: #f0f0ec !important;
+  color: #161616 !important;
+}
+
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea,
+html[data-theme="light"] .table-toolbar input,
+html[data-theme="light"] .qa-search,
+html[data-theme="light"] .qa-compact-search,
+html[data-theme="light"] .finance-search,
+html[data-theme="light"] .worklog-filter input,
+html[data-theme="light"] .worklog-filter select {
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 1px !important;
+  background: #fbfbf8 !important;
+  color: #252523 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] input:focus,
+html[data-theme="light"] select:focus,
+html[data-theme="light"] textarea:focus {
+  border-color: #8f8f88 !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 1px #8f8f88 !important;
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #aaa9a3 !important;
+}
+
+html[data-theme="light"] .field > span,
+html[data-theme="light"] .select-control > span,
+html[data-theme="light"] [class*="field"] > span {
+  color: #7d7d77 !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  letter-spacing: .025em;
+}
+
+/* ---------------------------------------------------------
+   Calendar / schedule
+   --------------------------------------------------------- */
+html[data-theme="light"] .calendar-toolbar {
+  margin-bottom: 12px !important;
+  padding: 0 0 12px !important;
+  border-bottom: 1px solid var(--editorial-line-soft) !important;
+}
+
+html[data-theme="light"] #calendarPage .select-control {
+  gap: 6px !important;
+}
+
+html[data-theme="light"] #calendarPage .select-control select {
+  min-height: 38px !important;
+  border-radius: 1px !important;
+  background: #fafaf7 !important;
+}
+
+html[data-theme="light"] .calendar-legend {
+  color: #85857f !important;
+  font-size: 10px !important;
+}
+
+html[data-theme="light"] .calendar-main {
+  padding: 18px !important;
+  background: #fbfbf8 !important;
+}
+
+html[data-theme="light"] .fc {
+  --fc-border-color: #ddddD7 !important;
+  --fc-page-bg-color: #fbfbf8 !important;
+  --fc-neutral-bg-color: #f2f2ee !important;
+  --fc-today-bg-color: #f1f1ed !important;
+}
+
+html[data-theme="light"] .fc .fc-toolbar {
+  margin-bottom: 16px !important;
+}
+
+html[data-theme="light"] .fc .fc-toolbar-title {
+  color: #1a1a19 !important;
+  font-size: 18px !important;
+  font-weight: 680 !important;
+  letter-spacing: -.035em !important;
+}
+
+html[data-theme="light"] .fc .fc-button {
+  min-height: 34px !important;
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 1px !important;
+  padding: 0 10px !important;
+  background: transparent !important;
+  color: #5e5e59 !important;
+  font-size: 10.5px !important;
+}
+
+html[data-theme="light"] .fc .fc-button:hover,
+html[data-theme="light"] .fc .fc-button.fc-button-active {
+  border-color: #171717 !important;
+  background: #171717 !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .fc .fc-col-header-cell,
+html[data-theme="light"] .fc .fc-scrollgrid-section-header th {
+  background: #f1f1ed !important;
+}
+
+html[data-theme="light"] .fc .fc-col-header-cell-cushion {
+  padding: 12px 0 !important;
+  color: #4d4d49 !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-day-number {
+  padding: 8px !important;
+  color: #666660 !important;
+  font-size: 10.5px !important;
+  font-weight: 550 !important;
+}
+
+html[data-theme="light"] .fc .fc-day-today {
+  background: #f0f0ec !important;
+  box-shadow: inset 0 2px 0 #171717 !important;
+}
+
+html[data-theme="light"] .fc .fc-day-today .fc-daygrid-day-number {
+  color: #171717 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="light"] .fc .fc-day-other {
+  background: #f7f7f4 !important;
+}
+
+html[data-theme="light"] .fc .fc-day-other .fc-daygrid-day-number {
+  color: #b3b3ad !important;
+}
+
+/* Event cards: white document rows with status line only. */
+html[data-theme="light"] .fc .fc-daygrid-event,
+html[data-theme="light"] .fc .fc-timegrid-event,
+html[data-theme="light"] .fc .fc-event {
+  border: 1px solid #ddddD7 !important;
+  border-left-width: 3px !important;
+  border-radius: 1px !important;
+  background: #fdfdfb !important;
+  color: #171717 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .fc .event-status-planned { border-left-color: #92928c !important; }
+html[data-theme="light"] .fc .event-status-progress { border-left-color: #315eea !important; }
+html[data-theme="light"] .fc .event-status-review { border-left-color: #7554b8 !important; }
+html[data-theme="light"] .fc .event-status-done { border-left-color: #21815b !important; }
+
+html[data-theme="light"] .fc .nw-client-badge {
+  min-height: 20px !important;
+  border: 1px solid #d5d5cf !important;
+  border-radius: 999px !important;
+  padding: 2px 7px !important;
+  background: #f1f1ed !important;
+  color: #4d4d48 !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+}
+
+html[data-theme="light"] .fc .nw-task-title {
+  color: #181817 !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+}
+
+html[data-theme="light"] .fc .nw-event-note {
+  color: #797973 !important;
+  font-size: 10px !important;
+}
+
+html[data-theme="light"] #clientDragSection,
+html[data-theme="light"] .client-drag-section {
+  margin-top: 14px !important;
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 0 !important;
+  padding: 18px 20px 14px !important;
+  background: #fafaf7 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .client-drag-section__head {
+  margin-bottom: 14px !important;
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid var(--editorial-line-soft) !important;
+}
+
+html[data-theme="light"] .client-drag-section__head h2 {
+  color: #1c1c1b !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
+}
+
+html[data-theme="light"] .client-drag-chip {
+  min-height: 31px !important;
+  border: 1px solid #d5d5cf !important;
+  border-radius: 999px !important;
+  padding: 0 11px !important;
+  background: transparent !important;
+  color: #4c4c48 !important;
+  font-size: 10.5px !important;
+}
+
+html[data-theme="light"] .client-drag-chip:hover {
+  border-color: #171717 !important;
+  background: #171717 !important;
+  color: #fff !important;
+}
+
+/* ---------------------------------------------------------
+   Summary / dashboard / my page
+   --------------------------------------------------------- */
+html[data-theme="light"] .summary-grid,
+html[data-theme="light"] .v2-dashboard-grid,
+html[data-theme="light"] .qa-summary,
+html[data-theme="light"] .finance-summary,
+html[data-theme="light"] .worklog-summary {
+  gap: 0 !important;
+}
+
+html[data-theme="light"] .summary-card,
+html[data-theme="light"] .v2-stat,
+html[data-theme="light"] .qa-summary-card,
+html[data-theme="light"] .finance-summary-card,
+html[data-theme="light"] .worklog-summary-card {
+  min-height: 108px !important;
+  border-right: 0 !important;
+  border-radius: 0 !important;
+  padding: 16px 18px !important;
+}
+
+html[data-theme="light"] .summary-card:last-child,
+html[data-theme="light"] .v2-stat:last-child,
+html[data-theme="light"] .qa-summary-card:last-child,
+html[data-theme="light"] .finance-summary-card:last-child,
+html[data-theme="light"] .worklog-summary-card:last-child {
+  border-right: 1px solid var(--editorial-line) !important;
+}
+
+html[data-theme="light"] .summary-card span,
+html[data-theme="light"] .v2-stat span,
+html[data-theme="light"] [class*="summary-card"] span {
+  color: #8a8a84 !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+html[data-theme="light"] .summary-card strong,
+html[data-theme="light"] .v2-stat strong,
+html[data-theme="light"] [class*="summary-card"] strong {
+  color: #1a1a18 !important;
+  font-size: 28px !important;
+  font-weight: 620 !important;
+  letter-spacing: -.045em !important;
+}
+
+html[data-theme="light"] .workspace-tabs,
+html[data-theme="light"] .v2-settings-tabs {
+  gap: 0 !important;
+  border-bottom: 1px solid var(--editorial-line) !important;
+}
+
+html[data-theme="light"] .workspace-tab,
+html[data-theme="light"] .v2-settings-tab {
+  border-radius: 0 !important;
+  padding: 11px 14px !important;
+  background: transparent !important;
+  color: #7a7a74 !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="light"] .workspace-tab.is-active,
+html[data-theme="light"] .v2-settings-tab.is-active {
+  border-bottom: 1px solid #171717 !important;
+  background: transparent !important;
+  color: #171717 !important;
+}
+
+html[data-theme="light"] .v2-dashboard-panel,
+html[data-theme="light"] .workspace-content {
+  overflow: hidden;
+}
+
+html[data-theme="light"] .v2-panel-head,
+html[data-theme="light"] .panel-heading,
+html[data-theme="light"] .section-title {
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid var(--editorial-line-soft) !important;
+}
+
+html[data-theme="light"] .v2-work-row,
+html[data-theme="light"] .line-item,
+html[data-theme="light"] .compact-item,
+html[data-theme="light"] .todo-item,
+html[data-theme="light"] .request-row {
+  border-color: var(--editorial-line-soft) !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .count-badge,
+html[data-theme="light"] .nw-request-count {
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: #545450 !important;
+}
+
+/* ---------------------------------------------------------
+   Clients / tables / business registry
+   --------------------------------------------------------- */
+html[data-theme="light"] .table-panel {
+  overflow: hidden;
+}
+
+html[data-theme="light"] .table-toolbar {
+  min-height: 58px !important;
+  border-bottom: 1px solid var(--editorial-line) !important;
+  background: #f8f8f5 !important;
+}
+
+html[data-theme="light"] .data-table {
+  border-collapse: collapse !important;
+}
+
+html[data-theme="light"] .data-table th {
+  border-bottom: 1px solid var(--editorial-line) !important;
+  background: #f0f0ec !important;
+  color: #777771 !important;
+  font-size: 9.5px !important;
+  font-weight: 650 !important;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+html[data-theme="light"] .data-table td {
+  border-bottom: 1px solid var(--editorial-line-soft) !important;
+  background: transparent !important;
+  color: #53534e !important;
+  font-size: 11px !important;
+}
+
+html[data-theme="light"] .data-table tr:hover td {
+  background: #f4f4f0 !important;
+}
+
+html[data-theme="light"] .client-name {
+  color: #1f1f1e !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+}
+
+html[data-theme="light"] .client-chip,
+html[data-theme="light"] .client-business-number,
+html[data-theme="light"] .finance-contract-type-badge {
+  color: #777771 !important;
+  font-size: 9.5px !important;
+}
+
+html[data-theme="light"] .client-progress-button {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  text-align: left !important;
+}
+
+html[data-theme="light"] .client-business-panel {
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 0 !important;
+  background: #f4f4f0 !important;
+}
+
+/* ---------------------------------------------------------
+   Settings / requests
+   --------------------------------------------------------- */
+html[data-theme="light"] .settings-page .page-heading {
+  margin-bottom: 18px !important;
+}
+
+html[data-theme="light"] .nw-settings-requests {
+  gap: 14px !important;
+}
+
+html[data-theme="light"] .nw-request-panel {
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 0 !important;
+  background: #fafaf7 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .nw-request-panel__head {
+  min-height: 62px !important;
+  border-bottom: 1px solid var(--editorial-line) !important;
+  background: #f6f6f2 !important;
+}
+
+html[data-theme="light"] .nw-request-panel__title h2 {
+  color: #1a1a19 !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
+}
+
+html[data-theme="light"] .nw-request-row {
+  border-bottom: 1px solid var(--editorial-line-soft) !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .nw-request-row:hover {
+  background: #f4f4f0 !important;
+}
+
+html[data-theme="light"] .nw-request-status,
+html[data-theme="light"] .nw-request-action {
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .nw-request-action.is-primary {
+  border-color: #171717 !important;
+  background: #171717 !important;
+  color: #fff !important;
+}
+
+/* ---------------------------------------------------------
+   QA
+   --------------------------------------------------------- */
+html[data-theme="light"] .qa-page.qa-compact-active .qa-heading h1 {
+  font-size: clamp(38px, 4vw, 54px) !important;
+}
+
+html[data-theme="light"] .qa-qa-guide,
+html[data-theme="light"] .qa-compact-toolbar,
+html[data-theme="light"] .qa-compact-card,
+html[data-theme="light"] .qa-detail-head,
+html[data-theme="light"] .qa-detail-panel,
+html[data-theme="light"] .qa-modal,
+html[data-theme="light"] .qa-method,
+html[data-theme="light"] .qa-beginner-check,
+html[data-theme="light"] .qa-shop-guide,
+html[data-theme="light"] .qa-site-card,
+html[data-theme="light"] .qa-report-panel {
+  border-color: var(--editorial-line) !important;
+  border-radius: 0 !important;
+  background: #fafaf7 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .qa-compact-grid {
+  gap: 10px !important;
+}
+
+html[data-theme="light"] .qa-compact-card {
+  min-height: 194px !important;
+  padding: 18px !important;
+}
+
+html[data-theme="light"] .qa-compact-card h3,
+html[data-theme="light"] .qa-detail-head h2,
+html[data-theme="light"] .qa-detail-panel__head h3 {
+  color: #1d1d1b !important;
+}
+
+html[data-theme="light"] .qa-detail-link,
+html[data-theme="light"] .qa-detail-select,
+html[data-theme="light"] .qa-filter-chip,
+html[data-theme="light"] .qa-flow-step {
+  border-color: var(--editorial-line) !important;
+  border-radius: 1px !important;
+  background: transparent !important;
+  color: #595954 !important;
+}
+
+/* ---------------------------------------------------------
+   Work journal / finance
+   --------------------------------------------------------- */
+html[data-theme="light"] .worklog-panel,
+html[data-theme="light"] .finance-panel,
+html[data-theme="light"] .finance-modal {
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 0 !important;
+  background: #fafaf7 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .worklog-panel-head,
+html[data-theme="light"] .finance-panel-head,
+html[data-theme="light"] .qa-panel-head,
+html[data-theme="light"] .qa-detail-panel__head {
+  border-bottom: 1px solid var(--editorial-line) !important;
+  background: #f7f7f3 !important;
+}
+
+html[data-theme="light"] .worklog-card,
+html[data-theme="light"] .finance-contract-row,
+html[data-theme="light"] .finance-ledger-row,
+html[data-theme="light"] .qa-issue-row {
+  border-color: var(--editorial-line-soft) !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .worklog-card:hover,
+html[data-theme="light"] .finance-contract-row:hover,
+html[data-theme="light"] .finance-ledger-row:hover,
+html[data-theme="light"] .qa-issue-row:hover {
+  background: #f3f3ef !important;
+}
+
+html[data-theme="light"] .worklog-type,
+html[data-theme="light"] .worklog-tag,
+html[data-theme="light"] .finance-ledger-type,
+html[data-theme="light"] .finance-contract-status,
+html[data-theme="light"] .finance-phase em {
+  border-color: var(--editorial-line) !important;
+  background: transparent !important;
+  color: #666660 !important;
+}
+
+/* ---------------------------------------------------------
+   Drawers / modals
+   --------------------------------------------------------- */
+html[data-theme="light"] .drawer,
+html[data-theme="light"] .modal,
+html[data-theme="light"] .qa-modal,
+html[data-theme="light"] .finance-modal,
+html[data-theme="light"] .crm-form-modal,
+html[data-theme="light"] #clientQuickModal {
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 0 !important;
+  background: #fafaf7 !important;
+  color: #1b1b1a !important;
+  box-shadow: -18px 0 60px rgba(25, 25, 20, .08) !important;
+}
+
+html[data-theme="light"] .drawer__header,
+html[data-theme="light"] .modal__header,
+html[data-theme="light"] .qa-modal-head,
+html[data-theme="light"] .finance-modal-head,
+html[data-theme="light"] .crm-form-head {
+  border-bottom: 1px solid var(--editorial-line) !important;
+}
+
+html[data-theme="light"] .drawer-backdrop,
+html[data-theme="light"] .modal-backdrop,
+html[data-theme="light"] .qa-modal-backdrop,
+html[data-theme="light"] .finance-backdrop,
+html[data-theme="light"] .crm-form-backdrop {
+  background: rgba(25,25,22,.16) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+/* One deliberate black information block, echoing CLIENT NOTICE. */
+html[data-theme="light"] .settings-page .v2-settings-card[data-emphasis="notice"],
+html[data-theme="light"] .client-notice,
+html[data-theme="light"] .project-notice {
+  border-color: #171717 !important;
+  background: #171717 !important;
+  color: #f5f5f2 !important;
+}
+
+/* ---------------------------------------------------------
+   Responsive
+   --------------------------------------------------------- */
+@media (max-width: 1080px) {
+  html[data-theme="light"] .app-content,
+  html[data-theme="light"] .topbar__inner {
+    width: min(calc(100% - 36px), 1460px) !important;
+  }
+
+  html[data-theme="light"] .page-heading h1 {
+    font-size: clamp(34px, 5vw, 48px) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  html[data-theme="light"] .app-content {
+    width: calc(100% - 24px) !important;
+    padding-top: 28px !important;
+  }
+
+  html[data-theme="light"] .topbar__inner {
+    width: calc(100% - 24px) !important;
+  }
+
+  html[data-theme="light"] .page-heading {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    padding-bottom: 20px !important;
+  }
+
+  html[data-theme="light"] .page-heading h1 {
+    font-size: 34px !important;
+  }
+
+  html[data-theme="light"] .panel,
+  html[data-theme="light"] .calendar-main,
+  html[data-theme="light"] #clientDragSection,
+  html[data-theme="light"] .client-drag-section {
+    border-radius: 0 !important;
+  }
+}
