@@ -1,0 +1,150 @@
+/* NINEWORKS CRM — compact editorial calendar details */
+html[data-theme="light"] .fc .fc-daygrid-day-events {
+  margin: 2px 4px 5px !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-event-harness {
+  margin-top: 2px !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-event,
+html[data-theme="light"] .fc .fc-timegrid-event,
+html[data-theme="light"] .fc .fc-event {
+  box-sizing: border-box !important;
+  height: auto !important;
+  min-height: 36px !important;
+  max-height: 44px !important;
+  overflow: hidden !important;
+  border: 1px solid #d8d8d2 !important;
+  border-left-width: 2px !important;
+  border-radius: 2px !important;
+  padding: 5px 7px !important;
+  background: #fdfdfb !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .fc .fc-event:hover {
+  border-color: #bdbdb6 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .fc .event-status-planned { border-left-color: #85857f !important; }
+html[data-theme="light"] .fc .event-status-progress { border-left-color: #315eea !important; }
+html[data-theme="light"] .fc .event-status-review { border-left-color: #7554b8 !important; }
+html[data-theme="light"] .fc .event-status-done { border-left-color: #21815b !important; }
+
+html[data-theme="light"] .fc .nw-event-content {
+  height: auto !important;
+  min-height: 24px !important;
+  justify-content: center !important;
+  gap: 2px !important;
+}
+
+html[data-theme="light"] .fc .nw-event-title {
+  gap: 6px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-theme="light"] .fc .nw-client-badge {
+  flex: 0 0 auto !important;
+  max-width: 84px !important;
+  min-height: 18px !important;
+  border: 1px solid #cfd1d4 !important;
+  border-radius: 2px !important;
+  padding: 1px 5px !important;
+  background: transparent !important;
+  color: #5a6470 !important;
+  font-size: 9.5px !important;
+  font-weight: 650 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -.015em !important;
+}
+
+html[data-theme="light"] .fc .event-status-progress .nw-client-badge {
+  border-color: #b8c7ef !important;
+  color: #3157bd !important;
+}
+
+html[data-theme="light"] .fc .event-status-review .nw-client-badge {
+  border-color: #d1c5e9 !important;
+  color: #6b4ca4 !important;
+}
+
+html[data-theme="light"] .fc .event-status-done .nw-client-badge {
+  border-color: #bfd8ca !important;
+  color: #247254 !important;
+}
+
+html[data-theme="light"] .fc .nw-task-title {
+  min-width: 0 !important;
+  color: #20242a !important;
+  font-size: 11.5px !important;
+  font-weight: 620 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -.025em !important;
+}
+
+html[data-theme="light"] .fc .nw-event-note {
+  display: block !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  padding-left: 0 !important;
+  color: #7c7c76 !important;
+  font-size: 9.5px !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="light"] .fc .event-status-done .nw-task-title,
+html[data-theme="light"] .fc .event-status-done .nw-event-note {
+  color: #83837e !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-day-number {
+  padding: 7px 8px 5px !important;
+  font-size: 10px !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-day-frame {
+  min-height: 112px !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-more-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 23px !important;
+  margin: 2px 4px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: #696963 !important;
+  font-size: 9.5px !important;
+  font-weight: 650 !important;
+}
+
+html[data-theme="light"] .fc .fc-daygrid-more-link:hover {
+  color: #171717 !important;
+}
+
+@media (max-width: 900px) {
+  html[data-theme="light"] .fc .fc-daygrid-event,
+  html[data-theme="light"] .fc .fc-event {
+    min-height: 33px !important;
+    max-height: 40px !important;
+    padding: 4px 6px !important;
+  }
+
+  html[data-theme="light"] .fc .nw-client-badge {
+    max-width: 68px !important;
+    min-height: 17px !important;
+    font-size: 9px !important;
+  }
+
+  html[data-theme="light"] .fc .nw-task-title {
+    font-size: 10.5px !important;
+  }
+}
