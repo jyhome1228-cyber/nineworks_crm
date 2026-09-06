@@ -1,4 +1,4 @@
-/* NINEWORKS CRM — prevent route-time legacy style flashes */
+/* NINEWORKS CRM — runtime stability and native calendar geometry */
 html[data-theme="light"] .page.is-active {
   animation: none !important;
 }
@@ -12,13 +12,11 @@ html[data-theme="light"] .table-panel {
   background-image: none !important;
 }
 
-/* No tween through legacy colors during route/module changes. */
 html[data-theme="light"] .page *,
 html[data-theme="light"] .topbar * {
   transition: none !important;
 }
 
-/* Brief neutral mask while the active page changes so legacy module paint is never visible. */
 html[data-theme="light"].nw-route-switching body::after {
   content: "";
   position: fixed;
@@ -28,9 +26,9 @@ html[data-theme="light"].nw-route-switching body::after {
   pointer-events: none;
 }
 
-/* Final monthly calendar density and alignment. */
+/* FullCalendar owns event coordinates. Do not force top/left/height on harnesses. */
 html[data-theme="light"] #calendar .fc-daygrid-day-frame {
-  min-height: 108px !important;
+  min-height: 112px !important;
   height: auto !important;
 }
 
@@ -44,47 +42,46 @@ html[data-theme="light"] #calendar .fc-daygrid-day-number {
 }
 
 html[data-theme="light"] #calendar .fc-daygrid-day-events {
-  margin: 2px 0 4px !important;
   min-height: 0 !important;
+  margin: 3px 4px 6px !important;
   overflow: visible !important;
 }
 
-html[data-theme="light"] #calendar .fc-daygrid-event-harness,
-html[data-theme="light"] #calendar .fc-daygrid-event-harness + .fc-daygrid-event-harness {
-  margin-top: 0 !important;
+html[data-theme="light"] #calendar .fc-daygrid-event-harness {
+  margin-top: 2px !important;
   margin-bottom: 0 !important;
 }
 
-html[data-theme="light"] #calendar .fc-daygrid-event-harness-abs {
-  left: 5px !important;
-  right: 5px !important;
-  width: auto !important;
-}
-
+/* Compact but readable event cards. Outer event stays overflow-visible for the resize handle. */
 html[data-theme="light"] #calendar .fc-daygrid-event,
 html[data-theme="light"] #calendar .fc-timegrid-event,
 html[data-theme="light"] #calendar .fc-event,
 html[data-theme="light"] #calendar .fc-h-event {
   box-sizing: border-box !important;
-  display: flex !important;
-  height: 31px !important;
-  min-height: 31px !important;
-  max-height: 31px !important;
-  align-items: center !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
   margin: 0 !important;
-  padding: 0 8px !important;
+  padding: 0 !important;
   border-radius: 9px !important;
   line-height: 1.1 !important;
-  overflow: hidden !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-event,
+html[data-theme="light"] #calendar .fc-h-event {
+  overflow: visible !important;
 }
 
 html[data-theme="light"] #calendar .fc-event-main,
 html[data-theme="light"] #calendar .fc-event-main-frame {
+  box-sizing: border-box !important;
   display: flex !important;
   width: 100% !important;
   min-width: 0 !important;
   height: 100% !important;
   align-items: center !important;
+  padding: 0 8px !important;
+  border-radius: inherit !important;
   overflow: hidden !important;
 }
 
@@ -92,7 +89,6 @@ html[data-theme="light"] #calendar .nw-event-content {
   display: flex !important;
   width: 100% !important;
   min-width: 0 !important;
-  min-height: 0 !important;
   height: 100% !important;
   align-items: center !important;
   justify-content: flex-start !important;
@@ -123,6 +119,8 @@ html[data-theme="light"] #calendar .nw-client-badge {
   font-size: 10px !important;
   font-weight: 650 !important;
   line-height: 18px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
 
@@ -141,21 +139,22 @@ html[data-theme="light"] #calendar .nw-event-note {
   display: none !important;
 }
 
-/* Every event should remain visible in month view; no +more affordance. */
+/* dayMaxEvents is disabled in JS; keep any stale more-link hidden defensively. */
 html[data-theme="light"] #calendar .fc-daygrid-more-link,
 html[data-theme="light"] #calendar .fc-more-link {
   display: none !important;
 }
 
-html[data-theme="light"] #calendar .fc-scroller,
-html[data-theme="light"] #calendar .fc-scroller-harness,
-html[data-theme="light"] #calendar .fc-scroller-harness-liquid {
-  overflow: visible !important;
+/* Drag / resize feedback must remain above adjacent cards. */
+html[data-theme="light"] #calendar .fc-event-dragging,
+html[data-theme="light"] #calendar .fc-event-resizing,
+html[data-theme="light"] #calendar .is-custom-resizing {
+  z-index: 100 !important;
 }
 
 @media (max-width: 900px) {
   html[data-theme="light"] #calendar .fc-daygrid-day-frame {
-    min-height: 96px !important;
+    min-height: 100px !important;
   }
 
   html[data-theme="light"] #calendar .fc-daygrid-event,
@@ -164,6 +163,10 @@ html[data-theme="light"] #calendar .fc-scroller-harness-liquid {
     height: 30px !important;
     min-height: 30px !important;
     max-height: 30px !important;
+  }
+
+  html[data-theme="light"] #calendar .fc-event-main,
+  html[data-theme="light"] #calendar .fc-event-main-frame {
     padding: 0 7px !important;
   }
 
