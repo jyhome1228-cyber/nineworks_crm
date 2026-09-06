@@ -97,6 +97,7 @@ function bootstrapThemeBeforeApp() {
 }
 
 bootstrapThemeBeforeApp();
+window.setTimeout(() => document.documentElement.classList.add("nw-auth-resolved"), 2200);
 
 const SAVE_GUARD_VERSION = "20260906-4";
 let bindTimer = null;
