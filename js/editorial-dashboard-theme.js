@@ -4,21 +4,27 @@
   const VERSION = "20260906-7";
 
   function mountEntryLoader() {
-    if (!document.body || document.getElementById("nwEntryLoader")) return;
+    if (!document.body) return;
 
-    const loader = document.createElement("div");
-    loader.id = "nwEntryLoader";
-    loader.className = "nw-entry-loader";
-    loader.setAttribute("role", "status");
-    loader.setAttribute("aria-live", "polite");
-    loader.innerHTML = `
-      <div class="nw-entry-loader__inner">
-        <img class="nw-entry-loader__logo" src="./assets/nineworks-logo.svg?v=${VERSION}" alt="NINEWORKS" />
-        <div class="nw-entry-loader__bars" aria-hidden="true"><i></i><i></i><i></i></div>
-        <p class="nw-entry-loader__label">WORKSPACE LOADING</p>
-      </div>
-    `;
-    document.body.prepend(loader);
+    let loader = document.getElementById("nwEntryLoader");
+    if (!loader) {
+      loader = document.createElement("div");
+      loader.id = "nwEntryLoader";
+      loader.className = "nw-entry-loader";
+      loader.setAttribute("role", "status");
+      loader.setAttribute("aria-live", "polite");
+      loader.innerHTML = `
+        <div class="nw-entry-loader__inner">
+          <img class="nw-entry-loader__logo" src="./assets/nineworks-logo.svg?v=${VERSION}" alt="NINEWORKS" />
+          <div class="nw-entry-loader__bars" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="nw-entry-loader__label">WORKSPACE LOADING</p>
+        </div>
+      `;
+      document.body.prepend(loader);
+    }
+
+    if (loader.dataset.bound === "true") return;
+    loader.dataset.bound = "true";
 
     const startedAt = performance.now();
     let finished = false;
