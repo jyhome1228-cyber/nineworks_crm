@@ -28,22 +28,25 @@ html[data-theme="light"].nw-route-switching body::after {
   pointer-events: none;
 }
 
-/* Final monthly calendar density. */
+/* Final monthly calendar density and alignment. */
 html[data-theme="light"] #calendar .fc-daygrid-day-frame {
-  min-height: 82px !important;
+  min-height: 108px !important;
+  height: auto !important;
 }
 
 html[data-theme="light"] #calendar .fc-daygrid-day-top {
-  min-height: 23px !important;
+  min-height: 25px !important;
+  padding: 5px 7px 1px !important;
 }
 
 html[data-theme="light"] #calendar .fc-daygrid-day-number {
-  padding: 5px 6px 2px !important;
+  padding: 0 !important;
 }
 
 html[data-theme="light"] #calendar .fc-daygrid-day-events {
-  margin: 0 3px 2px !important;
+  margin: 2px 0 4px !important;
   min-height: 0 !important;
+  overflow: visible !important;
 }
 
 html[data-theme="light"] #calendar .fc-daygrid-event-harness,
@@ -52,46 +55,120 @@ html[data-theme="light"] #calendar .fc-daygrid-event-harness + .fc-daygrid-event
   margin-bottom: 0 !important;
 }
 
+html[data-theme="light"] #calendar .fc-daygrid-event-harness-abs {
+  left: 5px !important;
+  right: 5px !important;
+  width: auto !important;
+}
+
 html[data-theme="light"] #calendar .fc-daygrid-event,
 html[data-theme="light"] #calendar .fc-timegrid-event,
-html[data-theme="light"] #calendar .fc-event {
-  height: 27px !important;
-  min-height: 27px !important;
-  max-height: 27px !important;
+html[data-theme="light"] #calendar .fc-event,
+html[data-theme="light"] #calendar .fc-h-event {
+  box-sizing: border-box !important;
+  display: flex !important;
+  height: 31px !important;
+  min-height: 31px !important;
+  max-height: 31px !important;
+  align-items: center !important;
   margin: 0 !important;
-  padding: 2px 5px !important;
-  border-radius: 6px !important;
+  padding: 0 8px !important;
+  border-radius: 9px !important;
   line-height: 1.1 !important;
+  overflow: hidden !important;
+}
+
+html[data-theme="light"] #calendar .fc-event-main,
+html[data-theme="light"] #calendar .fc-event-main-frame {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  align-items: center !important;
+  overflow: hidden !important;
 }
 
 html[data-theme="light"] #calendar .nw-event-content {
-  min-height: 18px !important;
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
   gap: 0 !important;
+  overflow: hidden !important;
 }
 
 html[data-theme="light"] #calendar .nw-event-title {
-  gap: 4px !important;
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  align-items: center !important;
+  gap: 6px !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
 }
 
 html[data-theme="light"] #calendar .nw-client-badge {
-  min-height: 15px !important;
-  padding: 0 4px !important;
-  font-size: 8.5px !important;
-  line-height: 13px !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  max-width: 88px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 6px !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  line-height: 18px !important;
+  white-space: nowrap !important;
 }
 
 html[data-theme="light"] #calendar .nw-task-title,
 html[data-theme="light"] #calendar .fc-event-title {
-  font-size: 10.5px !important;
+  min-width: 0 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
   line-height: 1.15 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
 html[data-theme="light"] #calendar .nw-event-note {
   display: none !important;
 }
 
+/* Every event should remain visible in month view; no +more affordance. */
+html[data-theme="light"] #calendar .fc-daygrid-more-link,
+html[data-theme="light"] #calendar .fc-more-link {
+  display: none !important;
+}
+
+html[data-theme="light"] #calendar .fc-scroller,
+html[data-theme="light"] #calendar .fc-scroller-harness,
+html[data-theme="light"] #calendar .fc-scroller-harness-liquid {
+  overflow: visible !important;
+}
+
 @media (max-width: 900px) {
   html[data-theme="light"] #calendar .fc-daygrid-day-frame {
-    min-height: 76px !important;
+    min-height: 96px !important;
+  }
+
+  html[data-theme="light"] #calendar .fc-daygrid-event,
+  html[data-theme="light"] #calendar .fc-event,
+  html[data-theme="light"] #calendar .fc-h-event {
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    padding: 0 7px !important;
+  }
+
+  html[data-theme="light"] #calendar .nw-task-title,
+  html[data-theme="light"] #calendar .fc-event-title {
+    font-size: 12px !important;
   }
 }
