@@ -5,6 +5,7 @@
   const CALENDAR_DETAIL_STYLE_ID = "nineworks-calendar-editorial-detail";
   const UNIVERSAL_SYSTEM_STYLE_ID = "nineworks-seed-universal-system";
   const DETAIL_REFINEMENT_STYLE_ID = "nineworks-ui-detail-refinements";
+  const QUICK_SCHEDULE_STYLE_ID = "nineworks-quick-schedule-input";
 
   function ensureEditorialStyle() {
     let link = document.getElementById(STYLE_ID);
@@ -54,19 +55,33 @@
     return link;
   }
 
+  function ensureQuickScheduleStyle() {
+    let link = document.getElementById(QUICK_SCHEDULE_STYLE_ID);
+    if (!link) {
+      link = document.createElement("link");
+      link.id = QUICK_SCHEDULE_STYLE_ID;
+      link.rel = "stylesheet";
+      link.href = new URL("../css/quick-schedule-input.css?v=20260906-1", import.meta.url).href;
+      document.head.appendChild(link);
+    }
+    return link;
+  }
+
   function ensureThemeStackIsLast() {
     const editorial = ensureEditorialStyle();
     const calendarDetail = ensureCalendarDetailStyle();
     const universalSystem = ensureUniversalSystemStyle();
     const detailRefinement = ensureDetailRefinementStyle();
+    const quickSchedule = ensureQuickScheduleStyle();
     const children = Array.from(document.head.children);
-    const tail = children.slice(-4);
+    const tail = children.slice(-5);
 
     if (
       tail[0] === editorial &&
       tail[1] === calendarDetail &&
       tail[2] === universalSystem &&
-      tail[3] === detailRefinement
+      tail[3] === detailRefinement &&
+      tail[4] === quickSchedule
     ) {
       return;
     }
@@ -75,6 +90,7 @@
     document.head.appendChild(calendarDetail);
     document.head.appendChild(universalSystem);
     document.head.appendChild(detailRefinement);
+    document.head.appendChild(quickSchedule);
   }
 
   function keepStylesLast() {
@@ -98,6 +114,7 @@
     ensureThemeStackIsLast();
     keepStylesLast();
     document.documentElement.classList.add("nw-editorial-dashboard", "nw-universal-system");
+    import("./quick-schedule-input.js?v=20260906-1").catch((error) => console.warn("빠른 일정 입력 모듈 로드 실패", error));
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
