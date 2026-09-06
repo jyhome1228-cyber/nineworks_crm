@@ -38,13 +38,17 @@
   }
 
   function ensureQuickScheduleStyle() {
-    const link = ensureStyle(QUICK_SCHEDULE_STYLE_ID, new URL("../css/quick-schedule-input.css?v=20260906-2", import.meta.url).href);
-    if (!link.href.includes("20260906-2")) link.href = new URL("../css/quick-schedule-input.css?v=20260906-2", import.meta.url).href;
+    const href = new URL("../css/quick-schedule-input.css?v=20260906-2", import.meta.url).href;
+    const link = ensureStyle(QUICK_SCHEDULE_STYLE_ID, href);
+    if (link.href !== href) link.href = href;
     return link;
   }
 
   function ensureCalendarMonochromeStyle() {
-    return ensureStyle(CALENDAR_MONOCHROME_STYLE_ID, new URL("../css/calendar-monochrome-final.css?v=20260906-1", import.meta.url).href);
+    const href = new URL("../css/calendar-monochrome-final.css?v=20260906-2", import.meta.url).href;
+    const link = ensureStyle(CALENDAR_MONOCHROME_STYLE_ID, href);
+    if (link.href !== href) link.href = href;
+    return link;
   }
 
   function ensureEntryLoaderStyle() {
