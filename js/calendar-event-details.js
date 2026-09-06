@@ -2,10 +2,10 @@ const api = window.NineworksFirebase;
 
 const style = document.createElement("link");
 style.rel = "stylesheet";
-style.href = new URL("../css/calendar-event-details.css", import.meta.url).href;
+style.href = new URL("../css/calendar-event-details.css?v=20260907-1", import.meta.url).href;
 document.head.appendChild(style);
 
-const EVENT_LANE_HEIGHT = 58;
+const EVENT_LANE_HEIGHT = 29;
 let events = [];
 let unsubscribeEvents = null;
 let renderQueued = false;
@@ -97,14 +97,14 @@ function restackCalendarEvents() {
       const nextTop = level * EVENT_LANE_HEIGHT;
       const nextTopValue = `${nextTop}px`;
 
-      if (harness.style.top !== nextTopValue) harness.style.top = nextTopValue;
-      harness.style.height = `${EVENT_LANE_HEIGHT - 5}px`;
+      harness.style.setProperty("top", nextTopValue, "important");
+      harness.style.setProperty("height", `${EVENT_LANE_HEIGHT - 2}px`, "important");
       harness.style.zIndex = String(10 + level);
     });
 
-    const requiredHeight = Math.max(EVENT_LANE_HEIGHT, originalTops.length * EVENT_LANE_HEIGHT + 4);
+    const requiredHeight = Math.max(EVENT_LANE_HEIGHT, originalTops.length * EVENT_LANE_HEIGHT + 1);
     row.querySelectorAll(".fc-daygrid-day-events").forEach((container) => {
-      container.style.minHeight = `${requiredHeight}px`;
+      container.style.setProperty("min-height", `${requiredHeight}px`, "important");
     });
   });
 
