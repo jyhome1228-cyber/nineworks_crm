@@ -1,3 +1,4 @@
+import "./calendar-show-all-events.js?v=20260907-3";
 import "./calendar-save-guard.js?v=20260906-4";
 import "./calendar-past-week-collapse.js?v=20260810-1";
 import "./calendar-duration-resize.js?v=20260804-4";
@@ -25,7 +26,7 @@ import "./finance-monthly-auto-received.js?v=20260807-2";
 import "./finance-receivable-semantics.js?v=20260807-1";
 import "./ui-cleanup-final.js?v=20260831-2";
 import "./client-business-registry.js?v=20260831-2";
-import "./editorial-dashboard-theme.js?v=20260907-2";
+import "./editorial-dashboard-theme.js?v=20260907-3";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
   getAuth,
@@ -50,7 +51,7 @@ import {
 
 const interactionStyle = document.createElement("link");
 interactionStyle.rel = "stylesheet";
-interactionStyle.href = new URL("../css/interaction-fixes.css?v=20260907-2", import.meta.url).href;
+interactionStyle.href = new URL("../css/interaction-fixes.css?v=20260907-3", import.meta.url).href;
 document.head.appendChild(interactionStyle);
 
 const firebaseConfig = {
