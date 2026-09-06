@@ -1,0 +1,178 @@
+/* NINEWORKS CRM — quick natural-language schedule composer */
+html[data-theme="light"] .nw-quick-schedule {
+  display: grid;
+  grid-template-columns: minmax(190px, 260px) minmax(0, 1fr);
+  gap: 16px 24px;
+  align-items: center;
+  margin: 0 0 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--nw-border) !important;
+  border-radius: var(--nw-radius-12) !important;
+  background: var(--nw-surface) !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__copy {
+  min-width: 0;
+}
+
+html[data-theme="light"] .nw-quick-schedule__copy .eyebrow {
+  margin-bottom: 5px !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__copy strong {
+  display: block;
+  color: var(--nw-text) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 20px !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__copy small {
+  display: block;
+  margin-top: 4px;
+  color: var(--nw-text-tertiary) !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+html[data-theme="light"] .nw-quick-schedule__input-wrap {
+  display: flex;
+  min-width: 0;
+  height: 44px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 13px;
+  border: 1px solid var(--nw-border) !important;
+  border-radius: var(--nw-radius-10) !important;
+  background: var(--nw-surface) !important;
+  transition: border-color 150ms var(--nw-ease), box-shadow 150ms var(--nw-ease);
+}
+
+html[data-theme="light"] .nw-quick-schedule__input-wrap:focus-within {
+  border-color: var(--nw-text) !important;
+  box-shadow: 0 0 0 1px var(--nw-text) !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__input-wrap svg {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: var(--nw-text-tertiary) !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+html[data-theme="light"] .nw-quick-schedule__input-wrap input,
+html[data-theme="light"] #quickScheduleInput {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--nw-text) !important;
+  font-size: 13px !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__input-wrap input:focus,
+html[data-theme="light"] #quickScheduleInput:focus {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__form .button {
+  min-width: 88px !important;
+  min-height: 44px !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__preview {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  margin-top: -6px;
+}
+
+html[data-theme="light"] .nw-quick-schedule__preview[hidden] {
+  display: none !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__preview span {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  border: 1px solid var(--nw-border) !important;
+  border-radius: var(--nw-radius-full) !important;
+  background: var(--nw-surface-subtle) !important;
+  color: var(--nw-text-secondary) !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__preview b {
+  color: var(--nw-text-tertiary) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__feedback {
+  grid-column: 2;
+  margin: -4px 0 0;
+  color: var(--nw-text-tertiary) !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__feedback.is-error {
+  color: var(--nw-text) !important;
+  font-weight: 500 !important;
+}
+
+@media (max-width: 900px) {
+  html[data-theme="light"] .nw-quick-schedule {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme="light"] .nw-quick-schedule__preview,
+  html[data-theme="light"] .nw-quick-schedule__feedback {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="light"] .nw-quick-schedule {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  html[data-theme="light"] .nw-quick-schedule__form {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme="light"] .nw-quick-schedule__input-wrap {
+    height: 48px;
+  }
+
+  html[data-theme="light"] .nw-quick-schedule__form .button {
+    width: 100%;
+    min-height: 44px !important;
+  }
+}
