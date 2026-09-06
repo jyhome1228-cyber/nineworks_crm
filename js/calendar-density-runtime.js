@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const LANE_HEIGHT = 29;
-  const EVENT_HEIGHT = 27;
+  const LANE_HEIGHT = 27;
+  const EVENT_HEIGHT = 26;
   let queued = false;
   let applying = false;
 
@@ -35,13 +35,16 @@
       const level = levelByTop.get(Math.round(currentTop(harness))) || 0;
       harness.style.setProperty("top", `${level * LANE_HEIGHT}px`, "important");
       harness.style.setProperty("height", `${EVENT_HEIGHT}px`, "important");
+      harness.style.setProperty("min-height", `${EVENT_HEIGHT}px`, "important");
+      harness.style.setProperty("max-height", `${EVENT_HEIGHT}px`, "important");
       harness.style.setProperty("margin-top", "0", "important");
       harness.style.setProperty("margin-bottom", "0", "important");
     });
 
-    const requiredHeight = Math.max(LANE_HEIGHT, tops.length * LANE_HEIGHT + 1);
+    const requiredHeight = Math.max(LANE_HEIGHT, tops.length * LANE_HEIGHT);
     row.querySelectorAll(".fc-daygrid-day-events").forEach((container) => {
       container.style.setProperty("min-height", `${requiredHeight}px`, "important");
+      container.style.setProperty("height", `${requiredHeight}px`, "important");
     });
   }
 
@@ -65,7 +68,7 @@
   function init() {
     const calendar = document.querySelector("#calendar");
     if (!calendar) {
-      window.setTimeout(init, 160);
+      window.setTimeout(init, 120);
       return;
     }
 
@@ -82,13 +85,13 @@
     window.addEventListener("resize", schedule, { passive: true });
     document.addEventListener("click", (event) => {
       if (event.target.closest("[data-route], .fc-button, .nw-past-week-toggle, .nw-past-weeks-all")) {
-        window.setTimeout(schedule, 40);
+        window.setTimeout(schedule, 24);
       }
     }, true);
 
     schedule();
-    window.setTimeout(schedule, 250);
-    window.setTimeout(schedule, 900);
+    window.setTimeout(schedule, 120);
+    window.setTimeout(schedule, 420);
   }
 
   if (document.readyState === "loading") {
