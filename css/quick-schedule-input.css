@@ -40,6 +40,13 @@ html[data-theme="light"] .nw-quick-schedule__form {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   min-width: 0;
+  align-items: start;
+}
+
+html[data-theme="light"] .nw-quick-schedule__input-stack {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
 }
 
 html[data-theme="light"] .nw-quick-schedule__input-wrap {
@@ -100,6 +107,52 @@ html[data-theme="light"] .nw-quick-schedule__form .button {
   min-height: 44px !important;
 }
 
+html[data-theme="light"] .nw-quick-schedule__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+html[data-theme="light"] .nw-quick-schedule__suggestions[hidden] {
+  display: none !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__suggestion {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--nw-border) !important;
+  border-radius: var(--nw-radius-full) !important;
+  padding: 0 10px;
+  background: var(--nw-surface) !important;
+  color: var(--nw-text-secondary) !important;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+html[data-theme="light"] .nw-quick-schedule__suggestion:hover,
+html[data-theme="light"] .nw-quick-schedule__suggestion.is-selected {
+  border-color: var(--nw-text) !important;
+  background: var(--nw-text) !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__suggestion strong {
+  color: inherit !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__suggestion small {
+  color: inherit !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  opacity: .68;
+}
+
 html[data-theme="light"] .nw-quick-schedule__preview {
   grid-column: 2;
   display: flex;
@@ -131,6 +184,19 @@ html[data-theme="light"] .nw-quick-schedule__preview b {
   color: var(--nw-text-tertiary) !important;
   font-size: 10px !important;
   font-weight: 500 !important;
+}
+
+html[data-theme="light"] .nw-quick-schedule__preview em {
+  display: inline-flex;
+  min-height: 18px;
+  align-items: center;
+  border-radius: var(--nw-radius-full);
+  padding: 0 5px;
+  background: #e8e8e3;
+  color: #5f5f59;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
 }
 
 html[data-theme="light"] .nw-quick-schedule__feedback {
