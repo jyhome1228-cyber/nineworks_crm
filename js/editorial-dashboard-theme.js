@@ -4,6 +4,7 @@
   const STYLE_ID = "nineworks-editorial-dashboard-theme";
   const CALENDAR_DETAIL_STYLE_ID = "nineworks-calendar-editorial-detail";
   const UNIVERSAL_SYSTEM_STYLE_ID = "nineworks-seed-universal-system";
+  const DETAIL_REFINEMENT_STYLE_ID = "nineworks-ui-detail-refinements";
 
   function ensureEditorialStyle() {
     let link = document.getElementById(STYLE_ID);
@@ -41,17 +42,31 @@
     return link;
   }
 
+  function ensureDetailRefinementStyle() {
+    let link = document.getElementById(DETAIL_REFINEMENT_STYLE_ID);
+    if (!link) {
+      link = document.createElement("link");
+      link.id = DETAIL_REFINEMENT_STYLE_ID;
+      link.rel = "stylesheet";
+      link.href = new URL("../css/ui-detail-refinements.css?v=20260906-1", import.meta.url).href;
+      document.head.appendChild(link);
+    }
+    return link;
+  }
+
   function ensureThemeStackIsLast() {
     const editorial = ensureEditorialStyle();
     const calendarDetail = ensureCalendarDetailStyle();
     const universalSystem = ensureUniversalSystemStyle();
+    const detailRefinement = ensureDetailRefinementStyle();
     const children = Array.from(document.head.children);
-    const tail = children.slice(-3);
+    const tail = children.slice(-4);
 
     if (
       tail[0] === editorial &&
       tail[1] === calendarDetail &&
-      tail[2] === universalSystem
+      tail[2] === universalSystem &&
+      tail[3] === detailRefinement
     ) {
       return;
     }
@@ -59,6 +74,7 @@
     document.head.appendChild(editorial);
     document.head.appendChild(calendarDetail);
     document.head.appendChild(universalSystem);
+    document.head.appendChild(detailRefinement);
   }
 
   function keepStylesLast() {
