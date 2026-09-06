@@ -1,0 +1,177 @@
+/* NINEWORKS CRM — final calendar monochrome guard
+   This file is intentionally defensive: legacy FullCalendar and feature styles
+   may still inject blue/purple/green values. The calendar must render achromatic. */
+
+html[data-theme="light"] #calendar {
+  --fc-border-color: #deded8 !important;
+  --fc-page-bg-color: #ffffff !important;
+  --fc-neutral-bg-color: #f4f4f1 !important;
+  --fc-neutral-text-color: #70706a !important;
+  --fc-today-bg-color: #f1f1ee !important;
+  --fc-highlight-color: rgba(23,23,23,.055) !important;
+  --fc-event-bg-color: #ffffff !important;
+  --fc-event-border-color: #cfcfc9 !important;
+  --fc-event-text-color: #171717 !important;
+  --fc-button-text-color: #4f4f4a !important;
+  --fc-button-bg-color: #ffffff !important;
+  --fc-button-border-color: #d8d8d2 !important;
+  --fc-button-hover-bg-color: #f2f2ef !important;
+  --fc-button-hover-border-color: #bcbcb6 !important;
+  --fc-button-active-bg-color: #171717 !important;
+  --fc-button-active-border-color: #171717 !important;
+  --fc-now-indicator-color: #171717 !important;
+  filter: grayscale(1) saturate(0) !important;
+}
+
+/* Table grid and weekday header — remove any colored current/selected underline. */
+html[data-theme="light"] #calendar .fc-scrollgrid,
+html[data-theme="light"] #calendar .fc-theme-standard td,
+html[data-theme="light"] #calendar .fc-theme-standard th,
+html[data-theme="light"] #calendar .fc-col-header-cell,
+html[data-theme="light"] #calendar .fc-scrollgrid-section-header th,
+html[data-theme="light"] #calendar .fc-scrollgrid-section-header td,
+html[data-theme="light"] #calendar .fc-daygrid-day {
+  border-color: #deded8 !important;
+  outline-color: #8a8a84 !important;
+}
+
+html[data-theme="light"] #calendar .fc-col-header-cell,
+html[data-theme="light"] #calendar .fc-col-header-cell:first-child,
+html[data-theme="light"] #calendar .fc-col-header-cell:last-child,
+html[data-theme="light"] #calendar .fc-scrollgrid-section-header th {
+  border-bottom-color: #deded8 !important;
+  box-shadow: none !important;
+  background: #f4f4f1 !important;
+  background-image: none !important;
+}
+
+html[data-theme="light"] #calendar .fc-col-header-cell::before,
+html[data-theme="light"] #calendar .fc-col-header-cell::after,
+html[data-theme="light"] #calendar .fc-scrollgrid-section-header th::before,
+html[data-theme="light"] #calendar .fc-scrollgrid-section-header th::after {
+  border-color: #deded8 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] #calendar .fc-col-header-cell-cushion,
+html[data-theme="light"] #calendar .fc-day-header a,
+html[data-theme="light"] #calendar a {
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #575752 !important;
+  text-decoration: none !important;
+}
+
+/* Today is hierarchy by neutral surface and black type only. */
+html[data-theme="light"] #calendar .fc-day-today,
+html[data-theme="light"] #calendar .fc-daygrid-day.fc-day-today,
+html[data-theme="light"] #calendar .fc-timegrid-col.fc-day-today {
+  background: #f1f1ee !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] #calendar .fc-day-today .fc-daygrid-day-number {
+  color: #171717 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="light"] #calendar .fc-highlight,
+html[data-theme="light"] #calendar .fc-bg-event {
+  background: rgba(23,23,23,.055) !important;
+  color: #171717 !important;
+}
+
+/* Toolbar controls. */
+html[data-theme="light"] #calendar .fc-button,
+html[data-theme="light"] #calendar .fc-button-primary,
+html[data-theme="light"] #calendar .nw-past-weeks-all,
+html[data-theme="light"] #calendar .nw-past-week-toggle {
+  border-color: #d8d8d2 !important;
+  background: #ffffff !important;
+  color: #555550 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="light"] #calendar .fc-button:hover,
+html[data-theme="light"] #calendar .fc-button-primary:hover,
+html[data-theme="light"] #calendar .nw-past-weeks-all:hover,
+html[data-theme="light"] #calendar .nw-past-week-toggle:hover,
+html[data-theme="light"] #calendar .nw-past-weeks-all.is-expanded,
+html[data-theme="light"] #calendar .nw-past-week-expanded .nw-past-week-toggle {
+  border-color: #aaa9a3 !important;
+  background: #f2f2ef !important;
+  color: #171717 !important;
+}
+
+html[data-theme="light"] #calendar .fc-button.fc-button-active,
+html[data-theme="light"] #calendar .fc-button-primary.fc-button-active,
+html[data-theme="light"] #calendar .fc-button-primary:not(:disabled).fc-button-active {
+  border-color: #171717 !important;
+  background: #171717 !important;
+  color: #ffffff !important;
+}
+
+/* Event cards: status is conveyed by grayscale weight/pattern, never chroma. */
+html[data-theme="light"] #calendar .fc-event,
+html[data-theme="light"] #calendar .fc-daygrid-event,
+html[data-theme="light"] #calendar .fc-timegrid-event {
+  border-color: #d4d4ce !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #171717 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] #calendar .event-status-planned {
+  border-left-color: #9a9a94 !important;
+  border-left-style: solid !important;
+}
+
+html[data-theme="light"] #calendar .event-status-progress {
+  border-left-color: #171717 !important;
+  border-left-style: solid !important;
+}
+
+html[data-theme="light"] #calendar .event-status-review {
+  border-left-color: #5d5d58 !important;
+  border-left-style: dashed !important;
+}
+
+html[data-theme="light"] #calendar .event-status-done {
+  border-left-color: #b2b2ac !important;
+  border-left-style: solid !important;
+  opacity: .78 !important;
+}
+
+html[data-theme="light"] #calendar .nw-client-badge,
+html[data-theme="light"] #calendar .event-status-progress .nw-client-badge,
+html[data-theme="light"] #calendar .event-status-review .nw-client-badge,
+html[data-theme="light"] #calendar .event-status-done .nw-client-badge {
+  border-color: #d8d8d2 !important;
+  background: #f3f3f0 !important;
+  color: #5e5e59 !important;
+}
+
+html[data-theme="light"] #calendar .nw-task-title,
+html[data-theme="light"] #calendar .fc-event-title {
+  color: #171717 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-note {
+  color: #85857f !important;
+}
+
+/* Defensive neutralization for focus/selection states inside the calendar. */
+html[data-theme="light"] #calendar :focus,
+html[data-theme="light"] #calendar :focus-visible {
+  outline-color: #171717 !important;
+}
+
+html[data-theme="light"] #calendar input,
+html[data-theme="light"] #calendar select,
+html[data-theme="light"] #calendar button {
+  accent-color: #171717 !important;
+}
