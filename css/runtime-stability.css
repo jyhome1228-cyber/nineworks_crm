@@ -12,14 +12,23 @@ html[data-theme="light"] .table-panel {
   background-image: none !important;
 }
 
-/* Avoid a visible transition through stale colors when legacy modules attach styles. */
+/* No tween through legacy colors during route/module changes. */
 html[data-theme="light"] .page *,
 html[data-theme="light"] .topbar * {
-  transition-property: background-color, border-color, color, opacity, transform !important;
-  transition-duration: 120ms !important;
+  transition: none !important;
 }
 
-/* Final monthly calendar density. Loaded after every legacy calendar stylesheet. */
+/* Brief neutral mask while the active page changes so legacy module paint is never visible. */
+html[data-theme="light"].nw-route-switching body::after {
+  content: "";
+  position: fixed;
+  z-index: 9000;
+  inset: 64px 0 0;
+  background: #f7f7f5;
+  pointer-events: none;
+}
+
+/* Final monthly calendar density. */
 html[data-theme="light"] #calendar .fc-daygrid-day-frame {
   min-height: 82px !important;
 }
@@ -39,15 +48,16 @@ html[data-theme="light"] #calendar .fc-daygrid-day-events {
 
 html[data-theme="light"] #calendar .fc-daygrid-event-harness,
 html[data-theme="light"] #calendar .fc-daygrid-event-harness + .fc-daygrid-event-harness {
-  margin-top: 1px !important;
+  margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
 
 html[data-theme="light"] #calendar .fc-daygrid-event,
 html[data-theme="light"] #calendar .fc-timegrid-event,
 html[data-theme="light"] #calendar .fc-event {
-  min-height: 25px !important;
-  max-height: 28px !important;
+  height: 27px !important;
+  min-height: 27px !important;
+  max-height: 27px !important;
   margin: 0 !important;
   padding: 2px 5px !important;
   border-radius: 6px !important;
@@ -83,12 +93,5 @@ html[data-theme="light"] #calendar .nw-event-note {
 @media (max-width: 900px) {
   html[data-theme="light"] #calendar .fc-daygrid-day-frame {
     min-height: 76px !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html[data-theme="light"] .page *,
-  html[data-theme="light"] .topbar * {
-    transition: none !important;
   }
 }
