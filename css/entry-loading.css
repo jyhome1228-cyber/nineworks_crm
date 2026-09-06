@@ -1,0 +1,93 @@
+/* NINEWORKS CRM — entry loading screen */
+.nw-entry-loader {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #f7f7f5;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+.nw-entry-loader.is-leaving {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.nw-entry-loader__inner {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+}
+
+.nw-entry-loader__logo {
+  display: block;
+  width: min(206px, 56vw);
+  height: auto;
+  filter: none;
+  animation: nw-loader-logo 1.15s ease-in-out infinite alternate;
+}
+
+.nw-entry-loader__bars {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 18px;
+}
+
+.nw-entry-loader__bars i {
+  display: block;
+  width: 20px;
+  height: 4px;
+  background: #171717;
+  transform-origin: center;
+  animation: nw-loader-bar 900ms ease-in-out infinite;
+}
+
+.nw-entry-loader__bars i:nth-child(2) { animation-delay: 110ms; }
+.nw-entry-loader__bars i:nth-child(3) { animation-delay: 220ms; }
+
+.nw-entry-loader__label {
+  margin: -2px 0 0;
+  color: #85857f;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: .13em;
+}
+
+html[data-theme="dark"] .nw-entry-loader {
+  background: #151515;
+}
+
+html[data-theme="dark"] .nw-entry-loader__logo {
+  filter: brightness(0) invert(1);
+}
+
+html[data-theme="dark"] .nw-entry-loader__bars i {
+  background: #f2f2ef;
+}
+
+html[data-theme="dark"] .nw-entry-loader__label {
+  color: #898985;
+}
+
+@keyframes nw-loader-logo {
+  from { opacity: .62; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(-2px); }
+}
+
+@keyframes nw-loader-bar {
+  0%, 100% { opacity: .28; transform: scaleX(.72); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nw-entry-loader__logo,
+  .nw-entry-loader__bars i {
+    animation: none !important;
+  }
+}
