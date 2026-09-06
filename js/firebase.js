@@ -1,5 +1,5 @@
 import "./fullcalendar-native-events.js?v=20260803-1";
-import "./calendar-save-guard.js?v=20260817-1";
+import "./calendar-save-guard.js?v=20260906-4";
 import "./calendar-past-week-collapse.js?v=20260810-1";
 import "./calendar-duration-resize.js?v=20260804-4";
 import "./calendar-visual-polish.js?v=20260804-2";
@@ -26,7 +26,7 @@ import "./finance-monthly-auto-received.js?v=20260807-2";
 import "./finance-receivable-semantics.js?v=20260807-1";
 import "./ui-cleanup-final.js?v=20260831-2";
 import "./client-business-registry.js?v=20260831-2";
-import "./editorial-dashboard-theme.js?v=20260906-2";
+import "./editorial-dashboard-theme.js?v=20260906-4";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
   getAuth,
@@ -51,7 +51,7 @@ import {
 
 const interactionStyle = document.createElement("link");
 interactionStyle.rel = "stylesheet";
-interactionStyle.href = new URL("../css/interaction-fixes.css?v=20260803-1", import.meta.url).href;
+interactionStyle.href = new URL("../css/interaction-fixes.css?v=20260906-4", import.meta.url).href;
 document.head.appendChild(interactionStyle);
 
 const firebaseConfig = {
@@ -73,6 +73,16 @@ const authPersistenceReady = setPersistence(auth, browserLocalPersistence)
     console.warn("Firebase 로그인 유지 설정 실패", error);
     return false;
   });
+
+function markAuthResolved() {
+  document.documentElement.classList.add("nw-auth-resolved");
+  document.documentElement.classList.remove("nw-booting");
+}
+
+onAuthStateChanged(auth, markAuthResolved, (error) => {
+  console.warn("Firebase 초기 인증 상태 확인 실패", error);
+  markAuthResolved();
+});
 
 function authErrorMessage(error) {
   const code = String(error?.code || "");
