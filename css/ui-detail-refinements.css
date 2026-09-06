@@ -1,0 +1,143 @@
+/* NINEWORKS CRM — small UI refinements after universal system */
+
+/* Header search: one control, not a bordered parent + bordered input. */
+html[data-theme="light"] .topbar__actions {
+  gap: 8px !important;
+}
+
+html[data-theme="light"] .search-box {
+  box-sizing: border-box !important;
+  width: 196px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  gap: 8px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--nw-border) !important;
+  border-radius: var(--nw-radius-10) !important;
+  background: var(--nw-surface) !important;
+  overflow: hidden !important;
+}
+
+html[data-theme="light"] .search-box svg {
+  flex: 0 0 auto !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+html[data-theme="light"] .search-box input,
+html[data-theme="light"] .search-box input[type="search"] {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--nw-text) !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+html[data-theme="light"] .search-box input:focus,
+html[data-theme="light"] .search-box input[type="search"]:focus {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .search-box input::-webkit-search-decoration,
+html[data-theme="light"] .search-box input::-webkit-search-cancel-button,
+html[data-theme="light"] .search-box input::-webkit-search-results-button,
+html[data-theme="light"] .search-box input::-webkit-search-results-decoration {
+  -webkit-appearance: none !important;
+}
+
+html[data-theme="light"] .icon-button,
+html[data-theme="light"] .v2-theme-toggle {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+/* Client table: metadata should read as metadata, not as an input/chip. */
+html[data-theme="light"] .data-table th {
+  padding: 12px 16px !important;
+  vertical-align: middle !important;
+}
+
+html[data-theme="light"] .data-table td {
+  padding: 14px 16px !important;
+  vertical-align: middle !important;
+}
+
+html[data-theme="light"] .client-name {
+  display: block !important;
+  color: var(--nw-text) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 18px !important;
+}
+
+html[data-theme="light"] .client-business-number {
+  display: block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 4px 0 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--nw-text-tertiary) !important;
+  box-shadow: none !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  line-height: 15px !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="light"] .client-chip {
+  display: inline-flex !important;
+  min-height: 26px !important;
+  align-items: center !important;
+  padding: 0 9px !important;
+  border: 1px solid var(--nw-border) !important;
+  border-radius: var(--nw-radius-full) !important;
+  background: var(--nw-surface) !important;
+  color: var(--nw-text-secondary) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* Business-registration detail panel follows the same monochrome hierarchy. */
+html[data-theme="light"] .client-business-panel {
+  background: var(--nw-surface-subtle) !important;
+}
+
+html[data-theme="light"] .client-business-item span {
+  color: var(--nw-text-tertiary) !important;
+}
+
+html[data-theme="light"] .client-business-item strong {
+  color: var(--nw-text-secondary) !important;
+}
+
+@media (max-width: 1080px) {
+  html[data-theme="light"] .search-box {
+    width: 168px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  html[data-theme="light"] .data-table th,
+  html[data-theme="light"] .data-table td {
+    padding: 12px !important;
+  }
+}
