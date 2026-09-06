@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260906-7";
+  const VERSION = "20260907-1";
 
   function mountEntryLoader() {
     if (!document.body) return;
@@ -53,12 +53,16 @@
     window.setTimeout(finish, 2200);
   }
 
+  function loadModule(path, label) {
+    import(`${path}?v=${VERSION}`).catch((error) => console.warn(`${label} 로드 실패`, error));
+  }
+
   function init() {
     document.documentElement.classList.add("nw-editorial-dashboard", "nw-universal-system");
     mountEntryLoader();
-    import(`./quick-schedule-input.js?v=${VERSION}`).catch((error) => {
-      console.warn("빠른 일정 입력 모듈 로드 실패", error);
-    });
+    loadModule("./quick-schedule-input.js", "빠른 일정 입력 모듈");
+    loadModule("./calendar-density-runtime.js", "캘린더 간격 보정 모듈");
+    loadModule("./route-visual-stability.js", "페이지 전환 안정화 모듈");
   }
 
   if (document.readyState === "loading") {
