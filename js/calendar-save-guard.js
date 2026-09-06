@@ -3,6 +3,29 @@ import "./calendar-layout-order.js?v=20260831-1";
 const THEME_KEY = "nineworks-crm-theme";
 const EARLY_THEME_STYLE_ID = "nineworks-early-theme-style";
 const FINAL_LIGHT_STYLE_ID = "nineworks-light-theme-final";
+const UNIVERSAL_STYLE_ID = "nineworks-seed-universal-system";
+const DETAIL_STYLE_ID = "nineworks-ui-detail-refinements";
+
+function ensureStyle(id, href) {
+  let link = document.getElementById(id);
+  if (!link) {
+    link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = href;
+    document.head.appendChild(link);
+  }
+  return link;
+}
+
+function waitForStyle(link) {
+  if (!link) return Promise.resolve();
+  if (link.sheet) return Promise.resolve();
+  return new Promise((resolve) => {
+    link.addEventListener("load", resolve, { once: true });
+    link.addEventListener("error", resolve, { once: true });
+  });
+}
 
 function bootstrapThemeBeforeApp() {
   const stored = localStorage.getItem(THEME_KEY);
@@ -12,7 +35,7 @@ function bootstrapThemeBeforeApp() {
   const colorScheme = document.querySelector('meta[name="color-scheme"]');
   const themeColor = document.querySelector('meta[name="theme-color"]');
   colorScheme?.setAttribute("content", "light dark");
-  themeColor?.setAttribute("content", theme === "dark" ? "#171719" : "#f4f6f8");
+  themeColor?.setAttribute("content", theme === "dark" ? "#151515" : "#f7f7f5");
 
   if (!document.getElementById(EARLY_THEME_STYLE_ID)) {
     const style = document.createElement("style");
@@ -20,33 +43,40 @@ function bootstrapThemeBeforeApp() {
     style.textContent = `
       html[data-theme="light"],
       html[data-theme="light"] body {
-        background:#f4f6f8 !important;
-        color:#17191d !important;
+        background:#f7f7f5 !important;
+        color:#171717 !important;
       }
       html[data-theme="light"] #loginView,
       html[data-theme="light"] .login-view {
-        background:#f4f6f8 !important;
-        color:#17191d !important;
+        background:#f7f7f5 !important;
+        color:#171717 !important;
       }
       html[data-theme="light"] .login-copy h1,
       html[data-theme="light"] .login-copy p,
       html[data-theme="light"] .login-footer,
       html[data-theme="light"] .field > span {
-        color:#344054 !important;
+        color:#171717 !important;
       }
       html[data-theme="light"] .login-form input {
-        border-color:#d7dce3 !important;
+        border-color:#deded8 !important;
         background:#fff !important;
-        color:#17191d !important;
+        color:#171717 !important;
       }
       html[data-theme="light"] .brand-logo {
         filter:none !important;
       }
-      html[data-theme="light"]:not(.nw-theme-ready) #appView:not([hidden]) {
+
+      html:not(.nw-theme-ready) #loginView,
+      html:not(.nw-auth-resolved) #loginView,
+      html:not(.nw-theme-ready) #appView:not([hidden]) {
         visibility:hidden !important;
+        opacity:0 !important;
       }
+
+      html.nw-theme-ready.nw-auth-resolved #loginView:not([hidden]),
       html.nw-theme-ready #appView:not([hidden]) {
         visibility:visible !important;
+        opacity:1 !important;
       }
     `;
     document.head.appendChild(style);
@@ -57,24 +87,18 @@ function bootstrapThemeBeforeApp() {
     return;
   }
 
-  let link = document.getElementById(FINAL_LIGHT_STYLE_ID);
-  if (!link) {
-    link = document.createElement("link");
-    link.id = FINAL_LIGHT_STYLE_ID;
-    link.rel = "stylesheet";
-    link.href = "./css/light-theme-final.css?v=20260831-2";
-    document.head.appendChild(link);
-  }
+  const legacy = ensureStyle(FINAL_LIGHT_STYLE_ID, "./css/light-theme-final.css?v=20260906-4");
+  const universal = ensureStyle(UNIVERSAL_STYLE_ID, "./css/seed-universal-system.css?v=20260906-4");
+  const detail = ensureStyle(DETAIL_STYLE_ID, "./css/ui-detail-refinements.css?v=20260906-4");
 
   const markReady = () => document.documentElement.classList.add("nw-theme-ready");
-  if (link.sheet) markReady();
-  else link.addEventListener("load", markReady, { once: true });
-  window.setTimeout(markReady, 1400);
+  Promise.all([waitForStyle(legacy), waitForStyle(universal), waitForStyle(detail)]).then(markReady);
+  window.setTimeout(markReady, 1200);
 }
 
 bootstrapThemeBeforeApp();
 
-const SAVE_GUARD_VERSION = "20260831-1";
+const SAVE_GUARD_VERSION = "20260906-4";
 let bindTimer = null;
 
 function getApi() {
