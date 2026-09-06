@@ -164,6 +164,71 @@ html[data-theme="light"] #calendar .nw-event-note {
   color: #85857f !important;
 }
 
+/* Compact month density — keep multiple tasks readable without tall empty gaps. */
+html[data-theme="light"] #calendar .fc-daygrid-day-frame {
+  min-height: 96px !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-day-top {
+  min-height: 27px !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-day-number {
+  padding: 6px 7px 3px !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-day-events {
+  min-height: 0 !important;
+  margin: 1px 4px 3px !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-event-harness,
+html[data-theme="light"] #calendar .fc-daygrid-event-harness + .fc-daygrid-event-harness {
+  margin-top: 1px !important;
+  margin-bottom: 0 !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-event,
+html[data-theme="light"] #calendar .fc-timegrid-event,
+html[data-theme="light"] #calendar .fc-event {
+  box-sizing: border-box !important;
+  min-height: 28px !important;
+  max-height: 32px !important;
+  margin: 0 !important;
+  padding: 3px 6px !important;
+  border-left-width: 2px !important;
+  border-radius: 7px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-content {
+  min-height: 20px !important;
+  gap: 0 !important;
+  justify-content: center !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-title {
+  gap: 5px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-theme="light"] #calendar .nw-client-badge {
+  min-height: 16px !important;
+  padding: 0 5px !important;
+  font-size: 9px !important;
+  line-height: 14px !important;
+}
+
+html[data-theme="light"] #calendar .nw-task-title,
+html[data-theme="light"] #calendar .fc-event-title {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-note {
+  display: none !important;
+}
+
 /* Defensive neutralization for focus/selection states inside the calendar. */
 html[data-theme="light"] #calendar :focus,
 html[data-theme="light"] #calendar :focus-visible {
@@ -174,4 +239,17 @@ html[data-theme="light"] #calendar input,
 html[data-theme="light"] #calendar select,
 html[data-theme="light"] #calendar button {
   accent-color: #171717 !important;
+}
+
+@media (max-width: 900px) {
+  html[data-theme="light"] #calendar .fc-daygrid-day-frame {
+    min-height: 88px !important;
+  }
+
+  html[data-theme="light"] #calendar .fc-daygrid-event,
+  html[data-theme="light"] #calendar .fc-event {
+    min-height: 27px !important;
+    max-height: 31px !important;
+    padding: 3px 5px !important;
+  }
 }
