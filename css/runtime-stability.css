@@ -19,6 +19,73 @@ html[data-theme="light"] .topbar * {
   transition-duration: 120ms !important;
 }
 
+/* Final monthly calendar density. Loaded after every legacy calendar stylesheet. */
+html[data-theme="light"] #calendar .fc-daygrid-day-frame {
+  min-height: 82px !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-day-top {
+  min-height: 23px !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-day-number {
+  padding: 5px 6px 2px !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-day-events {
+  margin: 0 3px 2px !important;
+  min-height: 0 !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-event-harness,
+html[data-theme="light"] #calendar .fc-daygrid-event-harness + .fc-daygrid-event-harness {
+  margin-top: 1px !important;
+  margin-bottom: 0 !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-event,
+html[data-theme="light"] #calendar .fc-timegrid-event,
+html[data-theme="light"] #calendar .fc-event {
+  min-height: 25px !important;
+  max-height: 28px !important;
+  margin: 0 !important;
+  padding: 2px 5px !important;
+  border-radius: 6px !important;
+  line-height: 1.1 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-content {
+  min-height: 18px !important;
+  gap: 0 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-title {
+  gap: 4px !important;
+}
+
+html[data-theme="light"] #calendar .nw-client-badge {
+  min-height: 15px !important;
+  padding: 0 4px !important;
+  font-size: 8.5px !important;
+  line-height: 13px !important;
+}
+
+html[data-theme="light"] #calendar .nw-task-title,
+html[data-theme="light"] #calendar .fc-event-title {
+  font-size: 10.5px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-note {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  html[data-theme="light"] #calendar .fc-daygrid-day-frame {
+    min-height: 76px !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-theme="light"] .page *,
   html[data-theme="light"] .topbar * {
