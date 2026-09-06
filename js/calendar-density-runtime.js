@@ -1,8 +1,9 @@
 (() => {
   "use strict";
 
-  const LANE_HEIGHT = 27;
-  const EVENT_HEIGHT = 26;
+  const LANE_HEIGHT = 35;
+  const EVENT_HEIGHT = 31;
+  const HORIZONTAL_INSET = 5;
   let queued = false;
   let applying = false;
 
@@ -20,9 +21,13 @@
 
   function compactRow(row) {
     const harnesses = [...row.querySelectorAll(".fc-daygrid-event-harness-abs")];
+    const containers = [...row.querySelectorAll(".fc-daygrid-day-events")];
+
     if (!harnesses.length) {
-      row.querySelectorAll(".fc-daygrid-day-events").forEach((container) => {
+      containers.forEach((container) => {
         container.style.removeProperty("min-height");
+        container.style.removeProperty("height");
+        container.style.setProperty("overflow", "visible", "important");
       });
       return;
     }
@@ -37,14 +42,18 @@
       harness.style.setProperty("height", `${EVENT_HEIGHT}px`, "important");
       harness.style.setProperty("min-height", `${EVENT_HEIGHT}px`, "important");
       harness.style.setProperty("max-height", `${EVENT_HEIGHT}px`, "important");
+      harness.style.setProperty("left", `${HORIZONTAL_INSET}px`, "important");
+      harness.style.setProperty("right", `${HORIZONTAL_INSET}px`, "important");
+      harness.style.setProperty("width", "auto", "important");
       harness.style.setProperty("margin-top", "0", "important");
       harness.style.setProperty("margin-bottom", "0", "important");
     });
 
-    const requiredHeight = Math.max(LANE_HEIGHT, tops.length * LANE_HEIGHT);
-    row.querySelectorAll(".fc-daygrid-day-events").forEach((container) => {
+    const requiredHeight = Math.max(LANE_HEIGHT, tops.length * LANE_HEIGHT + 3);
+    containers.forEach((container) => {
       container.style.setProperty("min-height", `${requiredHeight}px`, "important");
       container.style.setProperty("height", `${requiredHeight}px`, "important");
+      container.style.setProperty("overflow", "visible", "important");
     });
   }
 
@@ -92,6 +101,7 @@
     schedule();
     window.setTimeout(schedule, 120);
     window.setTimeout(schedule, 420);
+    window.setTimeout(schedule, 900);
   }
 
   if (document.readyState === "loading") {
