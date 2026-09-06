@@ -1,0 +1,27 @@
+/* NINEWORKS CRM — prevent route-time legacy style flashes */
+html[data-theme="light"] .page.is-active {
+  animation: none !important;
+}
+
+html[data-theme="light"] .app-content,
+html[data-theme="light"] .page,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .calendar-main,
+html[data-theme="light"] .workspace-content,
+html[data-theme="light"] .table-panel {
+  background-image: none !important;
+}
+
+/* Avoid a visible transition through stale colors when legacy modules attach styles. */
+html[data-theme="light"] .page *,
+html[data-theme="light"] .topbar * {
+  transition-property: background-color, border-color, color, opacity, transform !important;
+  transition-duration: 120ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="light"] .page *,
+  html[data-theme="light"] .topbar * {
+    transition: none !important;
+  }
+}
