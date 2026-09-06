@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260907-3";
+  const VERSION = "20260907-4";
 
   function mountEntryLoader() {
     if (!document.body) return;
@@ -53,15 +53,22 @@
     window.setTimeout(finish, 2200);
   }
 
+  function refreshRuntimeStyle() {
+    const link = document.getElementById("nineworks-runtime-stability");
+    if (!link) return;
+    const href = new URL(`../css/runtime-stability.css?v=${VERSION}`, import.meta.url).href;
+    if (link.href !== href) link.href = href;
+  }
+
   function loadModule(path, label) {
     import(`${path}?v=${VERSION}`).catch((error) => console.warn(`${label} 로드 실패`, error));
   }
 
   function init() {
     document.documentElement.classList.add("nw-editorial-dashboard", "nw-universal-system");
+    refreshRuntimeStyle();
     mountEntryLoader();
     loadModule("./quick-schedule-input.js", "빠른 일정 입력 모듈");
-    loadModule("./calendar-density-runtime.js", "캘린더 간격 보정 모듈");
     loadModule("./route-visual-stability.js", "페이지 전환 안정화 모듈");
   }
 
