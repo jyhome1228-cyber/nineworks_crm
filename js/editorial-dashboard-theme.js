@@ -6,6 +6,7 @@
   const UNIVERSAL_SYSTEM_STYLE_ID = "nineworks-seed-universal-system";
   const DETAIL_REFINEMENT_STYLE_ID = "nineworks-ui-detail-refinements";
   const QUICK_SCHEDULE_STYLE_ID = "nineworks-quick-schedule-input";
+  const CALENDAR_MONOCHROME_STYLE_ID = "nineworks-calendar-monochrome-final";
 
   function ensureEditorialStyle() {
     let link = document.getElementById(STYLE_ID);
@@ -67,21 +68,35 @@
     return link;
   }
 
+  function ensureCalendarMonochromeStyle() {
+    let link = document.getElementById(CALENDAR_MONOCHROME_STYLE_ID);
+    if (!link) {
+      link = document.createElement("link");
+      link.id = CALENDAR_MONOCHROME_STYLE_ID;
+      link.rel = "stylesheet";
+      link.href = new URL("../css/calendar-monochrome-final.css?v=20260906-1", import.meta.url).href;
+      document.head.appendChild(link);
+    }
+    return link;
+  }
+
   function ensureThemeStackIsLast() {
     const editorial = ensureEditorialStyle();
     const calendarDetail = ensureCalendarDetailStyle();
     const universalSystem = ensureUniversalSystemStyle();
     const detailRefinement = ensureDetailRefinementStyle();
     const quickSchedule = ensureQuickScheduleStyle();
+    const calendarMonochrome = ensureCalendarMonochromeStyle();
     const children = Array.from(document.head.children);
-    const tail = children.slice(-5);
+    const tail = children.slice(-6);
 
     if (
       tail[0] === editorial &&
       tail[1] === calendarDetail &&
       tail[2] === universalSystem &&
       tail[3] === detailRefinement &&
-      tail[4] === quickSchedule
+      tail[4] === quickSchedule &&
+      tail[5] === calendarMonochrome
     ) {
       return;
     }
@@ -91,6 +106,7 @@
     document.head.appendChild(universalSystem);
     document.head.appendChild(detailRefinement);
     document.head.appendChild(quickSchedule);
+    document.head.appendChild(calendarMonochrome);
   }
 
   function keepStylesLast() {
