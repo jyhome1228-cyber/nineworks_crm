@@ -52,7 +52,7 @@ html[data-theme="light"] #calendar .fc-daygrid-event-harness {
   margin-bottom: 0 !important;
 }
 
-/* Compact but readable event cards. Outer event stays overflow-visible for the resize handle. */
+/* Compact but readable event cards. Outer event stays overflow-visible for the custom resize handle. */
 html[data-theme="light"] #calendar .fc-daygrid-event,
 html[data-theme="light"] #calendar .fc-timegrid-event,
 html[data-theme="light"] #calendar .fc-event,
@@ -145,7 +145,26 @@ html[data-theme="light"] #calendar .fc-more-link {
   display: none !important;
 }
 
-/* Drag / resize feedback must remain above adjacent cards. */
+/* Only the custom right-edge handle may change duration. */
+html[data-theme="light"] #calendar .fc-event-resizer,
+html[data-theme="light"] #calendar .fc-event-resizer-end,
+html[data-theme="light"] #calendar .fc-event-resizer-start {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+html[data-theme="light"] #calendar .nw-duration-resize-handle {
+  display: block !important;
+  pointer-events: auto !important;
+}
+
+/* While stretching, hide the original source card completely and show only the preview. */
+html[data-theme="light"] #calendar .is-duration-resize-source {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 html[data-theme="light"] #calendar .fc-event-dragging,
 html[data-theme="light"] #calendar .fc-event-resizing,
 html[data-theme="light"] #calendar .is-custom-resizing {
