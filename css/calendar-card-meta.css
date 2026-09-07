@@ -119,6 +119,35 @@ html[data-theme="light"] #calendar .fc-event-note {
   display: none !important;
 }
 
+/* Every card fills the native FullCalendar harness. This keeps one-day jobs exactly
+   one date-cell wide and multi-day jobs exactly as wide as their calculated span. */
+html[data-theme="light"] #calendar .fc-daygrid-event-harness {
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-event-harness > .fc-daygrid-event,
+html[data-theme="light"] #calendar .fc-daygrid-event-harness > .fc-h-event,
+html[data-theme="light"] #calendar .fc-daygrid-event-harness > .fc-event,
+html[data-theme="light"] #calendar .fc-daygrid-event {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+html[data-theme="light"] #calendar .fc-daygrid-event .fc-event-main,
+html[data-theme="light"] #calendar .fc-daygrid-event .fc-event-main-frame,
+html[data-theme="light"] #calendar .fc-daygrid-event .nw-event-content--meta {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+
 /* Custom resize preview uses the same two-line content. */
 html[data-theme="light"] .nw-duration-preview .nw-event-content--meta {
   display: flex !important;
