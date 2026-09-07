@@ -5,8 +5,8 @@
   const CurrentCalendar = FullCalendar?.Calendar;
   if (!CurrentCalendar || FullCalendar.__nineworksLaneStability) return;
 
-  const EVENT_HEIGHT = 32;
-  const LANE_GAP = 4;
+  const EVENT_HEIGHT = 42;
+  const LANE_GAP = 3;
   const LANE_HEIGHT = EVENT_HEIGHT + LANE_GAP;
   let layoutFrame = 0;
   let delayedTimer = 0;
