@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260907-5";
+  const VERSION = "20260907-7";
 
   function mountEntryLoader() {
     if (!document.body) return;
@@ -72,8 +72,9 @@
     refreshRuntimeStyle();
     mountEntryLoader();
 
-    /* This must run before firebase.js creates the FullCalendar instance. */
+    /* These must run before firebase.js creates the FullCalendar instance. */
     await loadModule("./calendar-native-resize-guard.js", "캘린더 중복 리사이즈 방지 모듈");
+    await loadModule("./calendar-lane-stability.js", "캘린더 일정 겹침 방지 모듈");
 
     loadModule("./quick-schedule-input.js", "빠른 일정 입력 모듈");
     loadModule("./route-visual-stability.js", "페이지 전환 안정화 모듈");
