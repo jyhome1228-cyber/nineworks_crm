@@ -39,7 +39,7 @@
     const link = document.createElement("link");
     link.id = STYLE_ID;
     link.rel = "stylesheet";
-    link.href = new URL("../css/calendar-card-meta.css?v=20260907-1", import.meta.url).href;
+    link.href = new URL("../css/calendar-card-meta.css?v=20260907-2", import.meta.url).href;
     document.head.appendChild(link);
   }
 
@@ -180,9 +180,38 @@
     }
   }
 
+  function syncResizePreviewMeta() {
+    if (!document.body.classList.contains("is-calendar-duration-resizing")) return;
+    const targetDate = document.querySelector("#calendar .is-duration-resize-target")?.dataset.date || "";
+    const sourcePeriod = document.querySelector("#calendar .is-duration-resize-source .nw-event-period");
+    const startDate = sourcePeriod?.dataset.start || "";
+    if (!targetDate || !startDate) return;
+
+    document.querySelectorAll("#nwDurationResizePreview .nw-event-period").forEach((period) => {
+      period.textContent = periodLabel(startDate, targetDate);
+      period.dataset.start = startDate;
+      period.dataset.end = targetDate;
+    });
+  }
+
+  function bindResizePreviewMeta() {
+    if (document.documentElement.dataset.nwResizeMetaBound === "true") return;
+    document.documentElement.dataset.nwResizeMetaBound = "true";
+    let queued = false;
+    document.addEventListener("pointermove", () => {
+      if (!document.body.classList.contains("is-calendar-duration-resizing") || queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        syncResizePreviewMeta();
+      });
+    }, { passive: true });
+  }
+
   function init() {
     ensureStyle();
     bindDrawerMeta();
+    bindResizePreviewMeta();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
