@@ -55,6 +55,29 @@
     });
   }
 
+  function fillHarnessWidth(harness, element) {
+    if (!harness || !element) return;
+
+    /*
+      FullCalendar leaves single-day harnesses at intrinsic/content width.
+      Once our lane layout makes them absolute, that intrinsic width becomes
+      visible as uneven bars. Single-day segments should always fill the
+      complete date cell. Multi-day absolute segments keep FullCalendar's
+      own left/right geometry so they still span the exact number of days.
+    */
+    if (!harness.classList.contains("fc-daygrid-event-harness-abs")) {
+      harness.style.setProperty("left", "0", "important");
+      harness.style.setProperty("right", "0", "important");
+      harness.style.setProperty("width", "auto", "important");
+      harness.style.setProperty("max-width", "none", "important");
+    }
+
+    element.style.setProperty("display", "block", "important");
+    element.style.setProperty("width", "100%", "important");
+    element.style.setProperty("max-width", "none", "important");
+    element.style.setProperty("box-sizing", "border-box", "important");
+  }
+
   function stabilizeRow(row) {
     const range = rowRange(row);
     if (!range) return;
@@ -105,6 +128,8 @@
       harness.style.setProperty("margin-top", "0", "important");
       harness.style.setProperty("height", `${EVENT_HEIGHT}px`, "important");
       harness.style.setProperty("z-index", String(20 + laneIndex), "important");
+
+      fillHarnessWidth(harness, item.element);
 
       item.element.style.setProperty("height", `${EVENT_HEIGHT}px`, "important");
       item.element.style.setProperty("min-height", `${EVENT_HEIGHT}px`, "important");
