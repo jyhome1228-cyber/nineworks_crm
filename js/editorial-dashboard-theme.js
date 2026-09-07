@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260907-7";
+  const VERSION = "20260907-8";
 
   function mountEntryLoader() {
     if (!document.body) return;
