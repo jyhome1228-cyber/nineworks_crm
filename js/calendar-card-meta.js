@@ -39,7 +39,7 @@
     const link = document.createElement("link");
     link.id = STYLE_ID;
     link.rel = "stylesheet";
-    link.href = new URL("../css/calendar-card-meta.css?v=20260907-2", import.meta.url).href;
+    link.href = new URL("../css/calendar-card-meta.css?v=20260907-3", import.meta.url).href;
     document.head.appendChild(link);
   }
 
