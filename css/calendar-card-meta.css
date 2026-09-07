@@ -1,0 +1,206 @@
+/* NINEWORKS CRM — calendar card assignee / work-period metadata */
+html[data-theme="light"] #calendar .fc-daygrid-event,
+html[data-theme="light"] #calendar .fc-timegrid-event,
+html[data-theme="light"] #calendar .fc-event,
+html[data-theme="light"] #calendar .fc-h-event {
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+}
+
+html[data-theme="light"] #calendar .fc-event-main,
+html[data-theme="light"] #calendar .fc-event-main-frame {
+  display: flex !important;
+  height: 100% !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  padding: 4px 8px !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-content.nw-event-content--meta {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  overflow: hidden !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-content--meta .nw-event-title {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 18px !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow: hidden !important;
+  line-height: 1 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-content--meta .nw-client-badge {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  max-width: 82px !important;
+  height: 17px !important;
+  min-height: 17px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #d1d2ce !important;
+  border-radius: 999px !important;
+  padding: 0 6px !important;
+  background: #f5f5f2 !important;
+  color: #555650 !important;
+  font-size: 9.5px !important;
+  font-weight: 650 !important;
+  line-height: 17px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-content--meta .nw-task-title {
+  display: block !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  color: #20211f !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  line-height: 18px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-meta {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 12px !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding-left: 1px !important;
+  color: #777872 !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  line-height: 12px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-assignee,
+html[data-theme="light"] #calendar .nw-event-period {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-assignee {
+  flex: 0 1 auto !important;
+  max-width: 78px !important;
+  color: #62635e !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-period {
+  flex: 0 0 auto !important;
+  color: #8a8b85 !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-meta-separator {
+  flex: 0 0 auto !important;
+  color: #b2b3ad !important;
+}
+
+html[data-theme="light"] #calendar .nw-event-note,
+html[data-theme="light"] #calendar .fc-event-note {
+  display: none !important;
+}
+
+/* Custom resize preview uses the same two-line content. */
+html[data-theme="light"] .nw-duration-preview .nw-event-content--meta {
+  display: flex !important;
+  width: 100% !important;
+  height: 100% !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  padding: 4px 8px !important;
+  overflow: hidden !important;
+}
+
+html[data-theme="light"] .nw-duration-preview .nw-event-meta {
+  display: flex !important;
+  gap: 5px !important;
+  color: #73746e !important;
+  font-size: 9px !important;
+  line-height: 12px !important;
+}
+
+/* Read-only project info at the bottom of the schedule drawer. */
+html[data-theme="light"] #eventScheduleMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 2px;
+  border: 1px solid #deded8;
+  background: #f8f8f5;
+}
+
+html[data-theme="light"] #eventScheduleMeta .event-schedule-meta__item {
+  min-width: 0;
+  padding: 12px 14px;
+}
+
+html[data-theme="light"] #eventScheduleMeta .event-schedule-meta__item + .event-schedule-meta__item {
+  border-left: 1px solid #deded8;
+}
+
+html[data-theme="light"] #eventScheduleMeta span {
+  display: block;
+  margin-bottom: 4px;
+  color: #8a8a84 !important;
+  font-size: 9.5px !important;
+  font-weight: 650 !important;
+  letter-spacing: .05em;
+}
+
+html[data-theme="light"] #eventScheduleMeta strong {
+  display: block;
+  color: #292925 !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  line-height: 1.45 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  html[data-theme="light"] #calendar .fc-daygrid-event,
+  html[data-theme="light"] #calendar .fc-event,
+  html[data-theme="light"] #calendar .fc-h-event {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+  }
+
+  html[data-theme="light"] #calendar .nw-event-content--meta .nw-client-badge {
+    max-width: 62px !important;
+  }
+
+  html[data-theme="light"] #calendar .nw-event-assignee {
+    max-width: 58px !important;
+  }
+
+  html[data-theme="light"] #eventScheduleMeta {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme="light"] #eventScheduleMeta .event-schedule-meta__item + .event-schedule-meta__item {
+    border-top: 1px solid #deded8;
+    border-left: 0;
+  }
+}
