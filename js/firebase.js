@@ -18,6 +18,7 @@ import "./qa-save-fix.js?v=20260820-1";
 import "./qa-simple-mode.js?v=20260820-2";
 import "./qa-report-screenshots.js?v=20260811-1";
 import "./qa-detail-page.js?v=20260811-3";
+import "./qa-function-spec.js?v=20260821-1";
 import "./sales-pipeline.js?v=20260807-1";
 import "./finance-ui-loader.js?v=20260807-1";
 import "./finance-management-v3.js?v=20260807-1";
