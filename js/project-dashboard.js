@@ -26,7 +26,13 @@
       priority: "focus",
       imageUrl: "",
       workstreams: ["결과보고서 내용 정리", "성과·증빙자료 취합", "제출 전 최종 체크"],
-      nextSteps: ["10/16 결과보고 제출", "보완 요청 발생 시 후속 대응"]
+      nextSteps: ["10/16 결과보고 제출", "보완 요청 발생 시 후속 대응"],
+      recentWork: ["결과보고 일정 10/16 확정", "현재 산출물과 증빙자료 기준으로 보고 범위 정리"],
+      workSections: [
+        { title: "결과보고", items: ["수행내용 요약", "성과 및 산출물 정리", "결과보고 문서 구성"] },
+        { title: "증빙자료", items: ["디자인 산출물 취합", "진행 과정 자료 정리", "필요 증빙 누락 여부 체크"] },
+        { title: "제출", items: ["최종 문서 검수", "10/16 제출", "보완 요청 대응"] }
+      ]
     },
     {
       id: "dailyhabit",
@@ -40,7 +46,13 @@
       priority: "focus",
       imageUrl: "",
       workstreams: ["월요일 공동구매 작업", "목요일 공동구매 작업", "상품·상세페이지 운영", "사이트 수정 및 콘텐츠 반영"],
-      nextSteps: ["다음 공동구매 일정 확인", "필요 소재 및 상품정보 선반영"]
+      nextSteps: ["다음 공동구매 일정 확인", "필요 소재 및 상품정보 선반영"],
+      recentWork: ["월·목 정기 공동구매 운영 체계로 관리", "상품·프로모션 소재를 일정에 맞춰 반복 제작"],
+      workSections: [
+        { title: "정기 공동구매", items: ["월요일 공구 작업", "목요일 공구 작업", "행사별 일정·상품 확인"] },
+        { title: "상품 운영", items: ["상품 정보 반영", "상세페이지 수정", "프로모션 배너·콘텐츠 제작"] },
+        { title: "사이트 운영", items: ["페이지 수정 요청", "상품 노출 확인", "행사 종료 후 원복·정리"] }
+      ]
     },
     {
       id: "odebell",
@@ -53,7 +65,13 @@
       priority: "normal",
       imageUrl: "",
       workstreams: ["패키지 디자인", "제품 비주얼 제작", "브랜드 콘텐츠", "상세페이지 및 운영물"],
-      nextSteps: ["후속 요청 우선순위 정리", "브랜드 톤 일관성 점검"]
+      nextSteps: ["후속 요청 우선순위 정리", "브랜드 톤 일관성 점검"],
+      recentWork: ["실버·라이트 옐로우·라이트 블루 중심 비주얼 방향 정리", "제품 연출 및 용기 비주얼 작업 진행"],
+      workSections: [
+        { title: "브랜드 비주얼", items: ["컬러·타이포 톤 유지", "제품별 비주얼 시스템", "브랜드 카피 적용"] },
+        { title: "패키지", items: ["용기·라벨 디자인", "제품군 일관성 체크", "응용 시안 제작"] },
+        { title: "운영 콘텐츠", items: ["상세페이지", "프로모션 이미지", "제품 연출 이미지"] }
+      ]
     },
     {
       id: "terrasave",
@@ -66,7 +84,13 @@
       priority: "normal",
       imageUrl: "",
       workstreams: ["브랜드 정리", "과일 DB 구축", "에틸렌·민감도 정보 구조화", "웹사이트 콘텐츠 및 UI 개선"],
-      nextSteps: ["과일 DB 범위 확장", "사이트 정보구조와 콘텐츠 최종 정리"]
+      nextSteps: ["과일 DB 범위 확장", "사이트 정보구조와 콘텐츠 최종 정리"],
+      recentWork: ["TerraSave 명칭 기준으로 프로젝트 정리", "과일 이미지·정보 DB를 서비스 콘텐츠와 연결하는 구조 설계"],
+      workSections: [
+        { title: "과일 DB", items: ["50~60종 과일 데이터 구축", "클라이맥테릭 여부", "에틸렌 발생·민감도", "처리 방법·권장사항·참고자료"] },
+        { title: "브랜드 콘텐츠", items: ["과일 보호망 솔루션 설명", "서비스 장점 구조화", "제품·기술 정보 시각화"] },
+        { title: "웹사이트", items: ["과일별 정보 페이지", "DB 탐색 구조", "사이트 UI·콘텐츠 개선"] }
+      ]
     },
     {
       id: "bitess",
@@ -79,7 +103,14 @@
       priority: "focus",
       imageUrl: "",
       workstreams: ["브랜드 전략", "비주얼 디렉션", "컬러 시스템", "BI 개발", "패키지 디자인", "제품·SNS 비주얼"],
-      nextSteps: ["브랜드 디렉션 확정", "BI 개발", "패키지 시스템 전개"]
+      nextSteps: ["브랜드 디렉션 확정", "BI 개발", "패키지 시스템 전개"],
+      recentWork: ["기존 7개 디렉션을 재정리해 적색 중심 브랜드 시스템으로 압축", "성인 프리미엄 구미 포지셔닝과 패키지 무드 구체화"],
+      workSections: [
+        { title: "브랜드 전략", items: ["성인 프리미엄 구미 포지셔닝", "여성 타깃이지만 전형적 뷰티 무드 지양", "전문성 + 감각성 균형"] },
+        { title: "비주얼 디렉션", items: ["메인 레드·버건디 시스템", "볼드 타이포그래피", "과학적·하이엔드 무드", "촬영·SNS 톤 통합"] },
+        { title: "BI / 패키지", items: ["BITESS 로고·BI 개발", "멀티비타민 히어로 제품", "제품군 컬러 확장", "이중구조 제형 시각화"] },
+        { title: "브랜드 운영", items: ["무드보드", "패키지 목업", "제품 비주얼", "SNS 콘텐츠 시스템"] }
+      ]
     },
     {
       id: "orient",
@@ -92,7 +123,15 @@
       priority: "focus",
       imageUrl: "",
       workstreams: ["사업내용 정리", "브랜드 전략", "네이밍", "브랜드 디렉션", "BI 개발", "비주얼 시스템", "웹사이트", "회사소개서·영업자료"],
-      nextSteps: ["사업내용 정리", "전략 구조 확정", "네이밍 제안"]
+      nextSteps: ["사업내용 정리", "전략 구조 확정", "네이밍 제안"],
+      recentWork: ["선금·계약 관련 착수 행정 진행", "전체 작업 순서를 사업정리부터 영업자료까지 단계화"],
+      workSections: [
+        { title: "1. 사업·전략", items: ["사업내용 정리", "서비스 구조화", "브랜드 전략 수립"] },
+        { title: "2. 브랜드 개발", items: ["네이밍 제안", "브랜드 디렉션", "BI 개발"] },
+        { title: "3. 비주얼 시스템", items: ["필요 이미지 제작", "응용디자인", "브랜드 사용 체계"] },
+        { title: "4. 웹 구축", items: ["랜딩형 페이지", "서비스 전용 페이지", "브랜드 시스템과 병행 개발"] },
+        { title: "5. 영업자료", items: ["회사소개서", "영업자료", "전체 산출물 최종 체크"] }
+      ]
     },
     {
       id: "ggm",
@@ -105,7 +144,13 @@
       priority: "focus",
       imageUrl: "",
       workstreams: ["월간 프로모션", "Cafe24 쇼핑몰 운영", "상품 등록·수정", "배송·교환·환불 UX", "지점·브랜드 디자인"],
-      nextSteps: ["운영 이슈 우선순위 처리", "다음 프로모션 소재 준비"]
+      nextSteps: ["운영 이슈 우선순위 처리", "다음 프로모션 소재 준비"],
+      recentWork: ["10월 프로모션 배너 및 지점 운영물 제작", "Cafe24 상품·배송·취소/환불 UX 관련 운영 이슈 대응"],
+      workSections: [
+        { title: "프로모션", items: ["월간 프로모션 기획 반영", "배너·SNS 소재", "지점별 프로모션 운영물"] },
+        { title: "Cafe24", items: ["상품 등록·수정", "옵션·가격 노출", "배송·송장", "취소·교환·반품·환불 흐름"] },
+        { title: "브랜드 운영", items: ["프로그램 대표 이미지", "지점 페이지", "멤버십·정책 문안", "상담·로그인 연동 이슈"] }
+      ]
     },
     {
       id: "ririm",
@@ -118,7 +163,14 @@
       priority: "normal",
       imageUrl: "",
       workstreams: ["홈·어바웃 구성", "브랜드 소개 페이지", "헤더·내비게이션 통일", "지도·지점 정보", "전체 반응형 QA"],
-      nextSteps: ["페이지별 깨짐 점검", "레이아웃 통일", "오픈 전 최종 QA"]
+      nextSteps: ["페이지별 깨짐 점검", "레이아웃 통일", "오픈 전 최종 QA"],
+      recentWork: ["홈·어바웃·지도 디자인과 브랜드 페이지 구조를 지속 수정", "저널·샵·브랜드 소개 페이지를 레퍼런스 기준으로 재정리"],
+      workSections: [
+        { title: "홈 / 어바웃", items: ["브랜드 소개 콘텐츠", "브랜드를 만든 이유와 방향", "메인 이미지·슬라이드 구성"] },
+        { title: "콘텐츠 페이지", items: ["저널 리스트", "샵 상품 노출", "브랜드 소개 이미지 롤링"] },
+        { title: "공통 UI", items: ["헤더 크기·정렬 통일", "드롭다운 안정화", "폰트·여백 위계"] },
+        { title: "지도 / QA", items: ["지도 톤앤매너 개선", "페이지별 레이아웃 깨짐 점검", "모바일 반응형 최종 확인"] }
+      ]
     },
     {
       id: "aminternational",
@@ -131,7 +183,13 @@
       priority: "normal",
       imageUrl: "",
       workstreams: ["영문 로고 개발", "타이포그래피 방향", "기본 BI 정리", "후속 응용안"],
-      nextSteps: ["로고 방향 확정", "최종안 및 기본 사용안 정리"]
+      nextSteps: ["로고 방향 확정", "최종안 및 기본 사용안 정리"],
+      recentWork: ["AM INTERNATIONAL 영문 워드마크 방향으로 로고 시안 개발", "선금 관련 자료와 계산서 발행 절차도 함께 진행"],
+      workSections: [
+        { title: "BI 개발", items: ["AM INTERNATIONAL 워드마크", "산세리프 기반 타이포 방향", "대안 시안 비교"] },
+        { title: "최종 정리", items: ["최종 로고 선택", "기본 비율·여백 정리", "기본 응용안"] },
+        { title: "프로젝트 운영", items: ["선금 요청 자료", "계산서 발행", "후속 제작 범위 확인"] }
+      ]
     },
     {
       id: "esencia",
@@ -144,7 +202,13 @@
       priority: "normal",
       imageUrl: "",
       workstreams: ["제품명·기본정보 정리", "Product Description", "Product organization", "스토어 상품 등록", "상품군 구조 정리"],
-      nextSteps: ["제품별 데이터 입력", "상품군별 정렬 및 스토어 QA"]
+      nextSteps: ["제품별 데이터 입력", "상품군별 정렬 및 스토어 QA"],
+      recentWork: ["인도 Shopify 스토어용 제품군과 입력 항목 정리", "토너·클렌저 등 제품별 Description 작성 진행"],
+      workSections: [
+        { title: "상품 데이터", items: ["제품명", "가격", "핵심 설명 3~4줄", "용량·기본정보"] },
+        { title: "Shopify 입력", items: ["Title", "Product Description", "Product organization", "제품군·태그·분류"] },
+        { title: "스토어 QA", items: ["상품 정렬", "제품군 구조", "정보 누락 체크", "페이지 노출 확인"] }
+      ]
     }
   ];
 
@@ -496,7 +560,7 @@
       return `<div class="work-card-media"><img src="${esc(item.imageUrl)}" alt="${esc(item.name)} 대표 이미지" loading="lazy" /></div>`;
     }
     const short = type === "business" ? (item.label || "OWN BUSINESS") : (item.client || "PROJECT");
-    return `<div class="work-card-media work-card-media--fallback"><span>${esc(short)}</span><strong>${esc(item.name)}</strong></div>`;
+    return `<div class="work-card-media work-card-media--fallback" data-visual="${esc(item.id || type)}"><span>${esc(short)}</span><strong>${esc(item.name)}</strong><i aria-hidden="true"></i></div>`;
   }
 
   function projectCard(project) {
@@ -599,6 +663,8 @@
     $("#workDetailTitle").textContent = item.name;
 
     const workstreams = Array.isArray(item.workstreams) ? item.workstreams : [];
+    const workSections = Array.isArray(item.workSections) ? item.workSections : [];
+    const recentWork = Array.isArray(item.recentWork) ? item.recentWork : [];
     const nextSteps = type === "project" && Array.isArray(item.nextSteps) ? item.nextSteps : [];
     const status = type === "project" ? (STATUS[item.status] || STATUS.active) : null;
 
@@ -621,15 +687,24 @@
       </section>` : ""}
 
       <section class="work-detail-section">
-        <div class="work-detail-section__title"><span>${type === "project" ? "02" : "01"}</span><h3>진행 업무</h3></div>
-        <div class="work-detail-worklist">
-          ${workstreams.length ? workstreams.map((work, index) => `<div><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(work)}</strong></div>`).join("") : "<p>등록된 업무가 없습니다.</p>"}
-        </div>
+        <div class="work-detail-section__title"><span>${type === "project" ? "02" : "01"}</span><h3>업무 구조</h3></div>
+        ${workSections.length ? `<div class="work-detail-groups">${workSections.map((group) => `
+          <div class="work-detail-group">
+            <h4>${esc(group.title || "업무")}</h4>
+            <div>${(group.items || []).map((work) => `<span>${esc(work)}</span>`).join("")}</div>
+          </div>
+        `).join("")}</div>` : `<div class="work-detail-worklist">${workstreams.length ? workstreams.map((work, index) => `<div><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(work)}</strong></div>`).join("") : "<p>등록된 업무가 없습니다.</p>"}</div>`}
       </section>
+
+      ${type === "project" && recentWork.length ? `
+      <section class="work-detail-section">
+        <div class="work-detail-section__title"><span>03</span><h3>최근 작업</h3></div>
+        <div class="work-detail-recent">${recentWork.map((work) => `<p>${esc(work)}</p>`).join("")}</div>
+      </section>` : ""}
 
       ${type === "project" ? `
       <section class="work-detail-section">
-        <div class="work-detail-section__title"><span>03</span><h3>다음 단계</h3></div>
+        <div class="work-detail-section__title"><span>${recentWork.length ? "04" : "03"}</span><h3>다음 단계</h3></div>
         <div class="work-detail-worklist is-next">
           ${nextSteps.length ? nextSteps.map((work, index) => `<div><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(work)}</strong></div>`).join("") : "<p>등록된 다음 단계가 없습니다.</p>"}
         </div>
