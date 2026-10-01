@@ -219,7 +219,13 @@
       label: "DESIGN & BRANDING",
       summary: "기업·브랜드의 전략, 아이덴티티, 패키지, 웹과 운영 디자인을 수행하는 디자인 사업.",
       imageUrl: "",
-      workstreams: ["브랜드 전략 및 디자인 컨설팅", "BI·CI·패키지", "웹사이트·상세페이지", "클라이언트 운영 디자인", "PRINTING 사업 확장"]
+      workstreams: ["브랜드 전략 및 디자인 컨설팅", "BI·CI·패키지", "웹사이트·상세페이지", "클라이언트 운영 디자인", "PRINTING 사업 확장"],
+      workSections: [
+        { title: "브랜딩", items: ["브랜드 전략", "BI·CI", "패키지", "비주얼 시스템"] },
+        { title: "디지털", items: ["웹사이트 기획·디자인", "상세페이지", "브랜드 콘텐츠", "운영 디자인"] },
+        { title: "컨설팅", items: ["사업·브랜드 구조화", "실무 프로세스 설계", "외주·지원사업 대응"] },
+        { title: "확장 사업", items: ["NINEWORKS PRINTING", "프로젝트 운영 시스템", "AI 기반 제작 워크플로"] }
+      ]
     },
     {
       id: "aesost",
@@ -227,7 +233,12 @@
       label: "WEB & DEVELOPMENT",
       summary: "회사 홈페이지부터 업무 시스템까지 구축하는 웹·비즈니스 시스템 개발 사업.",
       imageUrl: "",
-      workstreams: ["기업 홈페이지 개발", "관리자·CRM 시스템", "업무 자동화", "내부 도구 개발", "AI 기능 연계"]
+      workstreams: ["기업 홈페이지 개발", "관리자·CRM 시스템", "업무 자동화", "내부 도구 개발", "AI 기능 연계"],
+      workSections: [
+        { title: "웹 개발", items: ["기업·브랜드 홈페이지", "랜딩페이지", "관리 페이지", "반응형 구축"] },
+        { title: "비즈니스 시스템", items: ["CRM", "클라이언트 포털", "업무관리 시스템", "데이터 대시보드"] },
+        { title: "자동화 / AI", items: ["PDF·문서 자동 분류", "업무 자동화", "AI 기능 연계", "내부 생산성 도구"] }
+      ]
     },
     {
       id: "aesost-place",
@@ -235,7 +246,12 @@
       label: "PROPERTY & SPACE",
       summary: "상가 임대와 공간 운영을 중심으로 향후 경매·부동산 자산 운영까지 확장하는 사업.",
       imageUrl: "",
-      workstreams: ["상가 임대 관리", "관리비·임대료 운영", "공간 자산 관리", "향후 경매·부동산 투자 체계화"]
+      workstreams: ["상가 임대 관리", "관리비·임대료 운영", "공간 자산 관리", "향후 경매·부동산 투자 체계화"],
+      workSections: [
+        { title: "임대 운영", items: ["상가 임대", "임대료 일정", "관리비", "계약·갱신 관리"] },
+        { title: "자산 관리", items: ["보증금·현금흐름", "공간 유지관리", "운영비 기록"] },
+        { title: "확장", items: ["부동산 경매 검토", "추가 자산 확보", "수익형 부동산 운영 체계"] }
+      ]
     },
     {
       id: "solarbiz",
@@ -243,7 +259,12 @@
       label: "SMALL BUSINESS TOOL",
       summary: "1인 자영업자와 소기업을 위한 매출·세금계산서·운영관리 서비스.",
       imageUrl: "",
-      workstreams: ["매출 기록", "세금계산서 정리", "PDF 자동 분류", "비용·미수금 관리", "사업 운영 대시보드"]
+      workstreams: ["매출 기록", "세금계산서 정리", "PDF 자동 분류", "비용·미수금 관리", "사업 운영 대시보드"],
+      workSections: [
+        { title: "매출 관리", items: ["카드매출", "일반 매출 기록", "월·분기 매출 현황"] },
+        { title: "세금계산서", items: ["PDF 드래그 업로드", "자동 분류", "거래처·매출 연결", "문서 보관"] },
+        { title: "운영관리", items: ["비용 기록", "미수금", "사업 일정", "대시보드 요약"] }
+      ]
     },
     {
       id: "growfarmers",
@@ -251,7 +272,12 @@
       label: "LOCAL & AGRI BRANDING",
       summary: "농산물·농가를 브랜드 전략, 패키지, 콘텐츠와 판매 기회로 연결하는 로컬 브랜딩 사업.",
       imageUrl: "",
-      workstreams: ["생산자 분석", "브랜드 전략", "아이덴티티·패키지", "콘텐츠 제작", "농가·협업 연결"]
+      workstreams: ["생산자 분석", "브랜드 전략", "아이덴티티·패키지", "콘텐츠 제작", "농가·협업 연결"],
+      workSections: [
+        { title: "농가 브랜딩", items: ["생산자·상품 분석", "브랜드 전략", "네이밍·아이덴티티", "패키지"] },
+        { title: "콘텐츠", items: ["상품 촬영·비주얼", "소개 콘텐츠", "판매용 상세 콘텐츠"] },
+        { title: "연결", items: ["농가·협업처 연결", "유통·판매 기회 탐색", "브랜드 운영 지원"] }
+      ]
     },
     {
       id: "jeongwol",
@@ -259,7 +285,13 @@
       label: "FORTUNE SERVICE",
       summary: "오늘의 운세, 인연, 궁합, 재물, 부적 등 콘텐츠를 보다 쉽고 재미있게 제공하는 자체 서비스.",
       imageUrl: "",
-      workstreams: ["오늘의 운세 UX", "운세 문장·콘텐츠", "결과 화면 구조", "정월부적·정월록", "서비스 기능 개선"]
+      workstreams: ["오늘의 운세 UX", "운세 문장·콘텐츠", "결과 화면 구조", "정월부적·정월록", "서비스 기능 개선"],
+      workSections: [
+        { title: "운세 서비스", items: ["오늘의 운세", "내일의 운세", "인연·궁합", "일·재물", "정월도감"] },
+        { title: "콘텐츠", items: ["총평", "재물", "애정", "직장", "학업", "건강", "추천 숫자"] },
+        { title: "서비스 확장", items: ["정월부적", "정월록", "로또·숫자 뽑기", "결과 화면 UX 개선"] },
+        { title: "운영 방향", items: ["랜덤값 최소화", "지정 데이터 기반 결과", "쉽고 재미있는 해석 방식"] }
+      ]
     }
   ];
 
@@ -536,6 +568,24 @@
     const normalized = (Array.isArray(list) ? list : []).map(mergeDefault).filter((item) => !SELF_PROJECT_IDS.has(item.id));
     const byId = new Map(normalized.map((item) => [item.id, item]));
     DEFAULT_PROJECTS.forEach((preset) => {
+      if (!byId.has(preset.id)) byId.set(preset.id, preset);
+    });
+    return [...byId.values()];
+  }
+
+  function sanitizeBusinesses(list) {
+    const source = Array.isArray(list) ? list : [];
+    const byId = new Map();
+    source.forEach((item) => {
+      const preset = DEFAULT_BUSINESSES.find((entry) => entry.id === item.id) || {};
+      byId.set(item.id, {
+        ...preset,
+        ...item,
+        workstreams: Array.isArray(item.workstreams) && item.workstreams.length ? item.workstreams : (preset.workstreams || []),
+        workSections: Array.isArray(item.workSections) && item.workSections.length ? item.workSections : (preset.workSections || [])
+      });
+    });
+    DEFAULT_BUSINESSES.forEach((preset) => {
       if (!byId.has(preset.id)) byId.set(preset.id, preset);
     });
     return [...byId.values()];
@@ -902,7 +952,7 @@
     unsubscribeProjects = api.onSnapshot(ref, async (snapshot) => {
       const data = snapshot.exists() ? snapshot.data() : {};
       const nextProjects = sanitizeProjects(data.projects);
-      const nextBusinesses = Array.isArray(data.businesses) && data.businesses.length ? data.businesses : DEFAULT_BUSINESSES;
+      const nextBusinesses = sanitizeBusinesses(data.businesses);
       projects = nextProjects;
       businesses = nextBusinesses;
       renderAll();
@@ -911,7 +961,8 @@
       const needsMigration = !snapshot.exists()
         || storedIds.some((id) => SELF_PROJECT_IDS.has(id) || id === "terracl")
         || !Array.isArray(data.businesses)
-        || data.businesses.length === 0;
+        || data.businesses.length === 0
+        || nextBusinesses.some((item) => !Array.isArray(item.workSections) || item.workSections.length === 0);
 
       if (needsMigration) {
         try {
