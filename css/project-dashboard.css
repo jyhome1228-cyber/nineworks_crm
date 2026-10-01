@@ -267,6 +267,106 @@
   padding: 16px 16px 14px;
 }
 
+.work-card-media--fallback i {
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  right: -18px;
+  top: -18px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 0 0 22px rgba(255,255,255,.22), 0 0 0 44px rgba(255,255,255,.12);
+}
+
+.work-card-media--fallback[data-visual="sogwadam"] { background: linear-gradient(145deg, #f5efe3, #ded4c2); }
+.work-card-media--fallback[data-visual="dailyhabit"] { background: linear-gradient(145deg, #ebe6de, #cfd7dc); }
+.work-card-media--fallback[data-visual="odebell"] { background: linear-gradient(145deg, #f5efc9, #d8e7ef 65%, #d9d9d7); }
+.work-card-media--fallback[data-visual="terrasave"] { background: linear-gradient(145deg, #edf1df, #9eaf82); }
+.work-card-media--fallback[data-visual="bitess"] { background: linear-gradient(145deg, #9d0016, #d5332f 58%, #4d0712); color: #fff; }
+.work-card-media--fallback[data-visual="bitess"] span { color: rgba(255,255,255,.7); }
+.work-card-media--fallback[data-visual="orient"] { background: linear-gradient(145deg, #eeeeea, #b9c2c9); }
+.work-card-media--fallback[data-visual="ggm"] { background: linear-gradient(145deg, #eef0ed, #aab8bc); }
+.work-card-media--fallback[data-visual="ririm"] { background: linear-gradient(145deg, #f8f7f2, #e1e0da); }
+.work-card-media--fallback[data-visual="aminternational"] { background: linear-gradient(145deg, #efefec, #c8c8c4); }
+.work-card-media--fallback[data-visual="esencia"] { background: linear-gradient(145deg, #eee5dc, #d9c7b9); }
+
+.work-card-media--fallback[data-visual="nineworks"],
+.work-card-media--fallback[data-visual="aesost"] {
+  background: linear-gradient(145deg, #171717, #4a4a48);
+  color: #fff;
+}
+.work-card-media--fallback[data-visual="nineworks"] span,
+.work-card-media--fallback[data-visual="aesost"] span { color: rgba(255,255,255,.62); }
+.work-card-media--fallback[data-visual="aesost-place"] { background: linear-gradient(145deg, #e8e5df, #bcb7ae); }
+.work-card-media--fallback[data-visual="solarbiz"] { background: linear-gradient(145deg, #e4e9e3, #b7c5bb); }
+.work-card-media--fallback[data-visual="growfarmers"] { background: linear-gradient(145deg, #edf0de, #b7c18c); }
+.work-card-media--fallback[data-visual="jeongwol"] { background: linear-gradient(145deg, #eee8df, #c2b39f); }
+
+.work-detail-groups {
+  display: grid;
+  gap: 9px;
+}
+
+.work-detail-group {
+  padding: 14px;
+  border: 1px solid #e9e9e5;
+  border-radius: 12px;
+  background: #fafaf8;
+}
+
+.work-detail-group h4 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: -.02em;
+}
+
+.work-detail-group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.work-detail-group > div span {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  padding: 0 9px;
+  border: 1px solid #e7e7e2;
+  border-radius: 999px;
+  background: #fff;
+  color: #5f5f5a;
+  font-size: 10px;
+  font-weight: 550;
+}
+
+.work-detail-recent {
+  display: grid;
+  gap: 7px;
+}
+
+.work-detail-recent p {
+  position: relative;
+  margin: 0;
+  padding: 12px 14px 12px 30px;
+  border-radius: 10px;
+  background: #f7f7f4;
+  color: #4e4e4a;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.work-detail-recent p::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 17px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #30302e;
+}
+
 .work-project-card__meta {
   display: flex;
   align-items: center;
