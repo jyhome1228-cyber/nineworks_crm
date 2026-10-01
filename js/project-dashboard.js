@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20261001-2";
+  const VERSION = "20261002-1";
   const DASHBOARD_DOC = "project_dashboard";
 
   const SELF_PROJECT_IDS = new Set([
