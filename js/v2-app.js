@@ -353,4 +353,23 @@ async function subscribeData(user){
     state.businesses=Array.isArray(d.businesses)&&d.businesses.length?d.businesses:BUSINESS_DEFAULTS;
     renderPage();
   },()=>{}));
-  state.unsubs.push(onSnapshot(collection(db,"clients"),snap=>{sta
+  state.unsubs.push(onSnapshot(collection(db,"clients"),snap=>{state.clients=snap.docs.map(d=>({id:d.id,...d.data()}));renderPage()},()=>{}));
+  state.unsubs.push(onSnapshot(collection(db,"events"),snap=>{state.events=snap.docs.map(d=>({id:d.id,...d.data()}));renderPage()},()=>{}));
+  try{state.unsubs.push(onSnapshot(collection(db,"financeContracts"),snap=>{state.contracts=snap.docs.map(d=>({id:d.id,...d.data()}));renderPage()},()=>{}))}catch{}
+  try{state.unsubs.push(onSnapshot(collection(db,"financeLedger"),snap=>{state.ledger=snap.docs.map(d=>({id:d.id,...d.data()}));renderPage()},()=>{}))}catch{}
+}
+
+function bindLogin(){
+  $("#loginForm")?.addEventListener("submit",async e=>{
+    e.preventDefault();const msg=$("#loginMsg");msg.textContent="로그인 중...";
+    try{await signInWithEmailAndPassword(auth,$("#loginEmail").value.trim(),$("#loginPassword").value);msg.textContent=""}
+    catch(err){console.error(err);msg.textContent="이메일 또는 비밀번호를 확인해주세요."}
+  });
+}
+function boot(){
+  const saved=localStorage.getItem("nineworks-v2-theme");if(saved)document.body.dataset.theme=saved;
+  onAuthStateChanged(auth,user=>{
+    if(user){subscribeData(user)}else{cleanup();state.user=null;$("#app").innerHTML=loginView();bindLogin()}
+  });
+}
+boot();
