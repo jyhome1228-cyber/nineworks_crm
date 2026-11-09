@@ -172,4 +172,55 @@ function homePage(){
     return (daysUntil(a.due)??9999)-(daysUntil(b.due)??9999);
   }).slice(0,6);
   return `<section class="page">
-    <div class="page-head"><div><p class="eyebrow">PROJECT 
+    <div class="page-head"><div><p class="eyebrow">PROJECT OPERATING SYSTEM</p><h2>내 업무</h2><p>현재 진행 중인 프로젝트와 다음 액션을 한눈에 봅니다.</p></div><button class="btn primary" id="addProject">＋ 프로젝트 추가</button></div>
+    <div class="summary-grid">
+      <div class="summary-card"><span>진행 프로젝트</span><strong>${open}</strong><small>완료 제외</small></div>
+      <div class="summary-card"><span>집중 관리</span><strong>${focus}</strong><small>우선순위 높음</small></div>
+      <div class="summary-card"><span>검수 필요</span><strong>${review}</strong><small>마무리 단계</small></div>
+      <div class="summary-card"><span>대기</span><strong>${waiting}</strong><small>회신·착수 대기</small></div>
+      <div class="summary-card"><span>14일 내 마감</span><strong>${due}</strong><small>일정 확인</small></div>
+    </div>
+    <div class="two-col">
+      <section class="panel"><div class="panel-head"><div><h3>프로젝트</h3><p>클라이언트 업무 중심으로 관리합니다.</p></div>
+        <div class="seg">${["open","all","focus","review","waiting"].map(k=>`<button data-filter="${k}" class="${state.filter===k?"active":""}">${({open:"진행",all:"전체",focus:"집중",review:"검수",waiting:"대기"})[k]}</button>`).join("")}</div>
+      </div><div class="project-grid">${list.length?list.map(projectCard).join(""):'<div class="empty">조건에 맞는 프로젝트가 없습니다.</div>'}</div></section>
+      <aside class="panel"><div class="panel-head"><div><h3>지금 확인할 일</h3><p>우선순위와 마감 기준</p></div></div>
+        <div class="focus-list">${focused.map(p=>`<div class="focus-item" data-open-project="${esc(p.id)}"><small>${esc(p.client)} · ${esc(p.stage||"진행")}</small><strong>${esc(p.name)}</strong><p>${esc(p.nextAction||"다음 할 일을 입력하세요.")}</p></div>`).join("")}</div>
+      </aside>
+    </div>
+  </section>`;
+}
+
+function monthData(base){
+  const y=base.getFullYear(),m=base.getMonth();const first=new Date(y,m,1);const start=new Date(y,m,1-first.getDay());const days=[];
+  for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);days.push(d)}return {y,m,days};
+}
+function eventsOn(key){return state.events.filter(e=>(e.start||"")<=key&&(e.end||e.start||"")>=key)}
+function calendarPage(){
+  const {y,m,days}=monthData(state.month);
+  const upcoming=[...state.events].filter(e=>(e.end||e.start||"")>=todayKey()).sort((a,b)=>(a.start||"").localeCompare(b.start||"")).slice(0,12);
+  return `<section class="page">
+    <div class="page-head"><div><p class="eyebrow">CALENDAR</p><h2>캘린더</h2><p>프로젝트 일정의 보조 뷰입니다.</p></div><div style="display:flex;gap:7px"><button class="btn" id="prevMonth">←</button><button class="btn" id="todayMonth">오늘</button><button class="btn" id="nextMonth">→</button></div></div>
+    <div class="calendar-layout">
+      <section class="panel"><div class="panel-head"><div><h3>${y}년 ${m+1}월</h3><p>등록된 일정 ${state.events.length}건</p></div></div>
+        <div class="calendar-scroll"><div class="month-grid">
+          ${["일","월","화","수","목","금","토"].map(x=>`<div class="day-head">${x}</div>`).join("")}
+          ${days.map(d=>{const key=todayKey(d),ev=eventsOn(key);return `<div class="day ${d.getMonth()!==m?"muted":""}"><div class="day-num">${d.getDate()}</div>${ev.slice(0,3).map(e=>`<span class="event-chip"><b>${esc(e.client||"")}</b>${esc(e.title||"일정")}</span>`).join("")}${ev.length>3?`<span class="event-chip">+${ev.length-3}</span>`:""}</div>`}).join("")}
+        </div></div>
+      </section>
+      <aside class="panel"><div class="panel-head"><div><h3>다가오는 일정</h3><p>오늘 이후 일정</p></div></div><div class="agenda">${upcoming.length?upcoming.map(e=>`<div class="agenda-item"><time>${esc(e.start||"")}</time><strong>${esc(e.title||"일정")}</strong><small>${esc(e.client||"")} · ${esc(e.member||"")}</small></div>`).join(""):'<div class="empty">다가오는 일정이 없습니다.</div>'}</div></aside>
+    </div>
+  </section>`;
+}
+function financePage(){
+  const total=state.contracts.reduce((n,c)=>n+bill(c),0), recv=state.contracts.reduce((n,c)=>n+received(c),0), out=state.contracts.reduce((n,c)=>n+outstanding(c),0);
+  return `<section class="page">
+    <div class="page-head"><div><p class="eyebrow">CONTRACT & CASH</p><h2>자금 · 계약</h2><p>기존 Firestore 계약·입금 데이터를 그대로 연결했습니다.</p></div></div>
+    <div class="summary-grid">
+      <div class="summary-card"><span>현재 잔고</span><strong style="font-size:20px">${won(reserve())}</strong><small>입금 − 지출</small></div>
+      <div class="summary-card"><span>총 청구액</span><strong style="font-size:20px">${won(total)}</strong><small>VAT 포함</small></div>
+      <div class="summary-card"><span>총 입금액</span><strong style="font-size:20px">${won(recv)}</strong><small>실제 입금</small></div>
+      <div class="summary-card"><span>미수금</span><strong style="font-size:20px">${won(out)}</strong><small>미입금</small></div>
+      <div class="summary-card"><span>진행 계약</span><strong>${state.contracts.filter(c=>outstanding(c)>0).length}</strong><small>잔액 남음</small></div>
+    </div>
+    <section class="panel"><div class="panel-head"><div><h
