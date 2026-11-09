@@ -1,18 +1,17 @@
-# NINEWORKS CRM V2
+# NINEWORKS OS
 
-Project Operating System for NINEWORKS.
+2026-11-09 full redesign reset.
 
-## Structure
-- HOME — project status and next actions
-- Calendar — schedule overview
-- Finance & Contracts — existing Firestore contract/cash data
-- Clients — client → project → contract links
-- Own Business — NINEWORKS, AESOST, AESOST PLACE, SOLARBIZ, GROW FARMERS, 정월재
+- Previous V2: `pre-redesign-20261109`
+- Older legacy: `legacy-v1`
+- Current main: clean information architecture only
 
-## Stack
-- Static HTML/CSS/JavaScript
-- Firebase Authentication
-- Cloud Firestore
-- GitHub Pages + custom domain
+## Current IA
+1. HOME
+2. Projects
+3. Calendar
+4. Finance & Contracts
+5. Clients
+6. Own Business
 
-The previous implementation is preserved in the `legacy-v1` branch.
+No previous project seed data or legacy UI is loaded on main.
