@@ -259,4 +259,39 @@ function projectDrawer(id){
     <div class="detail-hero">${cover(p)}</div>
     <section class="detail-section"><div class="chips"><span class="chip">${esc(p.client||"")}</span>${statusMarkup(p.status)}<span class="chip">${esc(dueLabel(p))}</span></div><p style="color:var(--muted);font-size:12px;line-height:1.7">${esc(p.summary||"")}</p></section>
     <section class="detail-section"><h4>현재 상태</h4><div class="detail-grid"><div class="detail-box"><span>현재 단계</span><strong>${esc(p.stage||"—")}</strong></div><div class="detail-box"><span>지금 해야 할 일</span><strong>${esc(p.nextAction||"—")}</strong></div></div></section>
-    <section class="detail-section"><h4>업무 구조</h4>${sections.map(g=>`<div class="group">
+    <section class="detail-section"><h4>업무 구조</h4>${sections.map(g=>`<div class="group"><h5>${esc(g.title||"업무")}</h5><div class="chips">${(g.items||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div></div>`).join("")}</section>
+    ${recent.length?`<section class="detail-section"><h4>최근 작업</h4><div class="history">${recent.map(x=>`<p>${esc(x)}</p>`).join("")}</div></section>`:""}
+    ${next.length?`<section class="detail-section"><h4>다음 단계</h4><div class="history">${next.map((x,i)=>`<p><b>${String(i+1).padStart(2,"0")}</b> · ${esc(x)}</p>`).join("")}</div></section>`:""}
+    ${contracts.length?`<section class="detail-section"><h4>계약 연결</h4>${contracts.map(c=>`<div class="detail-box" style="margin-bottom:7px"><span>${esc(c.projectName||p.name)}</span><strong>${won(bill(c))} · 미수 ${won(outstanding(c))}</strong></div>`).join("")}</section>`:""}
+    <div class="actions"><button class="btn" data-edit-project="${esc(p.id)}">프로젝트 수정</button></div>
+  </div>`);
+}
+function businessDrawer(id){
+  const b=state.businesses.find(x=>x.id===id);if(!b)return;
+  openDrawer(`<div class="drawer-head"><div><p class="eyebrow">${esc(b.label||"OWN BUSINESS")}</p><h2>${esc(b.name)}</h2></div><button class="x" data-close-drawer>×</button></div><div class="drawer-body"><div class="detail-hero">${cover(b)}</div>
+  <section class="detail-section"><p style="color:var(--muted);font-size:12px;line-height:1.7">${esc(b.summary||"")}</p></section>
+  <section class="detail-section"><h4>운영 영역</h4>${(b.workSections||[]).map(g=>`<div class="group"><h5>${esc(g.title)}</h5><div class="chips">${(g.items||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div></div>`).join("")}</section>
+  </div>`);
+}
+function clientDrawer(name){
+  const c=state.clients.find(x=>x.name===name), ps=state.projects.filter(p=>p.client===name), cs=state.contracts.filter(x=>x.clientName===name);
+  openDrawer(`<div class="drawer-head"><div><p class="eyebrow">CLIENT</p><h2>${esc(name)}</h2></div><button class="x" data-close-drawer>×</button></div><div class="drawer-body">
+  <section class="detail-section"><h4>기본 정보</h4><div class="detail-grid"><div class="detail-box"><span>분류</span><strong>${esc(c?.type||"—")}</strong></div><div class="detail-box"><span>담당자</span><strong>${esc(c?.member||"—")}</strong></div></div></section>
+  <section class="detail-section"><h4>진행 프로젝트</h4>${ps.length?ps.map(p=>`<div class="focus-item" data-open-project="${esc(p.id)}"><small>${esc(p.stage||"")}</small><strong>${esc(p.name)}</strong><p>${esc(p.nextAction||"")}</p></div>`).join(""):'<div class="empty">연결 프로젝트가 없습니다.</div>'}</section>
+  <section class="detail-section"><h4>계약</h4>${cs.length?cs.map(x=>`<div class="detail-box" style="margin-bottom:7px"><span>${esc(x.projectName||"계약")}</span><strong>${won(bill(x))} · 미수 ${won(outstanding(x))}</strong></div>`).join(""):'<div class="empty">계약 데이터가 없습니다.</div>'}</section>
+  </div>`);
+}
+
+function openProjectModal(id=""){
+  const p=state.projects.find(x=>x.id===id)||{status:"active",priority:"normal",workSections:[],recentWork:[],nextSteps:[]};
+  $("#modal").innerHTML=`<div class="modal-head"><div><p class="eyebrow">PROJECT</p><h3>${id?"프로젝트 수정":"프로젝트 추가"}</h3></div><button class="x" data-close-modal>×</button></div>
+  <form id="projectForm" class="modal-body">
+    <input type="hidden" id="pId" value="${esc(p.id||"")}">
+    <div class="form-grid"><label class="field"><span>프로젝트명</span><input id="pName" required value="${esc(p.name||"")}"></label><label class="field"><span>클라이언트</span><input id="pClient" required value="${esc(p.client||"")}"></label></div>
+    <label class="field"><span>간략 설명</span><input id="pSummary" value="${esc(p.summary||"")}"></label>
+    <div class="form-grid"><label class="field"><span>현재 단계</span><input id="pStage" value="${esc(p.stage||"")}"></label><label class="field"><span>마감일</span><input id="pDue" type="date" value="${esc(p.due||"")}"></label></div>
+    <label class="field"><span>지금 해야 할 일</span><textarea id="pNext" rows="2">${esc(p.nextAction||"")}</textarea></label>
+    <div class="form-grid"><label class="field"><span>상태</span><select id="pStatus">${["active","review","waiting","hold","done"].map(x=>`<option value="${x}" ${p.status===x?"selected":""}>${STATUS[x][0]}</option>`).join("")}</select></label><label class="field"><span>우선순위</span><select id="pPriority"><option value="focus" ${p.priority==="focus"?"selected":""}>집중</option><option value="normal" ${p.priority==="normal"?"selected":""}>일반</option><option value="low" ${p.priority==="low"?"selected":""}>후순위</option></select></label></div>
+    <label class="field"><span>대표 이미지 URL</span><input id="pImage" type="url" value="${esc(p.imageUrl||"")}"></label>
+    <label class="field"><span>업무 항목 · 한 줄에 하나씩</span><textarea id="pWorks" rows="6">${esc((p.workstreams||[]).join("\n"))}</textarea></label>
+    <label class="field"><span>최근 작
