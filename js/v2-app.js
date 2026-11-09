@@ -294,4 +294,63 @@ function openProjectModal(id=""){
     <div class="form-grid"><label class="field"><span>상태</span><select id="pStatus">${["active","review","waiting","hold","done"].map(x=>`<option value="${x}" ${p.status===x?"selected":""}>${STATUS[x][0]}</option>`).join("")}</select></label><label class="field"><span>우선순위</span><select id="pPriority"><option value="focus" ${p.priority==="focus"?"selected":""}>집중</option><option value="normal" ${p.priority==="normal"?"selected":""}>일반</option><option value="low" ${p.priority==="low"?"selected":""}>후순위</option></select></label></div>
     <label class="field"><span>대표 이미지 URL</span><input id="pImage" type="url" value="${esc(p.imageUrl||"")}"></label>
     <label class="field"><span>업무 항목 · 한 줄에 하나씩</span><textarea id="pWorks" rows="6">${esc((p.workstreams||[]).join("\n"))}</textarea></label>
-    <label class="field"><span>최근 작
+    <label class="field"><span>최근 작업 · 한 줄에 하나씩</span><textarea id="pRecent" rows="4">${esc((p.recentWork||[]).join("\n"))}</textarea></label>
+    <label class="field"><span>다음 단계 · 한 줄에 하나씩</span><textarea id="pSteps" rows="4">${esc((p.nextSteps||[]).join("\n"))}</textarea></label>
+    <div class="actions">${id?`<button type="button" class="btn" id="deleteProject">삭제</button>`:""}<button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">저장</button></div>
+  </form>`;
+  $("#modalBackdrop").classList.remove("hidden");$("#modal").classList.remove("hidden");document.body.style.overflow="hidden";
+}
+function closeModal(){$("#modalBackdrop").classList.add("hidden");$("#modal").classList.add("hidden");document.body.style.overflow="";}
+async function persistProjects(next){
+  await setDoc(doc(db,"meta","project_dashboard"),{projects:next,businesses:state.businesses,updatedAt:serverTimestamp(),updatedBy:state.user.uid},{merge:true});
+}
+
+function bindShell(){
+  document.addEventListener("click", async e=>{
+    const route=e.target.closest("[data-route]"); if(route){state.route=route.dataset.route;renderPage();return}
+    const filter=e.target.closest("[data-filter]");if(filter){state.filter=filter.dataset.filter;renderPage();return}
+    const project=e.target.closest("[data-open-project]");if(project){projectDrawer(project.dataset.openProject);return}
+    const business=e.target.closest("[data-open-business]");if(business){businessDrawer(business.dataset.openBusiness);return}
+    const client=e.target.closest("[data-open-client]");if(client){clientDrawer(client.dataset.openClient);return}
+    if(e.target.closest("[data-close-drawer]")||e.target.id==="drawerBackdrop"){closeDrawer();return}
+    if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return}
+    if(e.target.id==="addProject"){openProjectModal();return}
+    const edit=e.target.closest("[data-edit-project]");if(edit){closeDrawer();openProjectModal(edit.dataset.editProject);return}
+    if(e.target.id==="prevMonth"){state.month=new Date(state.month.getFullYear(),state.month.getMonth()-1,1);renderPage();return}
+    if(e.target.id==="nextMonth"){state.month=new Date(state.month.getFullYear(),state.month.getMonth()+1,1);renderPage();return}
+    if(e.target.id==="todayMonth"){state.month=new Date();renderPage();return}
+    if(e.target.id==="deleteProject"){
+      const id=$("#pId").value,p=state.projects.find(x=>x.id===id);if(!p||!confirm(`${p.name} 프로젝트를 삭제할까요?`))return;
+      try{await persistProjects(state.projects.filter(x=>x.id!==id));closeModal();toast("프로젝트를 삭제했습니다.")}catch(err){console.error(err);toast("삭제하지 못했습니다.")}
+    }
+  });
+
+  $("#globalSearch")?.addEventListener("input",e=>{state.search=e.target.value;renderPage()});
+  $("#logoutBtn")?.addEventListener("click",()=>signOut(auth));
+  const theme=()=>{const next=document.body.dataset.theme==="dark"?"light":"dark";document.body.dataset.theme=next;localStorage.setItem("nineworks-v2-theme",next)};
+  $("#themeBtn")?.addEventListener("click",theme);$("#mobileThemeBtn")?.addEventListener("click",theme);
+
+  document.addEventListener("submit",async e=>{
+    if(e.target.id!=="projectForm")return;e.preventDefault();
+    const id=$("#pId").value||uid("project"),prev=state.projects.find(x=>x.id===id);
+    const works=$("#pWorks").value.split("\n").map(x=>x.trim()).filter(Boolean);
+    const recent=$("#pRecent").value.split("\n").map(x=>x.trim()).filter(Boolean);
+    const steps=$("#pSteps").value.split("\n").map(x=>x.trim()).filter(Boolean);
+    const p={...prev,id,name:$("#pName").value.trim(),client:$("#pClient").value.trim(),summary:$("#pSummary").value.trim(),stage:$("#pStage").value.trim(),due:$("#pDue").value,nextAction:$("#pNext").value.trim(),status:$("#pStatus").value,priority:$("#pPriority").value,imageUrl:$("#pImage").value.trim(),workstreams:works,recentWork:recent,nextSteps:steps,updatedAt:Date.now(),createdAt:prev?.createdAt||Date.now()};
+    const next=prev?state.projects.map(x=>x.id===id?p:x):[p,...state.projects];
+    try{await persistProjects(next);closeModal();toast("프로젝트를 저장했습니다.")}catch(err){console.error(err);toast("저장하지 못했습니다.")}
+  });
+}
+
+async function subscribeData(user){
+  cleanup();state.user=user;
+  try{const snap=await getDoc(doc(db,"users",user.uid));state.profile=snap.exists()?snap.data():{name:"박재영",role:"owner"}}catch{state.profile={name:"박재영",role:"owner"}}
+  renderApp();
+
+  state.unsubs.push(onSnapshot(doc(db,"meta","project_dashboard"),snap=>{
+    const d=snap.exists()?snap.data():{};
+    state.projects=Array.isArray(d.projects)?d.projects:[];
+    state.businesses=Array.isArray(d.businesses)&&d.businesses.length?d.businesses:BUSINESS_DEFAULTS;
+    renderPage();
+  },()=>{}));
+  state.unsubs.push(onSnapshot(collection(db,"clients"),snap=>{sta
