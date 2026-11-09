@@ -223,4 +223,40 @@ function financePage(){
       <div class="summary-card"><span>미수금</span><strong style="font-size:20px">${won(out)}</strong><small>미입금</small></div>
       <div class="summary-card"><span>진행 계약</span><strong>${state.contracts.filter(c=>outstanding(c)>0).length}</strong><small>잔액 남음</small></div>
     </div>
-    <section class="panel"><div class="panel-head"><div><h
+    <section class="panel"><div class="panel-head"><div><h3>계약 현황</h3><p>클라이언트와 프로젝트 기준</p></div></div><div class="table-wrap"><table class="table"><thead><tr><th>클라이언트</th><th>프로젝트</th><th>계약 유형</th><th>총 청구액</th><th>입금</th><th>미수</th><th>계약일</th></tr></thead>
+      <tbody>${state.contracts.length?state.contracts.map(c=>`<tr><td><strong>${esc(c.clientName||"—")}</strong></td><td>${esc(c.projectName||"—")}</td><td>${c.contractType==="monthly"?"월단위":"선금·잔금"}</td><td>${won(bill(c))}</td><td>${won(received(c))}</td><td>${won(outstanding(c))}</td><td>${esc(c.contractDate||"—")}</td></tr>`).join(""):'<tr><td colspan="7" class="empty">계약 데이터가 없습니다.</td></tr>'}</tbody></table></div></section>
+  </section>`;
+}
+function clientsPage(){
+  const q=state.search.trim().toLowerCase();
+  const rows=state.clients.filter(c=>!q||`${c.name} ${c.type} ${c.work}`.toLowerCase().includes(q));
+  return `<section class="page"><div class="page-head"><div><p class="eyebrow">CLIENTS</p><h2>클라이언트</h2><p>클라이언트 → 프로젝트 → 계약 흐름으로 연결합니다.</p></div></div>
+    <section class="panel"><div class="panel-head"><div><h3>클라이언트 목록</h3><p>${rows.length} CLIENTS</p></div></div><div class="table-wrap"><table class="table"><thead><tr><th>클라이언트</th><th>분류</th><th>현재 업무</th><th>프로젝트</th><th>계약</th><th>담당자</th></tr></thead><tbody>
+    ${rows.length?rows.map(c=>{const ps=state.projects.filter(p=>p.client===c.name);const cs=state.contracts.filter(x=>x.clientName===c.name);return `<tr data-open-client="${esc(c.name)}"><td><strong>${esc(c.name)}</strong></td><td>${esc(c.type||"—")}</td><td>${esc(c.work||"—")}</td><td>${ps.length}건</td><td>${cs.length}건</td><td>${esc(c.member||"—")}</td></tr>`}).join(""):'<tr><td colspan="6" class="empty">클라이언트가 없습니다.</td></tr>'}
+    </tbody></table></div></section></section>`;
+}
+function businessCard(b){return `<article class="project-card" data-open-business="${esc(b.id)}">${cover(b)}<div class="card-body"><div class="meta"><span>${esc(b.label||"OWN BUSINESS")}</span><span class="status">자체 운영</span></div><h3>${esc(b.name)}</h3><p>${esc(b.summary||"")}</p><div class="chips">${(b.workSections||[]).slice(0,2).flatMap(g=>g.items||[]).slice(0,5).map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div><div class="card-footer"><span>OWN BUSINESS</span><button class="link-btn" data-open-business="${esc(b.id)}">사업 보기 →</button></div></div></article>`}
+function businessesPage(){return `<section class="page"><div class="page-head"><div><p class="eyebrow">OWN BUSINESS</p><h2>내 사업체</h2><p>외주 프로젝트와 분리해 직접 운영하는 사업·서비스를 관리합니다.</p></div></div><section class="panel"><div class="business-grid">${state.businesses.map(businessCard).join("")}</div></section></section>`}
+
+function renderPage(){
+  const root=$("#pageRoot"), titles={home:"HOME",calendar:"캘린더",finance:"자금 · 계약",clients:"클라이언트",businesses:"내 사업체"};
+  $("#routeTitle").textContent=titles[state.route]||"HOME";
+  $$(".nav [data-route]").forEach(b=>b.classList.toggle("active",b.dataset.route===state.route));
+  root.innerHTML = state.route==="calendar"?calendarPage():state.route==="finance"?financePage():state.route==="clients"?clientsPage():state.route==="businesses"?businessesPage():homePage();
+}
+function renderApp(){ $("#app").innerHTML=shellView(); renderPage(); bindShell(); }
+
+function openDrawer(html){
+  $("#drawer").innerHTML=html; $("#drawer").classList.remove("hidden"); $("#drawerBackdrop").classList.remove("hidden"); document.body.style.overflow="hidden";
+}
+function closeDrawer(){ $("#drawer").classList.add("hidden"); $("#drawerBackdrop").classList.add("hidden"); document.body.style.overflow=""; }
+function projectDrawer(id){
+  const p=state.projects.find(x=>x.id===id); if(!p)return;
+  const sections=Array.isArray(p.workSections)&&p.workSections.length?p.workSections:[{title:"진행 업무",items:p.workstreams||[]}];
+  const recent=p.recentWork||[], next=p.nextSteps||[];
+  const contracts=state.contracts.filter(c=>c.clientName===p.client && (!c.projectName||c.projectName===p.name));
+  openDrawer(`<div class="drawer-head"><div><p class="eyebrow">${esc(p.client||"PROJECT")}</p><h2>${esc(p.name)}</h2></div><button class="x" data-close-drawer>×</button></div><div class="drawer-body">
+    <div class="detail-hero">${cover(p)}</div>
+    <section class="detail-section"><div class="chips"><span class="chip">${esc(p.client||"")}</span>${statusMarkup(p.status)}<span class="chip">${esc(dueLabel(p))}</span></div><p style="color:var(--muted);font-size:12px;line-height:1.7">${esc(p.summary||"")}</p></section>
+    <section class="detail-section"><h4>현재 상태</h4><div class="detail-grid"><div class="detail-box"><span>현재 단계</span><strong>${esc(p.stage||"—")}</strong></div><div class="detail-box"><span>지금 해야 할 일</span><strong>${esc(p.nextAction||"—")}</strong></div></div></section>
+    <section class="detail-section"><h4>업무 구조</h4>${sections.map(g=>`<div class="group">
