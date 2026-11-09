@@ -86,4 +86,90 @@ function received(c){
 function supply(c){return Number(c.supplyAmount??c.contractAmount??0)}
 function bill(c){const s=supply(c);return s+(c.vatSeparate===false?0:Math.round(s*.1))}
 function outstanding(c){return Math.max(0,bill(c)-received(c))}
-function reserve(){return state.ledger
+function reserve(){return state.ledger.reduce((n,x)=>x.type==="expense"?n-Math.abs(Number(x.amount||0)):n+Number(x.amount||0),0)}
+
+function loginView(){
+  return `
+  <div class="login-shell">
+    <section class="login-brand">
+      <img src="./assets/nineworks-logo.svg" alt="NINEWORKS">
+      <div><p class="eyebrow">PROJECT OPERATING SYSTEM</p><h1>Work.<br>Clear.</h1><p>프로젝특, 클라이언트, 일정과 계약을 하나의 흐름으로 관리합니다.</p></div>
+      <small style="color:#686863;font-size:10px">NINEWORKS · INTERNAL WORKSPACE</small>
+    </section>
+    <section class="login-form-wrap">
+      <form id="loginForm" class="login-card">
+        <p class="eyebrow">ADMIN WORKSPACE</p><h2>로그인</h2><p>등록된 나인웍스 계정으로 접속하세요.</p>
+        <label class="field"><span>이메일</span><input id="loginEmail" type="email" autocomplete="email" required placeholder="admin@nineworks.kr"></label>
+        <label class="field"><span>비밀번호</span><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Password"></label>
+        <button class="btn primary full" type="submit">로그인</button>
+        <p id="loginMsg" class="login-msg"></p>
+      </form>
+    </section>
+  </div>`;
+}
+
+function shellView(){
+  return `
+  <div class="shell">
+    <aside class="sidebar">
+      <button class="logo-btn" data-route="home"><img src="./assets/nineworks-logo.svg" alt="NINEWORKS"></button>
+      <nav class="nav">
+        <button data-route="home" class="active">HOME <span>01</span></button>
+        <button data-route="calendar">캘린더 <span>02</span></button>
+        <button data-route="finance">자금 · 계약 <span>03</span></button>
+        <button data-route="clients">클라이언트 <span>04</span></button>
+        <button data-route="businesses">내 사업체 <span>05</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="profile"><strong>${esc(state.profile?.name||"박재영")}</strong><span>${esc(state.profile?.role||"OWNER")}</span></div>
+        <button id="themeBtn" class="btn ghost">화면 모드 전환</button>
+        <button id="logoutBtn" class="btn ghost">로그아웃</button>
+      </div>
+    </aside>
+    <main class="content">
+      <header class="topbar">
+        <h1 id="routeTitle">HOME</h1>
+        <div class="top-actions"><input id="globalSearch" class="search" type="search" placeholder="프로젝트 · 클라이언트 검색"><button id="mobileThemeBtn" class="btn ghost">◐</button></div>
+      </header>
+      <div id="pageRoot"></div>
+    </main>
+  </div>
+  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div><aside id="drawer" class="drawer hidden"></aside>
+  <div id="modalBackdrop" class="modal-backdrop hidden"></div><section id="modal" class="modal hidden"></section>
+  <div id="toast" class="hidden" style="position:fixed;right:22px;bottom:22px;z-index:100;background:#171717;color:#fff;padding:11px 14px;border-radius:10px;font-size:11px"></div>`;
+}
+
+function projectVisible(p){
+  const q=state.search.trim().toLowerCase();
+  if(q && !`${p.name} ${p.client} ${p.summary} ${p.stage} ${p.nextAction}`.toLowerCase().includes(q)) return false;
+  if(state.filter==="all")return true;
+  if(state.filter==="focus")return p.priority==="focus"&&p.status!=="done";
+  if(state.filter==="review")return p.status==="review";
+  if(state.filter==="waiting")return p.status==="waiting";
+  return p.status!=="done"&&p.status!=="hold";
+}
+function projectCard(p){
+  return `<article class="project-card" data-open-project="${esc(p.id)}">
+    ${cover(p)}
+    <div class="card-body">
+      <div class="meta"><span>${esc(p.client||"—")}</span>${statusMarkup(p.status)}</div>
+      <h3>${esc(p.name)}</h3><p>${esc(p.summary||"프로젝트 설명을 입력하세요.")}</p>
+      <div class="info-row"><span>현재 단계</span><strong>${esc(p.stage||"—")}</strong></div>
+      <div class="info-row"><span>지금 할 일</span><strong>${esc(p.nextAction||"—")}</strong></div>
+      <div class="card-footer"><span>${esc(dueLabel(p))}</span><button class="link-btn" data-open-project="${esc(p.id)}">상세보기 →</button></div>
+    </div>
+  </article>`;
+}
+function homePage(){
+  const open=state.projects.filter(p=>p.status!=="done"&&p.status!=="hold").length;
+  const focus=state.projects.filter(p=>p.priority==="focus"&&p.status!=="done").length;
+  const review=state.projects.filter(p=>p.status==="review").length;
+  const waiting=state.projects.filter(p=>p.status==="waiting").length;
+  const due=state.projects.filter(p=>{const n=daysUntil(p.due);return n!==null&&n>=0&&n<=14&&p.status!=="done"}).length;
+  const list=state.projects.filter(projectVisible);
+  const focused=[...state.projects].filter(p=>p.status!=="done"&&p.status!=="hold").sort((a,b)=>{
+    const pa=a.priority==="focus"?0:1,pb=b.priority==="focus"?0:1;if(pa!==pb)return pa-pb;
+    return (daysUntil(a.due)??9999)-(daysUntil(b.due)??9999);
+  }).slice(0,6);
+  return `<section class="page">
+    <div class="page-head"><div><p class="eyebrow">PROJECT 
