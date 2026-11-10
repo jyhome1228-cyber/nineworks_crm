@@ -1,70 +1,172 @@
-const $=(s,r=document)=>r.querySelector(s);
-const state={route:"home",search:"",filter:"active"};
-const routes=[
-  ["home","HOME","01"],["projects","프로젝트","02"],["calendar","캘린더","03"],
-  ["finance","자금 · 계약","04"],["clients","클라이언트","05"],["business","내 사업체","06"]
-];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+const config={apiKey:"AIzaSyBXhDb0jyhIR4G1ho6Y7V8sibwvENI2r8k",authDomain:"nineworks-crm.firebaseapp.com",projectId:"nineworks-crm",storageBucket:"nineworks-crm.firebasestorage.app",messagingSenderId:"1096147745343",appId:"1:1096147745343:web:cbec82631cbc2d9db1968a"};
+const firebaseApp=initializeApp(config);
+const auth=getAuth(firebaseApp);
+const db=getFirestore(firebaseApp);
+setPersistence(auth,browserLocalPersistence).catch(function(){});
+
+const $=function(s,r){return (r||document).querySelector(s);};
+const esc=function(v){return String(v==null?"":v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");};
+const uid=function(p){return p+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);};
+const today=function(){return new Date().toISOString().slice(0,10);};
+const won=function(v){return Math.round(Number(v||0)).toLocaleString("ko-KR")+"원";};
+
+const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],activeClientId:"",query:"",unsubs:[]};
+
+function cleanup(){state.unsubs.forEach(function(f){if(f)f();});state.unsubs=[];}
+function clientName(c){return c&&c.name?c.name:(c&&c.clientName?c.clientName:"이름 없음");}
+function activeClient(){return state.clients.find(function(c){return c.id===state.activeClientId;})||null;}
+function formatDate(v){if(!v)return "—";var d=new Date(v+"T00:00:00");if(isNaN(d.getTime()))return v;return String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");}
+function timestampMs(v){if(!v)return 0;if(typeof v==="number")return v;if(v&&typeof v.toMillis==="function")return v.toMillis();return 0;}
+function toast(msg){var el=$("#toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";document.body.appendChild(el);}el.textContent=msg;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){el.hidden=true;},1800);}
+function initials(name){return String(name||"NW").trim().slice(0,2).toUpperCase();}
+function clientTodos(c){var n=clientName(c);return state.todos.filter(function(t){return !t.done&&(t.clientId===c.id||(!t.clientId&&t.client===n));});}
+function clientLogs(c,type){var n=clientName(c);return state.logs.filter(function(l){return (l.clientId===c.id||(!l.clientId&&l.client===n))&&((l.type||"work")===type);}).sort(function(a,b){return (b.date||"").localeCompare(a.date||"")+(Number(b.createdAtMs||0)-Number(a.createdAtMs||0));});}
+function clientContracts(c){var n=clientName(c);return state.contracts.filter(function(x){return x.clientId===c.id||x.clientName===n;});}
+function supply(c){return Number(c.supplyAmount==null?c.contractAmount:c.supplyAmount)||0;}
+function bill(c){var s=supply(c);return s+(c.vatSeparate===false?0:Math.round(s*.1));}
+function received(c){if(c.contractType==="monthly")return Number(c.payments&&c.payments.monthly&&c.payments.monthly.amount||0);return ["advance","balance"].reduce(function(sum,key){var p=c.payments&&c.payments[key];return sum+(p&&p.paid?Number(p.amount||0):0);},0);}
+function outstanding(c){return Math.max(0,bill(c)-received(c));}
+
+function loginView(){
+  return '<div class="login"><section class="login-visual"><img class="login-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><div class="login-copy"><p class="eyebrow">CLIENT WORKSPACE</p><h1>Client.<br>Work.<br>Log.</h1><p>클라이언트별 현재 작업, 작업 로그, 미팅 내용과 계약 정보를 한 곳에 계속 쌓아가는 나인웍스 내부 워크스페이스.</p></div><span style="color:#50504c;font-size:9px">NINEWORKS · INTERNAL ONLY</span></section><section class="login-form-wrap"><form id="loginForm" class="login-card"><p class="eyebrow">ADMIN ACCESS</p><h2>로그인</h2><p>기존 나인웍스 관리자 계정으로 접속합니다.</p><label class="field"><span>이메일</span><input id="loginEmail" type="email" autocomplete="email" required></label><label class="field"><span>비밀번호</span><input id="loginPassword" type="password" autocomplete="current-password" required></label><button class="btn primary full" type="submit">로그인</button><p id="loginMsg" class="login-msg"></p></form></section></div>';
+}
+
+function clientList(){
+  var q=state.query.trim().toLowerCase();
+  var list=state.clients.filter(function(c){return !q||(clientName(c)+" "+(c.type||"")).toLowerCase().includes(q);}).sort(function(a,b){return clientName(a).localeCompare(clientName(b),"ko");});
+  if(!list.length)return '<div class="empty">등록된 클라이언트가 없습니다.</div>';
+  return list.map(function(c){
+    var tasks=clientTodos(c).length;
+    return '<button class="client-button '+(c.id===state.activeClientId?'active':'')+'" data-client-id="'+esc(c.id)+'"><span class="client-avatar">'+esc(initials(clientName(c)))+'</span><span><strong>'+esc(clientName(c))+'</strong><small>'+esc(c.type||"CLIENT")+'</small></span><span class="client-count">'+tasks+'</span></button>';
+  }).join("");
+}
+
 function shell(){
-  return `<div class="app">
-    <aside class="sidebar">
-      <button class="logo" data-route="home"><img src="./assets/nineworks-logo.svg" alt="NINEWORKS"></button>
-      <nav class="nav">${routes.map(([id,label,n])=>`<button data-route="${id}" class="${state.route===id?"active":""}">${label}<span>${n}</span></button>`).join("")}</nav>
-      <div class="side-foot"><strong>NINEWORKS OS</strong><small>Project Operating System</small></div>
-    </aside>
-    <main class="content">
-      <header class="topbar">
-        <h1 id="routeTitle"></h1>
-        <div class="top-actions"><input class="search" id="search" type="search" placeholder="검색"><button class="btn primary" id="quickAdd">＋ 새로 만들기</button></div>
-      </header>
-      <div id="page"></div>
-    </main>
-  </div>`;
+  return '<div class="workspace"><aside id="sidebar" class="sidebar"><div class="brand"><img src="./assets/nineworks-logo.svg" alt="NINEWORKS"></div><div class="side-label">CLIENTS</div><label class="client-search"><input id="clientSearch" type="search" placeholder="클라이언트 검색"></label><div id="clientList" class="client-list">'+clientList()+'</div><div class="side-actions"><button class="btn primary" id="addClient">＋ 클라이언트 추가</button><div class="user-mini"><strong>'+esc(state.profile&&state.profile.name||state.user&&state.user.email||"NINEWORKS")+'</strong><span>'+esc(state.profile&&state.profile.role||"OWNER")+'</span></div><button class="btn" id="logoutBtn">로그아웃</button></div></aside><main class="main"><header class="topbar"><div class="topbar-title"><button id="mobileClients" class="btn mobile-client-toggle">CLIENTS</button><h1>CLIENT WORKSPACE</h1><span>WORK · MEETING · CONTRACT</span></div><div class="topbar-actions"><button class="btn" id="addWorkLog">＋ 작업 로그</button><button class="btn primary" id="addMeeting">＋ 미팅 기록</button></div></header><div id="content" class="content"></div></main></div><div id="modalBackdrop" class="modal-backdrop" hidden></div><section id="modal" class="modal" hidden></section>';
 }
-function empty(title,copy){
-  return `<div class="empty"><div class="mark">＋</div><strong>${title}</strong><p>${copy}</p></div>`;
+
+function taskMarkup(t){
+  return '<div class="task"><button class="check" data-complete-task="'+esc(t.id)+'" title="완료">✓</button><div><strong>'+esc(t.title||"업무")+'</strong><small>'+esc(t.memo||"")+'</small>'+(t.project?'<div style="margin-top:6px"><span class="task-project">'+esc(t.project)+'</span></div>':'')+'</div><span class="task-due">'+esc(formatDate(t.due))+'</span></div>';
 }
-function home(){
-  return `<section class="page">
-    <div class="page-head"><div><p class="eyebrow">WORKSPACE</p><h2>오늘의 업무</h2><p>프로젝트와 해야 할 일을 가장 먼저 보는 화면입니다.</p></div><button class="btn primary">＋ 프로젝트 추가</button></div>
-    <div class="summary">
-      <div class="summary-card"><span>진행 프로젝트</span><strong>0</strong><small>ACTIVE</small></div>
-      <div class="summary-card"><span>오늘 할 일</span><strong>0</strong><small>TODAY</small></div>
-      <div class="summary-card"><span>검수 필요</span><strong>0</strong><small>REVIEW</small></div>
-      <div class="summary-card"><span>대기</span><strong>0</strong><small>WAITING</small></div>
-      <div class="summary-card"><span>마감 임박</span><strong>0</strong><small>DEADLINE</small></div>
-    </div>
-    <div class="grid">
-      <section class="panel"><div class="panel-head"><div><h3>프로젝트</h3><p>클라이언트 업무를 프로젝트 단위로 관리합니다.</p></div><div class="section-tabs"><button class="active">진행</button><button>전체</button><button>검수</button><button>대기</button></div></div>${empty("아직 프로젝트가 없습니다.","새 CRM은 빈 상태에서 시작합니다. 프로젝트를 추가하면 이곳에 이미지, 간략 설명, 현재 단계, 지금 해야 할 일이 표시됩니다.")}</section>
-      <aside class="panel"><div class="panel-head"><div><h3>지금 해야 할 일</h3><p>우선순위 기준</p></div></div><div class="todo"><div class="todo-item"><i class="dot"></i><div><strong>등록된 할 일이 없습니다.</strong><span>프로젝트의 ‘지금 해야 할 일’을 기준으로 자동 정리할 예정입니다.</span></div></div></div></aside>
-    </div>
-  </section>`;
+function logMarkup(l){
+  return '<article class="log-item"><time>'+esc(formatDate(l.date||today()))+'</time><strong>'+esc(l.title||"작업 기록")+'</strong>'+(l.content?'<p>'+esc(l.content)+'</p>':'')+'<div class="log-meta">'+(l.project?'<span class="tag">'+esc(l.project)+'</span>':'')+(l.link?'<a class="tag" href="'+esc(l.link)+'" target="_blank" rel="noopener">LINK ↗</a>':'')+'</div></article>';
 }
-function projects(){
-  return `<section class="page"><div class="page-head"><div><p class="eyebrow">PROJECTS</p><h2>프로젝트</h2><p>업무의 중심이 되는 프로젝트 관리 화면입니다.</p></div><button class="btn primary">＋ 프로젝트 추가</button></div>
-  <section class="panel"><div class="panel-head"><div><h3>전체 프로젝트</h3><p>이미지 + 설명 + 현재 단계 + 다음 액션</p></div></div>
-  ${empty("프로젝트 구조를 새로 설계합니다.","기존 프로젝트 데이터와 UI는 모두 제거했습니다. 앞으로 이 화면을 기준으로 프로젝트 상세, 업무 히스토리, 파일, 계약, 클라이언트를 연결합니다.")}</section></section>`;
+function meetingMarkup(m){
+  return '<article class="meeting"><div class="meeting-head"><div><strong>'+esc(m.title||"미팅")+'</strong><div class="attendees">'+esc(m.attendees||"참석자 미기재")+'</div></div><time>'+esc(formatDate(m.date||today()))+'</time></div>'+(m.content?'<p>'+esc(m.content)+'</p>':'')+(m.decisions?'<div class="meeting-section"><span>DECISION</span><p>'+esc(m.decisions)+'</p></div>':'')+(m.nextAction?'<div class="meeting-section"><span>NEXT ACTION</span><p>'+esc(m.nextAction)+'</p></div>':'')+'</article>';
 }
-function generic(title,eyebrow,copy,cards){
-  return `<section class="page"><div class="page-head"><div><p class="eyebrow">${eyebrow}</p><h2>${title}</h2><p>${copy}</p></div></div>
-  <section class="panel"><div class="placeholder-grid">${cards.map(([a,b])=>`<article class="placeholder-card"><strong>${a}</strong><p>${b}</p></article>`).join("")}</div></section></section>`;
+function contractMarkup(c){
+  return '<article class="contract-card"><strong>'+esc(c.projectName||"계약")+'</strong><p>'+esc(c.contractType==="monthly"?"월 단위 계약":"선금 · 잔금 계약")+' · '+esc(c.contractDate||"계약일 미기재")+'</p><div class="contract-money"><div><span>총 청구액</span><b>'+won(bill(c))+'</b></div><div><span>미수금</span><b>'+won(outstanding(c))+'</b></div></div></article>';
 }
-function page(){
-  if(state.route==="home")return home();
-  if(state.route==="projects")return projects();
-  if(state.route==="calendar")return generic("캘린더","CALENDAR","프로젝트 일정의 보조 화면으로 다시 설계합니다.",[["월간 일정","프로젝트 마감과 반복 업무만 보여주는 단순한 캘린더."],["이번 주","이번 주 처리해야 할 일정만 빠르게 확인."],["반복 업무","월·목 공구처럼 반복되는 업무를 별도로 관리."]]);
-  if(state.route==="finance")return generic("자금 · 계약","FINANCE","계약과 입금 흐름을 프로젝트와 연결합니다.",[["계약","클라이언트·프로젝트·계약금액 연결."],["입금","선금·잔금·월계약 입금 관리."],["미수금","아직 받지 못한 금액과 예정일 관리."]]);
-  if(state.route==="clients")return generic("클라이언트","CLIENTS","클라이언트별 프로젝트와 계약을 묶어 봅니다.",[["클라이언트 프로필","회사정보·담당자·연락처."],["진행 프로젝트","해당 클라이언트의 현재 프로젝트."],["계약 이력","과거·현재 계약과 금액."]]);
-  return generic("내 사업체","OWN BUSINESS","외주 프로젝트와 분리해 직접 운영하는 사업을 관리합니다.",[["사업체","9WORKS, AESOST 등 사업 단위 관리."],["서비스","각 사업체에서 운영하는 서비스."],["현재 액션","각 사업에서 지금 해야 할 일을 정리."]]);
+
+function clientPage(c){
+  var todos=clientTodos(c),logs=clientLogs(c,"work"),meetings=clientLogs(c,"meeting"),contracts=clientContracts(c);
+  var totalContract=contracts.reduce(function(n,x){return n+bill(x);},0);
+  var totalOutstanding=contracts.reduce(function(n,x){return n+outstanding(x);},0);
+  return '<section><div class="client-head"><div><p class="eyebrow">CLIENT / '+esc(String(c.type||"ACTIVE").toUpperCase())+'</p><h2>'+esc(clientName(c))+'</h2><p>'+esc(c.work||c.description||"클라이언트별 작업과 기록을 관리합니다.")+'</p></div><div class="client-head-actions"><button class="btn" data-action="task">＋ 현재 작업</button><button class="btn" data-action="log">＋ 작업 로그</button><button class="btn primary" data-action="meeting">＋ 미팅 기록</button></div></div>'+
+  '<div class="metrics"><article class="metric"><span>현재 작업</span><strong>'+todos.length+'</strong><small>OPEN TASKS</small></article><article class="metric"><span>작업 로그</span><strong>'+logs.length+'</strong><small>WORK LOGS</small></article><article class="metric"><span>미팅 기록</span><strong>'+meetings.length+'</strong><small>MEETINGS</small></article><article class="metric"><span>미수금</span><strong style="font-size:15px">'+won(totalOutstanding)+'</strong><small>계약 총액 '+won(totalContract)+'</small></article></div>'+
+  '<div class="main-grid"><div><section class="panel"><div class="panel-head"><div><h3>현재 작업</h3><p>지금 이 클라이언트에서 실제로 진행 중인 것</p></div><button class="btn" data-action="task">＋ 추가</button></div><div class="panel-body task-list">'+(todos.length?todos.map(taskMarkup).join(""):'<div class="empty">현재 진행 중인 작업이 없습니다.</div>')+'</div></section>'+
+  '<section class="panel"><div class="panel-head"><div><h3>작업 로그</h3><p>작업할 때마다 짧게 남기는 히스토리</p></div><button class="btn" data-action="log">＋ 로그</button></div><div class="panel-body timeline">'+(logs.length?logs.map(logMarkup).join(""):'<div class="empty">아직 작업 로그가 없습니다. 작업할 때마다 기록을 남겨보세요.</div>')+'</div></section>'+
+  '<section class="panel"><div class="panel-head"><div><h3>미팅</h3><p>미팅 내용 · 결정사항 · 다음 액션</p></div><button class="btn" data-action="meeting">＋ 미팅</button></div><div class="panel-body meeting-list">'+(meetings.length?meetings.map(meetingMarkup).join(""):'<div class="empty">등록된 미팅 기록이 없습니다.</div>')+'</div></section></div>'+
+  '<aside><section class="panel"><div class="panel-head"><div><h3>클라이언트 정보</h3><p>기본 정보</p></div><button class="btn" data-action="edit-client">수정</button></div><div class="client-info"><div class="info-row"><span>분류</span><strong>'+esc(c.type||"—")+'</strong></div><div class="info-row"><span>담당자</span><strong>'+esc(c.contact||c.manager||"—")+'</strong></div><div class="info-row"><span>연락처</span><strong>'+esc(c.phone||"—")+'</strong></div><div class="info-row"><span>이메일</span><strong>'+esc(c.email||"—")+'</strong></div><div class="info-row"><span>메모</span><strong>'+esc(c.note||"—")+'</strong></div></div></section>'+
+  '<section class="panel"><div class="panel-head"><div><h3>계약</h3><p>기존 자금관리 데이터 연동</p></div></div><div class="panel-body">'+(contracts.length?contracts.map(contractMarkup).join(""):'<div class="empty">연결된 계약이 없습니다.</div>')+'</div></section></aside></div></section>';
 }
-function render(){
-  $("#routeTitle").textContent=routes.find(x=>x[0]===state.route)?.[1]||"HOME";
-  document.querySelectorAll("[data-route]").forEach(b=>b.classList.toggle("active",b.dataset.route===state.route));
-  $("#page").innerHTML=page();
+
+function renderContent(){
+  var c=activeClient();
+  $("#clientList").innerHTML=clientList();
+  $("#content").innerHTML=c?clientPage(c):'<div class="empty-page"><div><p class="eyebrow">CLIENT WORKSPACE</p><h2>클라이언트를 선택하세요.</h2><p>왼쪽에서 클라이언트를 선택하면 현재 작업, 작업 로그, 미팅 기록과 계약 정보를 한 번에 볼 수 있습니다.</p></div></div>';
 }
-function boot(){
-  $("#app").innerHTML=shell();render();
-  document.addEventListener("click",e=>{const b=e.target.closest("[data-route]");if(!b)return;state.route=b.dataset.route;render()});
-  $("#search").addEventListener("input",e=>state.search=e.target.value);
-  $("#quickAdd").addEventListener("click",()=>alert("새 프로젝트 등록 구조를 다음 단계에서 연결합니다."));
+function openModal(title,body){
+  $("#modal").innerHTML='<div class="modal-head"><div><p class="eyebrow">NINEWORKS CRM</p><h3>'+esc(title)+'</h3></div><button class="x" data-close-modal>×</button></div><div class="modal-body">'+body+'</div>';
+  $("#modalBackdrop").hidden=false;$("#modal").hidden=false;document.body.style.overflow="hidden";
 }
-boot();
+function closeModal(){$("#modalBackdrop").hidden=true;$("#modal").hidden=true;document.body.style.overflow="";}
+
+function clientForm(c){
+  c=c||{};
+  var display=clientName(c)==="이름 없음"?"":clientName(c);
+  openModal(c.id?"클라이언트 수정":"클라이언트 추가",'<form id="clientForm"><input id="clientId" type="hidden" value="'+esc(c.id||"")+'"><div class="form-grid"><label class="field"><span>클라이언트명 *</span><input id="clientName" required value="'+esc(display)+'"></label><label class="field"><span>분류</span><input id="clientType" value="'+esc(c.type||"")+'" placeholder="월간 운영 / 프로젝트 / 기타"></label></div><div class="form-grid"><label class="field"><span>담당자</span><input id="clientContact" value="'+esc(c.contact||c.manager||"")+'"></label><label class="field"><span>연락처</span><input id="clientPhone" value="'+esc(c.phone||"")+'"></label></div><label class="field"><span>이메일</span><input id="clientEmail" type="email" value="'+esc(c.email||"")+'"></label><label class="field"><span>현재 관계 / 업무 설명</span><textarea id="clientWork" rows="3">'+esc(c.work||c.description||"")+'</textarea></label><label class="field"><span>메모</span><textarea id="clientNote" rows="3">'+esc(c.note||"")+'</textarea></label><div class="actions"><button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">저장</button></div></form>');
+}
+function taskForm(){
+  openModal("현재 작업 추가",'<form id="taskForm"><label class="field"><span>업무명 *</span><input id="taskTitle" required placeholder="예: 상세페이지 수정"></label><div class="form-grid"><label class="field"><span>프로젝트 / 브랜드</span><input id="taskProject" placeholder="예: ODE BELL"></label><label class="field"><span>목표일</span><input id="taskDue" type="date"></label></div><label class="field"><span>메모</span><textarea id="taskMemo" rows="3"></textarea></label><div class="actions"><button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">작업 추가</button></div></form>');
+}
+function logForm(){
+  openModal("작업 로그",'<form id="logForm"><div class="form-grid"><label class="field"><span>작업 제목 *</span><input id="logTitle" required></label><label class="field"><span>작업일</span><input id="logDate" type="date" value="'+today()+'"></label></div><label class="field"><span>프로젝트 / 브랜드</span><input id="logProject"></label><label class="field"><span>작업 내용</span><textarea id="logContent" rows="5"></textarea></label><label class="field"><span>관련 링크</span><input id="logLink" type="url"></label><div class="actions"><button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">로그 저장</button></div></form>');
+}
+function meetingForm(){
+  openModal("미팅 기록",'<form id="meetingForm"><div class="form-grid"><label class="field"><span>미팅명 *</span><input id="meetingTitle" required></label><label class="field"><span>미팅일</span><input id="meetingDate" type="date" value="'+today()+'"></label></div><label class="field"><span>참석자</span><input id="meetingAttendees"></label><label class="field"><span>미팅 내용 *</span><textarea id="meetingContent" rows="6" required></textarea></label><label class="field"><span>결정사항</span><textarea id="meetingDecisions" rows="4"></textarea></label><label class="field"><span>다음 액션</span><textarea id="meetingNext" rows="3" placeholder="입력하면 현재 작업으로도 자동 추가됩니다."></textarea></label><label class="field"><span>프로젝트 / 브랜드</span><input id="meetingProject"></label><div class="actions"><button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">미팅 저장</button></div></form>');
+}
+
+async function saveLog(payload){
+  var id=uid("log");
+  await setDoc(doc(db,"workLogs",id),Object.assign({id:id,createdAt:serverTimestamp(),createdAtMs:Date.now(),updatedBy:state.user.uid},payload));
+}
+async function completeTask(id){
+  var t=state.todos.find(function(x){return x.id===id;}),c=activeClient();if(!t||!c)return;
+  try{
+    await setDoc(doc(db,"todos",id),Object.assign({},t,{done:true,completedAt:serverTimestamp()}),{merge:true});
+    await saveLog({type:"work",clientId:c.id,client:clientName(c),project:t.project||"",title:"완료 · "+(t.title||"업무"),content:t.memo||"",date:today()});
+    toast("완료 처리하고 작업 로그에도 남겼습니다.");
+  }catch(err){console.error(err);toast("완료 처리하지 못했습니다.");}
+}
+
+function bindGlobal(){
+  document.addEventListener("click",function(e){
+    var cb=e.target.closest("[data-client-id]");if(cb){state.activeClientId=cb.dataset.clientId;renderContent();$("#sidebar").classList.remove("open");return;}
+    if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return;}
+    var complete=e.target.closest("[data-complete-task]");if(complete){completeTask(complete.dataset.completeTask);return;}
+    var action=e.target.closest("[data-action]");if(action){var c=activeClient();if(!c)return;var a=action.dataset.action;if(a==="task")taskForm();if(a==="log")logForm();if(a==="meeting")meetingForm();if(a==="edit-client")clientForm(c);}
+  });
+  $("#clientSearch").addEventListener("input",function(e){state.query=e.target.value;$("#clientList").innerHTML=clientList();});
+  $("#addClient").addEventListener("click",function(){clientForm({});});
+  $("#addWorkLog").addEventListener("click",function(){if(activeClient())logForm();else toast("클라이언트를 먼저 선택하세요.");});
+  $("#addMeeting").addEventListener("click",function(){if(activeClient())meetingForm();else toast("클라이언트를 먼저 선택하세요.");});
+  $("#logoutBtn").addEventListener("click",function(){signOut(auth);});
+  $("#mobileClients").addEventListener("click",function(){$("#sidebar").classList.toggle("open");});
+
+  document.addEventListener("submit",async function(e){
+    if(e.target.id==="clientForm"){
+      e.preventDefault();var id=$("#clientId").value||uid("client");var ex=state.clients.find(function(x){return x.id===id;})||{};
+      try{await setDoc(doc(db,"clients",id),Object.assign({},ex,{id:id,name:$("#clientName").value.trim(),type:$("#clientType").value.trim(),contact:$("#clientContact").value.trim(),phone:$("#clientPhone").value.trim(),email:$("#clientEmail").value.trim(),work:$("#clientWork").value.trim(),note:$("#clientNote").value.trim(),updatedAt:serverTimestamp()}),{merge:true});state.activeClientId=id;closeModal();toast("클라이언트를 저장했습니다.");}catch(err){console.error(err);toast("저장하지 못했습니다.");}
+      return;
+    }
+    if(e.target.id==="taskForm"){
+      e.preventDefault();var c=activeClient();if(!c)return;var tid=uid("todo");
+      try{await setDoc(doc(db,"todos",tid),{id:tid,clientId:c.id,client:clientName(c),title:$("#taskTitle").value.trim(),project:$("#taskProject").value.trim(),due:$("#taskDue").value,memo:$("#taskMemo").value.trim(),done:false,createdAt:serverTimestamp()});closeModal();toast("현재 작업에 추가했습니다.");}catch(err){console.error(err);toast("작업을 저장하지 못했습니다.");}
+      return;
+    }
+    if(e.target.id==="logForm"){
+      e.preventDefault();var cl=activeClient();if(!cl)return;
+      try{await saveLog({type:"work",clientId:cl.id,client:clientName(cl),title:$("#logTitle").value.trim(),date:$("#logDate").value||today(),project:$("#logProject").value.trim(),content:$("#logContent").value.trim(),link:$("#logLink").value.trim()});closeModal();toast("작업 로그를 남겼습니다.");}catch(err){console.error(err);toast("로그를 저장하지 못했습니다.");}
+      return;
+    }
+    if(e.target.id==="meetingForm"){
+      e.preventDefault();var cm=activeClient();if(!cm)return;var next=$("#meetingNext").value.trim();var project=$("#meetingProject").value.trim();
+      try{
+        await saveLog({type:"meeting",clientId:cm.id,client:clientName(cm),title:$("#meetingTitle").value.trim(),date:$("#meetingDate").value||today(),attendees:$("#meetingAttendees").value.trim(),content:$("#meetingContent").value.trim(),decisions:$("#meetingDecisions").value.trim(),nextAction:next,project:project});
+        if(next){var nt=uid("todo");await setDoc(doc(db,"todos",nt),{id:nt,clientId:cm.id,client:clientName(cm),title:next,project:project,due:"",memo:"미팅에서 생성된 다음 액션",done:false,createdAt:serverTimestamp()});}
+        closeModal();toast(next?"미팅과 다음 액션을 저장했습니다.":"미팅 기록을 저장했습니다.");
+      }catch(err){console.error(err);toast("미팅을 저장하지 못했습니다.");}
+    }
+  });
+}
+
+async function subscribe(user){
+  cleanup();state.user=user;
+  try{var p=await getDoc(doc(db,"users",user.uid));state.profile=p.exists()?p.data():{name:user.email,role:"OWNER"};}catch(e){state.profile={name:user.email,role:"OWNER"};}
+  $("#app").innerHTML=shell();bindGlobal();renderContent();
+
+  state.unsubs.push(onSnapshot(collection(db,"clients"),function(snap){state.clients=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!state.activeClientId&&state.clients.length)state.activeClientId=state.clients[0].id;if(state.activeClientId&&!state.clients.some(function(c){return c.id===state.activeClientId;}))state.activeClientId=state.clients[0]?state.clients[0].id:"";renderContent();}));
+  state.unsubs.push(onSnapshot(collection(db,"todos"),function(snap){state.todos=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();}));
+  state.unsubs.push(onSnapshot(collection(db,"workLogs"),function(snap){state.logs=snap.docs.map(function(d){var data=d.data();return Object.assign({id:d.id,createdAtMs:timestampMs(data.createdAt)},data);});renderContent();}));
+  state.unsubs.push(onSnapshot(collection(db,"financeContracts"),function(snap){state.contracts=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("financeContracts unavailable",err);state.contracts=[];renderContent();}));
+}
+
+function bindLogin(){
+  $("#loginForm").addEventListener("submit",async function(e){e.preventDefault();var msg=$("#loginMsg");msg.textContent="로그인 중...";try{await signInWithEmailAndPassword(auth,$("#loginEmail").value.trim(),$("#loginPassword").value);msg.textContent="";}catch(err){console.error(err);msg.textContent="이메일 또는 비밀번호를 확인하세요.";}});
+}
+onAuthStateChanged(auth,function(user){if(user)subscribe(user);else{cleanup();state.user=null;state.profile=null;$("#app").innerHTML=loginView();bindLogin();}});
