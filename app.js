@@ -46,7 +46,22 @@ function clientList(){
 }
 
 function shell(){
-  return '<div class="workspace"><aside id="sidebar" class="sidebar"><div class="brand"><img src="./assets/nineworks-logo.svg" alt="NINEWORKS"></div><div class="side-label">CLIENTS</div><label class="client-search"><input id="clientSearch" type="search" placeholder="클라이언트 검색"></label><div id="clientList" class="client-list">'+clientList()+'</div><div class="side-actions"><button class="btn primary" id="addClient">＋ 클라이언트 추가</button><div class="user-mini"><strong>'+esc(state.profile&&state.profile.name||state.user&&state.user.email||"NINEWORKS")+'</strong><span>'+esc(state.profile&&state.profile.role||"OWNER")+'</span></div><button class="btn" id="logoutBtn">로그아웃</button></div></aside><main class="main"><header class="topbar"><div class="topbar-title"><button id="mobileClients" class="btn mobile-client-toggle">CLIENTS</button><h1>CLIENT WORKSPACE</h1><span>WORK · MEETING · CONTRACT</span></div><div class="topbar-actions"><button class="btn" id="addWorkLog">＋ 작업 로그</button><button class="btn primary" id="addMeeting">＋ 미팅 기록</button></div></header><div id="content" class="content"></div></main></div><div id="modalBackdrop" class="modal-backdrop" hidden></div><section id="modal" class="modal" hidden></section>';
+  return '<div class="site-shell">'+
+  '<header class="site-header">'+
+    '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><span class="site-kicker">NINEWORKS / CLIENT MANAGEMENT SYSTEM</span></div>'+
+    '<div class="site-header-right"><span class="site-meta">INTERNAL WORKSPACE · 2026</span><button class="header-action" id="addWorkLog">WORK LOG ↗</button><button class="header-action solid" id="addMeeting">MEETING ↗</button><button class="header-menu" id="mobileClients">CLIENTS</button></div>'+
+  '</header>'+
+  '<div class="workspace">'+
+    '<aside id="sidebar" class="sidebar">'+
+      '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 함께 일하고 있는 클라이언트와 프로젝트를 관리합니다.</p></div>'+
+      '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
+      '<div id="clientList" class="client-list">'+clientList()+'</div>'+
+      '<div class="side-actions"><button class="btn primary" id="addClient">＋ ADD CLIENT</button><div class="user-mini"><strong>'+esc(state.profile&&state.profile.name||state.user&&state.user.email||"NINEWORKS")+'</strong><span>'+esc(state.profile&&state.profile.role||"OWNER")+'</span></div><button class="btn" id="logoutBtn">LOGOUT ↗</button></div>'+
+    '</aside>'+
+    '<main class="main"><div id="content" class="content"></div></main>'+
+  '</div>'+
+  '<div id="modalBackdrop" class="modal-backdrop" hidden></div><section id="modal" class="modal" hidden></section>'+
+  '</div>';
 }
 
 function taskMarkup(t){
@@ -66,13 +81,37 @@ function clientPage(c){
   var todos=clientTodos(c),logs=clientLogs(c,"work"),meetings=clientLogs(c,"meeting"),contracts=clientContracts(c);
   var totalContract=contracts.reduce(function(n,x){return n+bill(x);},0);
   var totalOutstanding=contracts.reduce(function(n,x){return n+outstanding(x);},0);
-  return '<section><div class="client-head"><div><p class="eyebrow">CLIENT / '+esc(String(c.type||"ACTIVE").toUpperCase())+'</p><h2>'+esc(clientName(c))+'</h2><p>'+esc(c.work||c.description||"클라이언트별 작업과 기록을 관리합니다.")+'</p></div><div class="client-head-actions"><button class="btn" data-action="task">＋ 현재 작업</button><button class="btn" data-action="log">＋ 작업 로그</button><button class="btn primary" data-action="meeting">＋ 미팅 기록</button></div></div>'+
-  '<div class="metrics"><article class="metric"><span>현재 작업</span><strong>'+todos.length+'</strong><small>OPEN TASKS</small></article><article class="metric"><span>작업 로그</span><strong>'+logs.length+'</strong><small>WORK LOGS</small></article><article class="metric"><span>미팅 기록</span><strong>'+meetings.length+'</strong><small>MEETINGS</small></article><article class="metric"><span>미수금</span><strong style="font-size:15px">'+won(totalOutstanding)+'</strong><small>계약 총액 '+won(totalContract)+'</small></article></div>'+
-  '<div class="main-grid"><div><section class="panel"><div class="panel-head"><div><h3>현재 작업</h3><p>지금 이 클라이언트에서 실제로 진행 중인 것</p></div><button class="btn" data-action="task">＋ 추가</button></div><div class="panel-body task-list">'+(todos.length?todos.map(taskMarkup).join(""):'<div class="empty">현재 진행 중인 작업이 없습니다.</div>')+'</div></section>'+
-  '<section class="panel"><div class="panel-head"><div><h3>작업 로그</h3><p>작업할 때마다 짧게 남기는 히스토리</p></div><button class="btn" data-action="log">＋ 로그</button></div><div class="panel-body timeline">'+(logs.length?logs.map(logMarkup).join(""):'<div class="empty">아직 작업 로그가 없습니다. 작업할 때마다 기록을 남겨보세요.</div>')+'</div></section>'+
-  '<section class="panel"><div class="panel-head"><div><h3>미팅</h3><p>미팅 내용 · 결정사항 · 다음 액션</p></div><button class="btn" data-action="meeting">＋ 미팅</button></div><div class="panel-body meeting-list">'+(meetings.length?meetings.map(meetingMarkup).join(""):'<div class="empty">등록된 미팅 기록이 없습니다.</div>')+'</div></section></div>'+
-  '<aside><section class="panel"><div class="panel-head"><div><h3>클라이언트 정보</h3><p>기본 정보</p></div><button class="btn" data-action="edit-client">수정</button></div><div class="client-info"><div class="info-row"><span>분류</span><strong>'+esc(c.type||"—")+'</strong></div><div class="info-row"><span>담당자</span><strong>'+esc(c.contact||c.manager||"—")+'</strong></div><div class="info-row"><span>연락처</span><strong>'+esc(c.phone||"—")+'</strong></div><div class="info-row"><span>이메일</span><strong>'+esc(c.email||"—")+'</strong></div><div class="info-row"><span>메모</span><strong>'+esc(c.note||"—")+'</strong></div></div></section>'+
-  '<section class="panel"><div class="panel-head"><div><h3>계약</h3><p>기존 자금관리 데이터 연동</p></div></div><div class="panel-body">'+(contracts.length?contracts.map(contractMarkup).join(""):'<div class="empty">연결된 계약이 없습니다.</div>')+'</div></section></aside></div></section>';
+  return '<section class="client-page">'+
+    '<div class="client-hero">'+
+      '<div class="client-hero-copy"><p class="eyebrow">NINEWORKS / CLIENT WORKSPACE</p><h1>'+esc(clientName(c))+'</h1><p class="client-lead">'+esc(c.work||c.description||"클라이언트의 현재 업무와 기록, 미팅과 계약 흐름을 한 곳에서 관리합니다.")+'</p></div>'+
+      '<div class="client-hero-actions"><button class="hero-link" data-action="task">ADD CURRENT WORK ↗</button><button class="hero-link" data-action="log">ADD WORK LOG ↗</button><button class="hero-link" data-action="meeting">ADD MEETING ↗</button></div>'+
+    '</div>'+
+    '<div class="client-facts">'+
+      '<div><span>01 / OPEN WORK</span><strong>'+todos.length+'</strong></div>'+
+      '<div><span>02 / WORK LOG</span><strong>'+logs.length+'</strong></div>'+
+      '<div><span>03 / MEETING</span><strong>'+meetings.length+'</strong></div>'+
+      '<div><span>04 / OUTSTANDING</span><strong>'+won(totalOutstanding)+'</strong><small>TOTAL '+won(totalContract)+'</small></div>'+
+    '</div>'+
+    '<section class="nw-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">01 / CURRENT WORK</p><h2>지금 진행 중인 업무를<br>가장 먼저 확인합니다.</h2></div><button class="section-link" data-action="task">ADD WORK ↗</button></div>'+
+      '<div class="nw-section-body">'+(todos.length?todos.map(taskMarkup).join(""):'<div class="empty large">현재 진행 중인 작업이 없습니다.</div>')+'</div>'+
+    '</section>'+
+    '<section class="nw-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">02 / WORK LOG</p><h2>작업의 흐름을<br>날짜별 기록으로 남깁니다.</h2></div><button class="section-link" data-action="log">ADD LOG ↗</button></div>'+
+      '<div class="nw-section-body timeline">'+(logs.length?logs.map(logMarkup).join(""):'<div class="empty large">아직 작업 로그가 없습니다.</div>')+'</div>'+
+    '</section>'+
+    '<section class="nw-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">03 / MEETING</p><h2>논의한 내용과 결정,<br>다음 액션을 연결합니다.</h2></div><button class="section-link" data-action="meeting">ADD MEETING ↗</button></div>'+
+      '<div class="nw-section-body meeting-list">'+(meetings.length?meetings.map(meetingMarkup).join(""):'<div class="empty large">등록된 미팅 기록이 없습니다.</div>')+'</div>'+
+    '</section>'+
+    '<section class="nw-section split-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">04 / CLIENT & CONTRACT</p><h2>관계와 계약 정보까지<br>하나의 기준으로 봅니다.</h2></div><button class="section-link" data-action="edit-client">EDIT CLIENT ↗</button></div>'+
+      '<div class="split-info">'+
+        '<div class="client-profile-block"><div class="info-row"><span>TYPE</span><strong>'+esc(c.type||"—")+'</strong></div><div class="info-row"><span>CONTACT</span><strong>'+esc(c.contact||c.manager||"—")+'</strong></div><div class="info-row"><span>PHONE</span><strong>'+esc(c.phone||"—")+'</strong></div><div class="info-row"><span>EMAIL</span><strong>'+esc(c.email||"—")+'</strong></div><div class="info-row"><span>NOTE</span><strong>'+esc(c.note||"—")+'</strong></div></div>'+
+        '<div class="contract-list">'+(contracts.length?contracts.map(contractMarkup).join(""):'<div class="empty large">연결된 계약이 없습니다.</div>')+'</div>'+
+      '</div>'+
+    '</section>'+
+  '</section>';
 }
 
 function renderContent(){
