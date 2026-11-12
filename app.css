@@ -795,3 +795,178 @@ aside .panel{border-top-color:#323232}
   .recent-grid{grid-template-columns:1fr}
   .recent-item{border-right:0}
 }
+
+
+/* NINEWORKS TONE REFINEMENT · 2026-11-12 */
+.opening-intro{
+  position:fixed;inset:0;z-index:9999;
+  display:grid;place-items:center;
+  background:#050505;
+  opacity:1;visibility:visible;
+  transition:opacity .55s ease,visibility .55s ease;
+}
+.opening-intro-inner{
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .55s ease,transform .55s cubic-bezier(.22,.61,.36,1);
+}
+.opening-intro.show .opening-intro-inner{opacity:1;transform:translateY(0)}
+.opening-intro.hide{opacity:0;visibility:hidden}
+.opening-intro img{width:168px;filter:brightness(0) invert(1)}
+.opening-intro span{
+  color:#4e4d48;font-size:8px;font-weight:700;letter-spacing:.16em
+}
+
+/* Header proportions aligned to nineworks.kr */
+.site-header{height:72px;padding:0 32px}
+.site-logo{width:132px}
+.site-kicker{font-size:7px;letter-spacing:.13em}
+.site-meta{font-size:7px}
+.header-action,.header-menu{font-size:7px}
+.workspace{grid-template-columns:258px minmax(0,1fr)}
+.sidebar{top:72px;height:calc(100vh - 72px);padding-top:28px}
+.side-intro{padding-top:0}
+.side-intro h2{font-size:22px;margin-top:6px}
+.side-intro p:last-child{font-size:8px;line-height:1.6}
+.content{padding:0 42px 88px}
+
+/* Dashboard hierarchy: editorial, not oversized */
+.desk-hero.compact{
+  min-height:0;
+  grid-template-columns:minmax(0,1fr) 250px;
+  gap:56px;
+  align-items:end;
+  padding:72px 0 38px;
+}
+.desk-hero.compact h1{
+  margin:13px 0 15px;
+  font-size:clamp(38px,4.4vw,62px);
+  line-height:1;
+  letter-spacing:-.055em;
+  font-weight:500;
+}
+.desk-hero.compact .desk-hero-copy>p:last-child{
+  max-width:720px;
+  font-size:10px;
+  line-height:1.75;
+  color:#75746e;
+}
+.desk-hero-side.compact{
+  padding:0 0 2px 24px;
+  border-left:1px solid #272727;
+}
+.desk-hero-side.compact>span{
+  color:#625f58;
+  font-size:8px;
+  letter-spacing:.11em;
+  font-weight:700;
+}
+.desk-hero-side.compact strong{
+  margin-top:10px;
+  font-size:48px;
+  line-height:1;
+  letter-spacing:-.04em;
+}
+.desk-hero-side.compact small{
+  margin-top:9px;
+  font-size:7px;
+  letter-spacing:.06em;
+}
+
+/* Metrics are supporting information, not hero cards */
+.desk-metrics>div{min-height:104px;padding:18px 16px}
+.desk-metrics span{font-size:7px}
+.desk-metrics strong{margin-top:15px;font-size:24px}
+.desk-metrics small{font-size:7px}
+
+/* Section title hierarchy follows 9works site */
+.desk-grid.primary,.desk-grid.secondary{padding-top:58px}
+.desk-block-head{padding:17px 0 17px}
+.desk-block-head .eyebrow{font-size:7px}
+.desk-block-head h2{
+  margin-top:7px;
+  font-size:22px;
+  line-height:1.2;
+  letter-spacing:-.04em;
+}
+.desk-block-head p,.desk-block-head>span{font-size:7px}
+.desk-task{padding:15px 0}
+.desk-task-main strong{font-size:10px}
+.desk-task-main p{font-size:8px}
+.attention-item{padding:14px 0}
+.attention-item strong{font-size:9px}
+.attention-item small,.attention-item span{font-size:7px}
+.workload-chart{height:220px;padding-top:24px}
+.recent-block{margin-top:58px;padding-bottom:76px}
+.recent-item{min-height:130px;padding:16px}
+.recent-item strong{font-size:9px}
+
+/* Client detail hierarchy should use same scale */
+.client-hero{
+  min-height:0;
+  padding:72px 0 36px;
+}
+.client-hero:before{top:80px;width:46px}
+.client-hero-copy .eyebrow{padding-left:62px}
+.client-hero h1{
+  margin:24px 0 18px;
+  font-size:clamp(42px,5.4vw,76px);
+  line-height:.98;
+  letter-spacing:-.06em;
+}
+.client-lead{font-size:10px;line-height:1.75;max-width:660px}
+.client-facts>div{min-height:112px;padding:18px 16px}
+.client-facts span{font-size:7px}
+.client-facts strong{margin-top:18px;font-size:26px}
+.client-facts small{font-size:7px}
+.nw-section{padding-top:64px}
+.nw-section-head{padding-bottom:28px}
+.nw-section-head .eyebrow{font-size:7px}
+.nw-section-head h2{
+  margin-top:8px;
+  font-size:clamp(26px,3vw,40px);
+  line-height:1.08;
+  letter-spacing:-.05em;
+}
+.hero-link,.section-link{font-size:7px}
+
+/* Sidebar closer to main website editorial density */
+.desk-nav{margin-bottom:28px}
+.desk-nav-item{padding:12px 4px}
+.desk-nav-item strong{font-size:8px}
+.desk-nav-item small,.desk-nav-item span{font-size:7px}
+.client-search{margin-bottom:12px}
+.client-button{padding:10px 4px}
+.client-avatar{width:30px;height:30px;font-size:8px}
+.client-button strong{font-size:9px}
+.client-button small,.client-count{font-size:7px}
+
+@media(max-width:1100px){
+  .content{padding-left:30px;padding-right:30px}
+  .desk-hero.compact{grid-template-columns:1fr 210px;gap:36px;padding-top:58px}
+}
+@media(max-width:760px){
+  .opening-intro img{width:145px}
+  .site-header{height:64px;padding:0 16px}
+  .site-logo{width:120px}
+  .sidebar{top:64px;height:calc(100vh - 64px)}
+  .content{padding:0 18px 60px}
+  .desk-hero.compact{
+    grid-template-columns:1fr;
+    gap:22px;
+    padding:48px 0 28px;
+  }
+  .desk-hero.compact h1{font-size:38px}
+  .desk-hero-side.compact{
+    border-left:0;border-top:1px solid #242424;
+    padding:16px 0 0;
+  }
+  .desk-hero-side.compact strong{font-size:38px}
+  .desk-metrics>div{min-height:92px;padding:14px 11px}
+  .desk-metrics strong{font-size:22px}
+  .desk-block-head h2{font-size:20px}
+  .client-hero{padding:50px 0 28px}
+  .client-hero h1{font-size:42px}
+  .nw-section{padding-top:50px}
+  .nw-section-head h2{font-size:28px}
+}
