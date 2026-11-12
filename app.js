@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 const config={apiKey:"AIzaSyBXhDb0jyhIR4G1ho6Y7V8sibwvENI2r8k",authDomain:"nineworks-crm.firebaseapp.com",projectId:"nineworks-crm",storageBucket:"nineworks-crm.firebasestorage.app",messagingSenderId:"1096147745343",appId:"1:1096147745343:web:cbec82631cbc2d9db1968a"};
 const firebaseApp=initializeApp(config);
@@ -43,8 +43,8 @@ function dateKeyFromValue(v){
   return "";
 }
 function recentDays(count){
-  var arr=[],now=new Date();now.setHours(0,0,0,0);
-  for(var i=count-1;i>=0;i--){var d=new Date(now);d.setDate(now.getDate()-i);arr.push(d.toISOString().slice(0,10));}
+  var arr=[],now=new Date(today()+"T12:00:00+09:00");
+  for(var i=count-1;i>=0;i--){var d=new Date(now);d.setUTCDate(now.getUTCDate()-i);arr.push(d.toISOString().slice(0,10));}
   return arr;
 }
 function logsOnDay(key){return state.logs.filter(function(l){return (l.date||dateKeyFromValue(l.createdAt))===key;});}
@@ -306,11 +306,15 @@ async function saveLog(payload){
   await setDoc(doc(db,"workLogs",id),Object.assign({id:id,createdAt:serverTimestamp(),createdAtMs:Date.now(),updatedBy:state.user.uid},payload));
 }
 async function completeTask(id){
-  var t=state.todos.find(function(x){return x.id===id;}),c=activeClient();if(!t||!c)return;
+  var t=state.todos.find(function(x){return x.id===id;});
+  if(!t||t.done)return;
+  var c=clientForTask(t);
   try{
-    await setDoc(doc(db,"todos",id),Object.assign({},t,{done:true,completedAt:serverTimestamp()}),{merge:true});
-    await saveLog({type:"work",clientId:c.id,client:clientName(c),project:t.project||"",title:"완료 · "+(t.title||"업무"),content:t.memo||"",date:today()});
-    toast("완료 처리하고 작업 로그에도 남겼습니다.");
+    var date=today(),batch=writeBatch(db);
+    batch.set(doc(db,"todos",id),{done:true,completedAt:serverTimestamp(),completedDate:date},{merge:true});
+    batch.set(doc(db,"workLogs","completed_"+id),{id:"completed_"+id,type:"work",clientId:c?c.id:(t.clientId||""),client:c?clientName(c):(t.client||""),project:t.project||"",title:"완료 · "+(t.title||"업무"),content:t.memo||"",date:date,taskId:id,updatedBy:state.user.uid,createdAt:serverTimestamp(),createdAtMs:Date.now()},{merge:true});
+    await batch.commit();
+    toast("업무 완료와 작업 로그를 함께 저장했습니다.");
   }catch(err){console.error(err);toast("완료 처리하지 못했습니다.");}
 }
 
@@ -334,7 +338,7 @@ function bindGlobal(){
     try{
       if(file.size>500000){throw new Error("500KB 이하 JSON만 가져올 수 있습니다.");}
       var obj=JSON.parse(await file.text());
-      if(!obj||!/^\\d{4}-\\d{2}-\\d{2}$/.test(obj.date)||!Array.isArray(obj.entries))throw new Error("업무일지 JSON의 date 또는 entries 형식이 올바르지 않습니다.");
+      if(!obj||!/^\d{4}-\d{2}-\d{2}$/.test(obj.date)||!Array.isArray(obj.entries))throw new Error("업무일지 JSON의 date 또는 entries 형식이 올바르지 않습니다.");
       var saved=state.journals.find(function(j){return j.date===obj.date;});
       if(saved&&!window.confirm(obj.date+" 업무일지가 이미 존재합니다. 이 날짜의 보고서를 갱신할까요?"))return;
       var payload=Object.assign({},obj,{schemaVersion:1,date:obj.date,importedAt:serverTimestamp(),importedBy:state.user.uid});
