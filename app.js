@@ -14,7 +14,7 @@ const uid=function(p){return p+"_"+Date.now()+"_"+Math.random().toString(36).sli
 const today=function(){return new Date().toISOString().slice(0,10);};
 const won=function(v){return Math.round(Number(v||0)).toLocaleString("ko-KR")+"원";};
 
-const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],activeClientId:"",query:"",unsubs:[]};
+const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],activeClientId:"",view:"desk",query:"",unsubs:[]};
 
 function cleanup(){state.unsubs.forEach(function(f){if(f)f();});state.unsubs=[];}
 function clientName(c){return c&&c.name?c.name:(c&&c.clientName?c.clientName:"이름 없음");}
@@ -30,6 +30,43 @@ function supply(c){return Number(c.supplyAmount==null?c.contractAmount:c.supplyA
 function bill(c){var s=supply(c);return s+(c.vatSeparate===false?0:Math.round(s*.1));}
 function received(c){if(c.contractType==="monthly")return Number(c.payments&&c.payments.monthly&&c.payments.monthly.amount||0);return ["advance","balance"].reduce(function(sum,key){var p=c.payments&&c.payments[key];return sum+(p&&p.paid?Number(p.amount||0):0);},0);}
 function outstanding(c){return Math.max(0,bill(c)-received(c));}
+function dateKeyFromValue(v){
+  if(!v)return "";
+  if(typeof v==="string")return v.slice(0,10);
+  if(typeof v==="number")return new Date(v).toISOString().slice(0,10);
+  if(v&&typeof v.toDate==="function")return v.toDate().toISOString().slice(0,10);
+  if(v&&typeof v.toMillis==="function")return new Date(v.toMillis()).toISOString().slice(0,10);
+  return "";
+}
+function recentDays(count){
+  var arr=[],now=new Date();now.setHours(0,0,0,0);
+  for(var i=count-1;i>=0;i--){var d=new Date(now);d.setDate(now.getDate()-i);arr.push(d.toISOString().slice(0,10));}
+  return arr;
+}
+function logsOnDay(key){return state.logs.filter(function(l){return (l.date||dateKeyFromValue(l.createdAt))===key;});}
+function openTasks(){return state.todos.filter(function(t){return !t.done;});}
+function overdueTasks(){
+  var key=today();
+  return openTasks().filter(function(t){return t.due&&t.due<key;}).sort(function(a,b){return (a.due||"").localeCompare(b.due||"");});
+}
+function todayTasks(){
+  var key=today(),all=openTasks().slice();
+  return all.sort(function(a,b){
+    var ad=a.due||"9999-12-31",bd=b.due||"9999-12-31";
+    var ap=ad<=key?0:(a.due?1:2),bp=bd<=key?0:(b.due?1:2);
+    return ap-bp||ad.localeCompare(bd);
+  });
+}
+function clientByName(name){return state.clients.find(function(c){return clientName(c)===name;})||null;}
+function clientForTask(t){return state.clients.find(function(c){return c.id===t.clientId;})||clientByName(t.client)||null;}
+function clientForLog(l){return state.clients.find(function(c){return c.id===l.clientId;})||clientByName(l.client)||null;}
+function totalOutstanding(){return state.contracts.reduce(function(sum,c){return sum+outstanding(c);},0);}
+function activeClientCount(){
+  var since=recentDays(14)[0];
+  return state.clients.filter(function(c){
+    return clientTodos(c).length>0||state.logs.some(function(l){return (l.clientId===c.id||l.client===clientName(c))&&(l.date||"")>=since;});
+  }).length;
+}
 
 function loginView(){
   return '<div class="login"><section class="login-visual"><img class="login-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><div class="login-copy"><p class="eyebrow">CLIENT WORKSPACE</p><h1>Client.<br>Work.<br>Log.</h1><p>클라이언트별 현재 작업, 작업 로그, 미팅 내용과 계약 정보를 한 곳에 계속 쌓아가는 나인웍스 내부 워크스페이스.</p></div><span style="color:#50504c;font-size:9px">NINEWORKS · INTERNAL ONLY</span></section><section class="login-form-wrap"><form id="loginForm" class="login-card"><p class="eyebrow">ADMIN ACCESS</p><h2>로그인</h2><p>기존 나인웍스 관리자 계정으로 접속합니다.</p><label class="field"><span>이메일</span><input id="loginEmail" type="email" autocomplete="email" required></label><label class="field"><span>비밀번호</span><input id="loginPassword" type="password" autocomplete="current-password" required></label><button class="btn primary full" type="submit">로그인</button><p id="loginMsg" class="login-msg"></p></form></section></div>';
@@ -41,7 +78,7 @@ function clientList(){
   if(!list.length)return '<div class="empty">등록된 클라이언트가 없습니다.</div>';
   return list.map(function(c){
     var tasks=clientTodos(c).length;
-    return '<button class="client-button '+(c.id===state.activeClientId?'active':'')+'" data-client-id="'+esc(c.id)+'"><span class="client-avatar">'+esc(initials(clientName(c)))+'</span><span><strong>'+esc(clientName(c))+'</strong><small>'+esc(c.type||"CLIENT")+'</small></span><span class="client-count">'+tasks+'</span></button>';
+    return '<button class="client-button '+(state.view==="client"&&c.id===state.activeClientId?'active':'')+'" data-client-id="'+esc(c.id)+'"><span class="client-avatar">'+esc(initials(clientName(c)))+'</span><span><strong>'+esc(clientName(c))+'</strong><small>'+esc(c.type||"CLIENT")+'</small></span><span class="client-count">'+tasks+'</span></button>';
   }).join("");
 }
 
@@ -53,6 +90,7 @@ function shell(){
   '</header>'+
   '<div class="workspace">'+
     '<aside id="sidebar" class="sidebar">'+
+      ''<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(state.view==="client"?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT WORKSPACE</small></button></nav>'+
       '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 함께 일하고 있는 클라이언트와 프로젝트를 관리합니다.</p></div>'+
       '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
       '<div id="clientList" class="client-list">'+clientList()+'</div>'+
@@ -75,6 +113,76 @@ function meetingMarkup(m){
 }
 function contractMarkup(c){
   return '<article class="contract-card"><strong>'+esc(c.projectName||"계약")+'</strong><p>'+esc(c.contractType==="monthly"?"월 단위 계약":"선금 · 잔금 계약")+' · '+esc(c.contractDate||"계약일 미기재")+'</p><div class="contract-money"><div><span>총 청구액</span><b>'+won(bill(c))+'</b></div><div><span>미수금</span><b>'+won(outstanding(c))+'</b></div></div></article>';
+}
+
+
+function dashboardTaskMarkup(t){
+  var c=clientForTask(t),name=c?clientName(c):(t.client||"GENERAL");
+  return '<div class="desk-task"><button class="desk-check" data-complete-task="'+esc(t.id)+'">✓</button><div class="desk-task-main"><div class="desk-task-meta"><span>'+esc(name)+'</span>'+(t.project?'<span>'+esc(t.project)+'</span>':'')+'</div><strong>'+esc(t.title||"업무")+'</strong>'+(t.memo?'<p>'+esc(t.memo)+'</p>':'')+'</div><time class="'+(t.due&&t.due<today()?"overdue":"")+'">'+esc(t.due?formatDate(t.due):"NO DATE")+'</time></div>';
+}
+function workloadBars(){
+  var days=recentDays(7),values=days.map(function(key){return logsOnDay(key).length;}),max=Math.max.apply(null,values.concat([1]));
+  return days.map(function(key,i){
+    var d=new Date(key+"T00:00:00"),label=["SUN","MON","TUE","WED","THU","FRI","SAT"][d.getDay()];
+    var h=Math.max(5,Math.round((values[i]/max)*100));
+    return '<div class="workload-day"><div class="workload-value">'+values[i]+'</div><div class="workload-track"><i style="height:'+h+'%"></i></div><span>'+label+'</span><small>'+key.slice(5).replace("-",".")+'</small></div>';
+  }).join("");
+}
+function clientWorkload(){
+  var since=recentDays(7)[0];
+  return state.clients.map(function(c){
+    var open=clientTodos(c).length;
+    var recent=state.logs.filter(function(l){return (l.clientId===c.id||l.client===clientName(c))&&(l.date||"")>=since;}).length;
+    return {c:c,open:open,recent:recent,total:open+recent};
+  }).filter(function(x){return x.total>0;}).sort(function(a,b){return b.total-a.total;}).slice(0,7);
+}
+function attentionItems(){
+  var items=[];
+  overdueTasks().slice(0,4).forEach(function(t){
+    var c=clientForTask(t);items.push({type:"DEADLINE",title:t.title||"업무",meta:(c?clientName(c):(t.client||"GENERAL"))+" · "+formatDate(t.due),client:c});
+  });
+  state.contracts.filter(function(c){return outstanding(c)>0;}).sort(function(a,b){return outstanding(b)-outstanding(a);}).slice(0,3).forEach(function(ct){
+    items.push({type:"OUTSTANDING",title:ct.projectName||ct.clientName||"계약",meta:(ct.clientName||"CLIENT")+" · "+won(outstanding(ct)),client:clientByName(ct.clientName)});
+  });
+  var weekAgo=recentDays(8)[0];
+  state.clients.forEach(function(c){
+    if(!clientTodos(c).length)return;
+    var latest=state.logs.filter(function(l){return l.clientId===c.id||l.client===clientName(c);}).sort(function(a,b){return (b.date||"").localeCompare(a.date||"");})[0];
+    if(!latest||((latest.date||"")<weekAgo))items.push({type:"NO UPDATE",title:clientName(c),meta:"진행 업무 "+clientTodos(c).length+"건 · 최근 기록 없음",client:c});
+  });
+  return items.slice(0,8);
+}
+function briefingText(){
+  var open=openTasks().length,over=overdueTasks().length,todayLog=logsOnDay(today()).length,out=totalOutstanding();
+  var parts=[];
+  if(over)parts.push("마감이 지난 업무 "+over+"건을 먼저 확인하는 것이 좋습니다.");
+  if(open>=8)parts.push("현재 열린 업무가 "+open+"건으로 업무량이 높은 편입니다.");
+  else if(open)parts.push("현재 진행할 업무는 "+open+"건입니다.");
+  if(todayLog)parts.push("오늘 "+todayLog+"건의 업무·미팅 기록이 쌓였습니다.");
+  else parts.push("아직 오늘 기록된 업무 로그가 없습니다.");
+  if(out>0)parts.push("미수금 "+won(out)+"도 함께 확인이 필요합니다.");
+  return parts.join(" ");
+}
+function dashboardPage(){
+  var tasks=todayTasks(),todayLog=logsOnDay(today()),workOnly=todayLog.filter(function(l){return (l.type||"work")==="work";}).length;
+  var meetings=todayLog.filter(function(l){return l.type==="meeting";}).length;
+  var workload=tasks.length+todayLog.length;
+  var clientLoads=clientWorkload(),attention=attentionItems();
+  var recent=state.logs.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||Number(b.createdAtMs||0)-Number(a.createdAtMs||0);}).slice(0,8);
+  var d=new Date(),dateLabel=d.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"}).toUpperCase();
+  return '<section class="desk-page">'+
+    '<section class="desk-hero"><div><p class="eyebrow">NINEWORKS / WORK DESK</p><h1>Today,<br>'+esc(dateLabel)+'</h1><p>'+esc(briefingText())+'</p></div><div class="desk-hero-side"><span>DAILY WORKLOAD</span><strong>'+workload+'</strong><small>OPEN '+tasks.length+' · LOG '+todayLog.length+'</small></div></section>'+
+    '<section class="desk-metrics"><div><span>01 / TODAY LOAD</span><strong>'+workload+'</strong><small>현재 업무 + 오늘 기록</small></div><div><span>02 / OPEN WORK</span><strong>'+openTasks().length+'</strong><small>진행 중 전체 업무</small></div><div><span>03 / TODAY LOG</span><strong>'+workOnly+'</strong><small>오늘 작업 기록</small></div><div><span>04 / MEETING</span><strong>'+meetings+'</strong><small>오늘 미팅 기록</small></div><div><span>05 / ACTIVE CLIENT</span><strong>'+activeClientCount()+'</strong><small>최근 14일 기준</small></div></section>'+
+    '<section class="desk-grid primary">'+
+      '<div class="desk-block"><div class="desk-block-head"><div><p class="eyebrow">01 / TODAY WORK</p><h2>오늘 처리할 업무</h2></div><span>'+tasks.length+' WORKS</span></div><div class="desk-task-list">'+(tasks.length?tasks.slice(0,10).map(dashboardTaskMarkup).join(""):'<div class="empty large">현재 등록된 업무가 없습니다.</div>')+'</div></div>'+
+      '<div class="desk-block"><div class="desk-block-head"><div><p class="eyebrow">02 / NEED ATTENTION</p><h2>확인이 필요한 것</h2></div><span>'+attention.length+' ITEMS</span></div><div class="attention-list">'+(attention.length?attention.map(function(x){return '<button class="attention-item" '+(x.client?'data-client-id="'+esc(x.client.id)+'"':'')+'><span>'+esc(x.type)+'</span><strong>'+esc(x.title)+'</strong><small>'+esc(x.meta)+'</small></button>';}).join(""):'<div class="empty large">지금 바로 확인할 이슈가 없습니다.</div>')+'</div></div>'+
+    '</section>'+
+    '<section class="desk-grid secondary">'+
+      '<div class="desk-block workload-block"><div class="desk-block-head"><div><p class="eyebrow">03 / DAILY WORKLOAD</p><h2>최근 7일 업무량</h2><p>작업 로그와 미팅 기록 기준</p></div><span>7 DAYS</span></div><div class="workload-chart">'+workloadBars()+'</div></div>'+
+      '<div class="desk-block"><div class="desk-block-head"><div><p class="eyebrow">04 / CLIENT LOAD</p><h2>클라이언트별 업무량</h2></div><span>7 DAYS + OPEN</span></div><div class="client-load-list">'+(clientLoads.length?clientLoads.map(function(x){return '<button class="client-load-row" data-client-id="'+esc(x.c.id)+'"><span>'+esc(clientName(x.c))+'</span><div><i style="width:'+Math.min(100,x.total*12)+'%"></i></div><strong>'+x.total+'</strong><small>OPEN '+x.open+' · LOG '+x.recent+'</small></button>';}).join(""):'<div class="empty large">집계할 업무가 없습니다.</div>')+'</div></div>'+
+    '</section>'+
+    '<section class="desk-block recent-block"><div class="desk-block-head"><div><p class="eyebrow">05 / RECENT ACTIVITY</p><h2>최근 업무 기록</h2></div><span>LATEST '+recent.length+'</span></div><div class="recent-grid">'+(recent.length?recent.map(function(l){var c=clientForLog(l);return '<article class="recent-item"><time>'+esc(formatDate(l.date||dateKeyFromValue(l.createdAt)))+'</time><span>'+esc(c?clientName(c):(l.client||"GENERAL"))+'</span><strong>'+esc(l.title||"업무 기록")+'</strong><small>'+esc(l.type==="meeting"?"MEETING":(l.project||"WORK LOG"))+'</small></article>';}).join(""):'<div class="empty large">아직 업무 기록이 없습니다.</div>')+'</div></section>'+
+  '</section>';
 }
 
 function clientPage(c){
@@ -117,6 +225,7 @@ function clientPage(c){
 function renderContent(){
   var c=activeClient();
   $("#clientList").innerHTML=clientList();
+  if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
   $("#content").innerHTML=c?clientPage(c):'<div class="empty-page"><div><p class="eyebrow">CLIENT WORKSPACE</p><h2>클라이언트를 선택하세요.</h2><p>왼쪽에서 클라이언트를 선택하면 현재 작업, 작업 로그, 미팅 기록과 계약 정보를 한 번에 볼 수 있습니다.</p></div></div>';
 }
 function openModal(title,body){
@@ -155,8 +264,10 @@ async function completeTask(id){
 
 function bindGlobal(){
   document.addEventListener("click",function(e){
-    var cb=e.target.closest("[data-client-id]");if(cb){state.activeClientId=cb.dataset.clientId;renderContent();$("#sidebar").classList.remove("open");return;}
+    var cb=e.target.closest("[data-client-id]");if(cb){state.activeClientId=cb.dataset.clientId;state.view="client";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return;}
+    if(e.target.closest("[data-workdesk]")){state.view="desk";renderContent();return;}
+    if(e.target.closest("[data-client-index]")){state.view="client";renderContent();return;}
     var complete=e.target.closest("[data-complete-task]");if(complete){completeTask(complete.dataset.completeTask);return;}
     var action=e.target.closest("[data-action]");if(action){var c=activeClient();if(!c)return;var a=action.dataset.action;if(a==="task")taskForm();if(a==="log")logForm();if(a==="meeting")meetingForm();if(a==="edit-client")clientForm(c);}
   });
