@@ -102,6 +102,14 @@ function shell(){
   '</div>';
 }
 
+function runOpeningIntro(){
+  var intro=$("#openingIntro");
+  if(!intro)return;
+  requestAnimationFrame(function(){intro.classList.add("show");});
+  setTimeout(function(){intro.classList.add("hide");},850);
+  setTimeout(function(){if(intro&&intro.parentNode)intro.parentNode.removeChild(intro);},1450);
+}
+
 function taskMarkup(t){
   return '<div class="task"><button class="check" data-complete-task="'+esc(t.id)+'" title="완료">✓</button><div><strong>'+esc(t.title||"업무")+'</strong><small>'+esc(t.memo||"")+'</small>'+(t.project?'<div style="margin-top:6px"><span class="task-project">'+esc(t.project)+'</span></div>':'')+'</div><span class="task-due">'+esc(formatDate(t.due))+'</span></div>';
 }
@@ -169,9 +177,12 @@ function dashboardPage(){
   var workload=tasks.length+todayLog.length;
   var clientLoads=clientWorkload(),attention=attentionItems();
   var recent=state.logs.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||Number(b.createdAtMs||0)-Number(a.createdAtMs||0);}).slice(0,8);
-  var d=new Date(),dateLabel=d.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"}).toUpperCase();
+  var d=new Date(),dateLabel=d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}).toUpperCase();
   return '<section class="desk-page">'+
-    '<section class="desk-hero"><div><p class="eyebrow">NINEWORKS / WORK DESK</p><h1>Today,<br>'+esc(dateLabel)+'</h1><p>'+esc(briefingText())+'</p></div><div class="desk-hero-side"><span>DAILY WORKLOAD</span><strong>'+workload+'</strong><small>OPEN '+tasks.length+' · LOG '+todayLog.length+'</small></div></section>'+
+    '<section class="desk-hero compact">'+
+      '<div class="desk-hero-copy"><p class="eyebrow">NINEWORKS / WORK DESK</p><h1>오늘의 업무</h1><p>'+esc(briefingText())+'</p></div>'+
+      '<div class="desk-hero-side compact"><span>'+esc(dateLabel)+'</span><strong>'+workload+'</strong><small>DAILY WORKLOAD · OPEN '+tasks.length+' · LOG '+todayLog.length+'</small></div>'+
+    '</section>'+
     '<section class="desk-metrics"><div><span>01 / TODAY LOAD</span><strong>'+workload+'</strong><small>현재 업무 + 오늘 기록</small></div><div><span>02 / OPEN WORK</span><strong>'+openTasks().length+'</strong><small>진행 중 전체 업무</small></div><div><span>03 / TODAY LOG</span><strong>'+workOnly+'</strong><small>오늘 작업 기록</small></div><div><span>04 / MEETING</span><strong>'+meetings+'</strong><small>오늘 미팅 기록</small></div><div><span>05 / ACTIVE CLIENT</span><strong>'+activeClientCount()+'</strong><small>최근 14일 기준</small></div></section>'+
     '<section class="desk-grid primary">'+
       '<div class="desk-block"><div class="desk-block-head"><div><p class="eyebrow">01 / TODAY WORK</p><h2>오늘 처리할 업무</h2></div><span>'+tasks.length+' WORKS</span></div><div class="desk-task-list">'+(tasks.length?tasks.slice(0,10).map(dashboardTaskMarkup).join(""):'<div class="empty large">현재 등록된 업무가 없습니다.</div>')+'</div></div>'+
@@ -308,7 +319,7 @@ function bindGlobal(){
 async function subscribe(user){
   cleanup();state.user=user;
   try{var p=await getDoc(doc(db,"users",user.uid));state.profile=p.exists()?p.data():{name:user.email,role:"OWNER"};}catch(e){state.profile={name:user.email,role:"OWNER"};}
-  $("#app").innerHTML=shell();bindGlobal();renderContent();
+  $("#app").innerHTML=shell();bindGlobal();renderContent();runOpeningIntro();
 
   state.unsubs.push(onSnapshot(collection(db,"clients"),function(snap){state.clients=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!state.activeClientId&&state.clients.length)state.activeClientId=state.clients[0].id;if(state.activeClientId&&!state.clients.some(function(c){return c.id===state.activeClientId;}))state.activeClientId=state.clients[0]?state.clients[0].id:"";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"todos"),function(snap){state.todos=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();}));
