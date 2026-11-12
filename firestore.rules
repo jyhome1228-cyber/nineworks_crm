@@ -43,6 +43,10 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
+    match /dailyJournals/{document=**} {
+      allow read, write: if isSignedIn();
+    }
+
     match /financeContracts/{document=**} {
       allow read, write: if isOwner();
     }
