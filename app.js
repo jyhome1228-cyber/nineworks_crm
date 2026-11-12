@@ -11,10 +11,14 @@ setPersistence(auth,browserLocalPersistence).catch(function(){});
 const $=function(s,r){return (r||document).querySelector(s);};
 const esc=function(v){return String(v==null?"":v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");};
 const uid=function(p){return p+"_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);};
-const today=function(){return new Date().toISOString().slice(0,10);};
+const today=function(){
+  var parts=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+  var values={};parts.forEach(function(p){values[p.type]=p.value;});
+  return values.year+"-"+values.month+"-"+values.day;
+};
 const won=function(v){return Math.round(Number(v||0)).toLocaleString("ko-KR")+"원";};
 
-const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],activeClientId:"",view:"desk",query:"",unsubs:[]};
+const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],activeClientId:"",view:"desk",journalDate:today(),journals:[],journalError:"",query:"",unsubs:[]};
 
 function cleanup(){state.unsubs.forEach(function(f){if(f)f();});state.unsubs=[];}
 function clientName(c){return c&&c.name?c.name:(c&&c.clientName?c.clientName:"이름 없음");}
@@ -90,7 +94,7 @@ function shell(){
   '</header>'+
   '<div class="workspace">'+
     '<aside id="sidebar" class="sidebar">'+
-      '<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(state.view==="client"?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT WORKSPACE</small></button></nav>'+
+      '<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(state.view==="client"?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT WORKSPACE</small></button><button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>03</span><strong>JOURNAL</strong><small>DAILY / HISTORY</small></button></nav>'+
       '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 함께 일하고 있는 클라이언트와 프로젝트를 관리합니다.</p></div>'+
       '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
       '<div id="clientList" class="client-list">'+clientList()+'</div>'+
@@ -233,10 +237,47 @@ function clientPage(c){
   '</section>';
 }
 
+
+function journalList(items){
+  if(!items||!items.length)return '<div class="empty large">저장된 업무일지가 없습니다.</div>';
+  return items.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");}).map(function(j){
+    return '<button class="journal-date-row '+(j.date===state.journalDate?"active":"")+'" data-journal-open="'+esc(j.date||"")+'"><span>'+esc(j.date||"")+'</span><strong>'+esc((j.entries||[]).length)+' WORK ITEMS</strong><small>'+esc(j.reviewStatus||"저장됨")+'</small></button>';
+  }).join("");
+}
+function journalBullet(items){
+  if(!items||!items.length)return '<p class="journal-empty">등록된 내용이 없습니다.</p>';
+  return '<ul class="journal-bullets">'+items.map(function(v){return '<li>'+esc(typeof v==="string"?v:JSON.stringify(v))+'</li>';}).join("")+'</ul>';
+}
+function journalPage(){
+  var j=state.journals.find(function(x){return x.date===state.journalDate;})||null;
+  var actions=j&&j.entries||[];
+  return '<section class="journal-page">'+
+    '<div class="journal-hero"><div><p class="eyebrow">NINEWORKS / WORK JOURNAL</p><h1>업무일지</h1><p>날짜별 기록을 저장하고 일간·주간·월간 보고서의 기준 데이터로 관리합니다.</p></div>'+
+      '<div class="journal-controls"><label>DATE<input id="journalDate" type="date" value="'+esc(state.journalDate||today())+'"></label><label class="journal-import">IMPORT JSON<input id="journalImport" type="file" accept="application/json,.json"></label></div>'+
+    '</div>'+
+    (state.journalError?'<p class="journal-error">'+esc(state.journalError)+'</p>':'')+
+    '<div class="journal-layout"><div class="journal-list"><div class="journal-group-header"><p class="eyebrow">01 / ARCHIVE</p><strong>DAILY HISTORY</strong></div>'+journalList(state.journals)+'</div>'+
+      '<div class="journal-content">'+(j?
+        '<div class="journal-head"><div><p class="eyebrow">02 / DAILY JOURNAL</p><h2>'+esc(j.date||"")+'</h2><p>'+esc(j.summary||"")+'</p></div><button data-journal-export class="journal-export">EXPORT JSON</button></div>'+
+        '<div class="journal-status"><span>'+esc(j.reviewStatus||"저장됨")+'</span><span>'+actions.length+' 기록 항목</span><span>시간·완료 건수는 별도 검증</span></div>'+
+        '<div class="journal-section"><p class="eyebrow">01 / TODAY WORK</p><h3>오늘 진행한 업무</h3><div class="journal-work-rows">'+(actions.length?actions.map(function(e){
+          return '<article class="journal-work"><div><span>'+esc(e.client||"기타")+' / '+esc(e.project||"")+'</span><strong>'+esc(e.title||"업무")+'</strong><p>'+esc(e.details||"")+'</p><small>'+esc(e.nextAction||"")+'</small></div><em>'+esc(e.status||"확인 필요")+'</em></article>';
+        }).join(""):'<p class="journal-empty">등록된 업무가 없습니다.</p>')+'</div></div>'+
+        '<div class="journal-section"><p class="eyebrow">02 / DECISIONS</p><h3>주요 결정·성과</h3>'+journalBullet(j.decisions)+'</div>'+
+        '<div class="journal-section"><p class="eyebrow">03 / PENDING</p><h3>미완료·확인 필요</h3>'+journalBullet(j.pending)+'</div>'+
+        '<div class="journal-section"><p class="eyebrow">04 / OPERATIONS</p><h3>운영 현황</h3><p class="journal-prose">'+esc((j.operations&&j.operations.note)||"실제 완료 건수 및 시간은 원본 로그 기준으로 별도 집계합니다.")+'</p></div>'+
+        '<div class="journal-section"><p class="eyebrow">05 / REVIEW</p><h3>하루 회고</h3><p class="journal-prose">'+esc(j.reflection||"")+'</p></div>'+
+        '<div class="journal-section"><p class="eyebrow">06 / NEXT PRIORITIES</p><h3>다음날 우선순위</h3>'+journalBullet(j.tomorrowPriorities)+'</div>'+
+        '<div class="journal-section"><p class="eyebrow">07 / MEETING ACTIONS</p><h3>미팅 후속 액션</h3><p class="journal-prose">'+esc(j.meetingNote||"별도 기록 없음")+'</p></div>'
+        :'<div class="journal-blank"><p class="eyebrow">02 / DAILY JOURNAL</p><h2>'+esc(state.journalDate||today())+'</h2><p>이 날짜의 업무일지가 아직 저장되지 않았습니다. 대화 기반 자동 정리 JSON 파일을 불러오면 로그인된 CRM의 비공개 Firestore 업무일지에 저장됩니다.</p></div>')+
+      '</div></div></section>';
+}
+
 function renderContent(){
   var c=activeClient();
   $("#clientList").innerHTML=clientList();
   if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
+  if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
   $("#content").innerHTML=c?clientPage(c):'<div class="empty-page"><div><p class="eyebrow">CLIENT WORKSPACE</p><h2>클라이언트를 선택하세요.</h2><p>왼쪽에서 클라이언트를 선택하면 현재 작업, 작업 로그, 미팅 기록과 계약 정보를 한 번에 볼 수 있습니다.</p></div></div>';
 }
 function openModal(title,body){
@@ -279,10 +320,28 @@ function bindGlobal(){
     if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return;}
     if(e.target.closest("[data-workdesk]")){state.view="desk";renderContent();return;}
     if(e.target.closest("[data-client-index]")){state.view="client";renderContent();return;}
+    if(e.target.closest("[data-journal-nav]")){state.view="journal";renderContent();$("#sidebar").classList.remove("open");return;}
+    var openJournal=e.target.closest("[data-journal-open]");if(openJournal){state.journalDate=openJournal.dataset.journalOpen;state.view="journal";renderContent();return;}
+    if(e.target.closest("[data-journal-export]")){var item=state.journals.find(function(j){return j.date===state.journalDate;});if(item){var blob=new Blob([JSON.stringify(item,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="nineworks-journal-"+item.date+".json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},2000);}return;}
     var complete=e.target.closest("[data-complete-task]");if(complete){completeTask(complete.dataset.completeTask);return;}
     var action=e.target.closest("[data-action]");if(action){var c=activeClient();if(!c)return;var a=action.dataset.action;if(a==="task")taskForm();if(a==="log")logForm();if(a==="meeting")meetingForm();if(a==="edit-client")clientForm(c);}
   });
   $("#clientSearch").addEventListener("input",function(e){state.query=e.target.value;$("#clientList").innerHTML=clientList();});
+  document.addEventListener("change",async function(e){
+    if(e.target.id==="journalDate"){state.journalDate=e.target.value||today();renderContent();return;}
+    if(e.target.id!=="journalImport")return;
+    var file=e.target.files&&e.target.files[0];if(!file)return;
+    try{
+      if(file.size>500000){throw new Error("500KB 이하 JSON만 가져올 수 있습니다.");}
+      var obj=JSON.parse(await file.text());
+      if(!obj||!/^\\d{4}-\\d{2}-\\d{2}$/.test(obj.date)||!Array.isArray(obj.entries))throw new Error("업무일지 JSON의 date 또는 entries 형식이 올바르지 않습니다.");
+      var saved=state.journals.find(function(j){return j.date===obj.date;});
+      if(saved&&!window.confirm(obj.date+" 업무일지가 이미 존재합니다. 이 날짜의 보고서를 갱신할까요?"))return;
+      var payload=Object.assign({},obj,{schemaVersion:1,date:obj.date,importedAt:serverTimestamp(),importedBy:state.user.uid});
+      await setDoc(doc(db,"dailyJournals",obj.date),payload,{merge:true});
+      state.journalDate=obj.date;state.journalError="";toast(obj.date+" 업무일지를 저장했습니다.");
+    }catch(err){console.error(err);state.journalError="파일을 저장하지 못했습니다: "+(err.message||"형식 또는 권한 오류");renderContent();}
+  });
   $("#addClient").addEventListener("click",function(){clientForm({});});
   $("#addWorkLog").addEventListener("click",function(){if(activeClient())logForm();else toast("클라이언트를 먼저 선택하세요.");});
   $("#addMeeting").addEventListener("click",function(){if(activeClient())meetingForm();else toast("클라이언트를 먼저 선택하세요.");});
@@ -324,6 +383,7 @@ async function subscribe(user){
   state.unsubs.push(onSnapshot(collection(db,"clients"),function(snap){state.clients=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!state.activeClientId&&state.clients.length)state.activeClientId=state.clients[0].id;if(state.activeClientId&&!state.clients.some(function(c){return c.id===state.activeClientId;}))state.activeClientId=state.clients[0]?state.clients[0].id:"";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"todos"),function(snap){state.todos=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"workLogs"),function(snap){state.logs=snap.docs.map(function(d){var data=d.data();return Object.assign({id:d.id,createdAtMs:timestampMs(data.createdAt)},data);});renderContent();}));
+  state.unsubs.push(onSnapshot(collection(db,"dailyJournals"),function(snap){state.journals=snap.docs.map(function(d){return Object.assign({date:d.id},d.data());});state.journalError="";renderContent();},function(err){console.warn("dailyJournals unavailable",err);state.journalError="업무일지 데이터 접근 권한 또는 연결을 확인하세요.";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"financeContracts"),function(snap){state.contracts=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("financeContracts unavailable",err);state.contracts=[];renderContent();}));
 }
 
