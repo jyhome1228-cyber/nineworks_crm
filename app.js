@@ -90,7 +90,7 @@ function shell(){
   '</header>'+
   '<div class="workspace">'+
     '<aside id="sidebar" class="sidebar">'+
-      ''<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(state.view==="client"?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT WORKSPACE</small></button></nav>'+
+      '<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(state.view==="client"?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT WORKSPACE</small></button></nav>'+
       '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 함께 일하고 있는 클라이언트와 프로젝트를 관리합니다.</p></div>'+
       '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
       '<div id="clientList" class="client-list">'+clientList()+'</div>'+
