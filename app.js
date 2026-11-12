@@ -85,8 +85,8 @@ function clientList(){
 function shell(){
   return '<div class="site-shell">'+
   '<header class="site-header">'+
-    '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><span class="site-kicker">NINEWORKS / CLIENT MANAGEMENT SYSTEM</span></div>'+
-    '<div class="site-header-right"><span class="site-meta">INTERNAL WORKSPACE · 2026</span><button class="header-action" id="addWorkLog">WORK LOG ↗</button><button class="header-action solid" id="addMeeting">MEETING ↗</button><button class="header-menu" id="mobileClients">CLIENTS</button></div>'+
+    '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><span class="site-kicker">NINEWORKS / WORK DESK</span></div>'+
+    '<div class="site-header-right"><span class="site-meta">PERSONAL OPERATING SYSTEM · 2026</span><button class="header-action" id="addWorkLog">WORK LOG ↗</button><button class="header-action solid" id="addMeeting">MEETING ↗</button><button class="header-menu" id="mobileClients">CLIENTS</button></div>'+
   '</header>'+
   '<div class="workspace">'+
     '<aside id="sidebar" class="sidebar">'+
