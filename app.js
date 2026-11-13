@@ -251,6 +251,21 @@ function journalBullet(items){
   if(!items||!items.length)return '<p class="journal-empty">등록된 내용이 없습니다.</p>';
   return '<ul class="journal-bullets">'+items.map(function(v){return '<li>'+esc(typeof v==="string"?v:JSON.stringify(v))+'</li>';}).join("")+'</ul>';
 }
+function journalMeetingsMarkup(j){
+  var meetings=Array.isArray(j&&j.meetings)?j.meetings:[];
+  if(!meetings.length)return '<p class="journal-prose">'+esc(j&&j.meetingNote||"미팅 확정 기록 없음")+'</p>';
+  var out=meetings.map(function(m){
+    var followups=Array.isArray(m.followupActions)?m.followupActions:(Array.isArray(m.followup)?m.followup:[]);
+    var details=Array.isArray(m.feedback)?m.feedback:[];
+    return '<article class="journal-meeting-card"><div class="journal-meeting-head"><strong>'+esc(m.title||"피드백 기록")+'</strong><span>'+esc(m.status||m.heldStatus||"확인 필요")+'</span></div>'+
+      '<p class="journal-meeting-client">'+esc([m.client,m.date].filter(Boolean).join(" / "))+'</p>'+
+      (details.length?'<ul class="journal-bullets">'+details.map(function(d){return '<li>'+esc(typeof d==="string"?d:(d.text||""))+'</li>';}).join("")+'</ul>':'')+
+      (followups.length?'<div class="journal-followups"><span>FOLLOW-UP / 별도 업무 중복 생성 없음</span><ul>'+followups.map(function(v){return '<li>'+esc(typeof v==="string"?v:(v.action||v.title||""))+'</li>';}).join("")+'</ul></div>':'')+
+    '</article>';
+  }).join("");
+  return '<p class="journal-prose">'+esc(j&&j.meetingNote||"")+'</p>'+out;
+}
+
 function journalPage(){
   var j=state.journals.find(function(x){return x.date===state.journalDate;})||null;
   var actions=j&&j.entries||[];
@@ -271,7 +286,7 @@ function journalPage(){
         '<div class="journal-section"><p class="eyebrow">04 / OPERATIONS</p><h3>운영 현황</h3><p class="journal-prose">'+esc((j.operations&&j.operations.note)||"실제 완료 건수 및 시간은 원본 로그 기준으로 별도 집계합니다.")+'</p></div>'+
         '<div class="journal-section"><p class="eyebrow">05 / REVIEW</p><h3>하루 회고</h3><p class="journal-prose">'+esc(j.reflection||"")+'</p></div>'+
         '<div class="journal-section"><p class="eyebrow">06 / NEXT PRIORITIES</p><h3>다음날 우선순위</h3>'+journalBullet(j.tomorrowPriorities)+'</div>'+
-        '<div class="journal-section"><p class="eyebrow">07 / MEETING ACTIONS</p><h3>미팅 후속 액션</h3><p class="journal-prose">'+esc(j.meetingNote||"별도 기록 없음")+'</p></div>'
+        '<div class="journal-section"><p class="eyebrow">07 / MEETING ACTIONS</p><h3>미팅 후속 액션</h3>'+journalMeetingsMarkup(j)+'</div>'
         :'<div class="journal-blank"><p class="eyebrow">02 / DAILY JOURNAL</p><h2>'+esc(state.journalDate||today())+'</h2><p>이 날짜의 업무일지가 아직 저장되지 않았습니다. 대화 기반 자동 정리 JSON 파일을 불러오면 로그인된 CRM의 비공개 Firestore 업무일지에 저장됩니다.</p></div>')+
       '</div></div></section>';
 }
