@@ -378,6 +378,8 @@ function renderContent(){
   $("#clientList").innerHTML=clientList();
   if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
   if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
+  if(state.view==="clients"){$("#content").innerHTML=clientsDashboard();var ps=$("#partnerSearch");if(ps)ps.addEventListener("input",function(e){state.partnerQuery=e.target.value;renderContent();});return;}
+  if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientsDashboard();return;}
   $("#content").innerHTML=c?clientPage(c):'<div class="empty-page"><div><p class="eyebrow">CLIENT WORKSPACE</p><h2>클라이언트를 선택하세요.</h2><p>왼쪽에서 클라이언트를 선택하면 현재 작업, 작업 로그, 미팅 기록과 계약 정보를 한 번에 볼 수 있습니다.</p></div></div>';
 }
 function openModal(title,body){
@@ -423,7 +425,11 @@ function bindGlobal(){
     var cb=e.target.closest("[data-client-id]");if(cb){state.activeClientId=cb.dataset.clientId;state.view="client";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return;}
     if(e.target.closest("[data-workdesk]")){state.view="desk";renderContent();return;}
-    if(e.target.closest("[data-client-index]")){state.view="client";renderContent();return;}
+    if(e.target.closest("[data-client-index]")){state.view="clients";renderContent();$("#sidebar").classList.remove("open");return;}
+    var partner=e.target.closest("[data-partner-id]");if(partner){state.activePartnerId=partner.dataset.partnerId;state.view="partner";renderContent();return;}
+    if(e.target.closest("[data-partner-import]")){$("#partnerImport").click();return;}
+    if(e.target.closest("[data-partner-new]")){partnerForm({});return;}
+    var pedit=e.target.closest("[data-partner-edit]");if(pedit){var pp=state.tradePartners.find(function(x){return x.id===pedit.dataset.partnerEdit;});if(pp)partnerForm(pp);return;}
     if(e.target.closest("[data-journal-nav]")){state.view="journal";renderContent();$("#sidebar").classList.remove("open");return;}
     var openJournal=e.target.closest("[data-journal-open]");if(openJournal){state.journalDate=openJournal.dataset.journalOpen;state.view="journal";renderContent();return;}
     if(e.target.closest("[data-journal-export]")){var item=state.journals.find(function(j){return j.date===state.journalDate;});if(item){var blob=new Blob([JSON.stringify(item,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="nineworks-journal-"+item.date+".json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},2000);}return;}
@@ -433,6 +439,7 @@ function bindGlobal(){
   $("#clientSearch").addEventListener("input",function(e){state.query=e.target.value;$("#clientList").innerHTML=clientList();});
   document.addEventListener("change",async function(e){
     if(e.target.id==="journalDate"){state.journalDate=e.target.value||today();renderContent();return;}
+    if(e.target.id==="partnerImport"){var pf=e.target.files&&e.target.files[0];if(!pf)return;try{await importTradePartnerWorkbook(pf);e.target.value="";}catch(err){console.error(err);toast(err.message||"거래처 자료를 가져오지 못했습니다.");}return;}
     if(e.target.id!=="journalImport")return;
     var file=e.target.files&&e.target.files[0];if(!file)return;
     try{
@@ -453,6 +460,10 @@ function bindGlobal(){
   $("#mobileClients").addEventListener("click",function(){$("#sidebar").classList.toggle("open");});
 
   document.addEventListener("submit",async function(e){
+    if(e.target.id==="partnerForm"){
+      e.preventDefault();var pid=$("#partnerId").value;var biz=$("#partnerBiz").value.trim();if(!pid)pid=(biz.replace(/[^0-9]/g,"")||uid("partner"));var existing=state.tradePartners.find(function(x){return x.id===pid;})||{};
+      try{await setDoc(doc(db,"tradePartners",pid),Object.assign({},existing,{id:pid,businessNumber:biz,name:$("#partnerName").value.trim(),representative:$("#partnerRep").value.trim(),address:$("#partnerAddress").value.trim(),email:$("#partnerEmail").value.trim(),industry:$("#partnerIndustry").value.trim(),category:$("#partnerCategory").value.trim(),manager:$("#partnerManager").value.trim(),phone:$("#partnerPhone").value.trim(),website:$("#partnerWebsite").value.trim(),updatedAt:serverTimestamp(),updatedBy:state.user.uid}),{merge:true});state.activePartnerId=pid;state.view="partner";closeModal();toast("거래처 정보를 저장했습니다.");}catch(err){console.error(err);toast("거래처 정보를 저장하지 못했습니다.");}return;
+    }
     if(e.target.id==="clientForm"){
       e.preventDefault();var id=$("#clientId").value||uid("client");var ex=state.clients.find(function(x){return x.id===id;})||{};
       try{await setDoc(doc(db,"clients",id),Object.assign({},ex,{id:id,name:$("#clientName").value.trim(),type:$("#clientType").value.trim(),contact:$("#clientContact").value.trim(),phone:$("#clientPhone").value.trim(),email:$("#clientEmail").value.trim(),work:$("#clientWork").value.trim(),note:$("#clientNote").value.trim(),updatedAt:serverTimestamp()}),{merge:true});state.activeClientId=id;closeModal();toast("클라이언트를 저장했습니다.");}catch(err){console.error(err);toast("저장하지 못했습니다.");}
@@ -487,6 +498,8 @@ async function subscribe(user){
   state.unsubs.push(onSnapshot(collection(db,"clients"),function(snap){state.clients=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!state.activeClientId&&state.clients.length)state.activeClientId=state.clients[0].id;if(state.activeClientId&&!state.clients.some(function(c){return c.id===state.activeClientId;}))state.activeClientId=state.clients[0]?state.clients[0].id:"";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"todos"),function(snap){state.todos=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"workLogs"),function(snap){state.logs=snap.docs.map(function(d){var data=d.data();return Object.assign({id:d.id,createdAtMs:timestampMs(data.createdAt)},data);});renderContent();}));
+  state.unsubs.push(onSnapshot(collection(db,"tradePartners"),function(snap){state.tradePartners=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("tradePartners unavailable",err);}));
+  state.unsubs.push(onSnapshot(collection(db,"taxInvoices"),function(snap){state.taxInvoices=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("taxInvoices unavailable",err);}));
   state.unsubs.push(onSnapshot(collection(db,"dailyJournals"),function(snap){state.journals=snap.docs.map(function(d){return Object.assign({date:d.id},d.data());});state.journalError="";renderContent();},function(err){console.warn("dailyJournals unavailable",err);state.journalError="업무일지 데이터 접근 권한 또는 연결을 확인하세요.";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"financeContracts"),function(snap){state.contracts=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("financeContracts unavailable",err);state.contracts=[];renderContent();}));
 }
