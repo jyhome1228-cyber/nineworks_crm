@@ -276,6 +276,103 @@ function journalPage(){
       '</div></div></section>';
 }
 
+
+function partnerSalesTotals(){
+  var list=state.tradePartners;
+  if(!list.length)return {count:53,active2026:29,sales2025:416391928,sales2026:228690054,invoices:213,corrections:63};
+  return {
+    count:list.length,
+    active2026:list.filter(function(p){return Number(p.sales2026||0)!==0;}).length,
+    sales2025:list.reduce(function(n,p){return n+Number(p.sales2025||0);},0),
+    sales2026:list.reduce(function(n,p){return n+Number(p.sales2026||0);},0),
+    invoices:list.reduce(function(n,p){return n+Number(p.invoiceCount||0);},0),
+    corrections:list.reduce(function(n,p){return n+Number(p.correctionCount||0);},0)
+  };
+}
+function clientsDashboard(){
+  var totals=partnerSalesTotals();
+  var q=state.partnerQuery.trim().toLowerCase();
+  var partners=state.tradePartners.filter(function(p){
+    return !q||((p.name||"")+" "+(p.representative||"")+" "+(p.address||"")+" "+(p.industry||"")+" "+(p.category||"")).toLowerCase().includes(q);
+  }).sort(function(a,b){return Number(b.sales2026||0)-Number(a.sales2026||0)||String(a.name||"").localeCompare(String(b.name||""),"ko");});
+  return '<section class="partner-dashboard">'+
+    '<section class="partner-hero"><div><p class="eyebrow">NINEWORKS / CLIENT MASTER</p><h1>거래처 관리</h1><p>2025·2026 세금계산서 거래처와 현재 클라이언트 정보를 한 곳에서 관리합니다. 대표자·주소·업태·종목·담당자와 매출 이력을 연결합니다.</p></div><div class="partner-hero-actions"><button class="btn" data-partner-new>＋ 거래처 추가</button><button class="btn primary" data-partner-import>거래처 마스터 가져오기 ↗</button></div></section>'+
+    '<section class="partner-metrics">'+
+      '<div><span>01 / PARTNERS</span><strong>'+totals.count+'</strong><small>전체 거래처</small></div>'+
+      '<div><span>02 / 2026 ACTIVE</span><strong>'+totals.active2026+'</strong><small>2026 거래 발생</small></div>'+
+      '<div><span>03 / 2025 SALES</span><strong>'+won(totals.sales2025)+'</strong><small>공급가액 기준</small></div>'+
+      '<div><span>04 / 2026 SALES</span><strong>'+won(totals.sales2026)+'</strong><small>11월 10일까지</small></div>'+
+      '<div><span>05 / INVOICES</span><strong>'+totals.invoices+'</strong><small>수정 '+totals.corrections+'건</small></div>'+
+    '</section>'+
+    '<section class="partner-list-section"><div class="partner-list-head"><div><p class="eyebrow">CLIENT DATABASE</p><h2>거래처 마스터</h2></div><label class="partner-search"><input id="partnerSearch" type="search" placeholder="상호 / 대표자 / 주소 / 업태 / 종목 검색" value="'+esc(state.partnerQuery)+'"></label></div>'+
+    (partners.length?'<div class="partner-table-wrap"><table class="partner-table"><thead><tr><th>거래처</th><th>대표자</th><th>주소 / 업태·종목</th><th>2025</th><th>2026</th><th>발행</th><th>최근거래</th></tr></thead><tbody>'+
+      partners.map(function(p){return '<tr data-partner-id="'+esc(p.id)+'"><td><strong>'+esc(p.name||"—")+'</strong><small>'+esc(maskBusinessNumber(p.businessNumber))+'</small></td><td>'+esc(p.representative||"—")+'</td><td><span>'+esc(p.address||"—")+'</span><small>'+esc([p.industry,p.category].filter(Boolean).join(" / ")||"업태·종목 미입력")+'</small></td><td>'+won(p.sales2025)+'</td><td><strong>'+won(p.sales2026)+'</strong></td><td>'+Number(p.invoiceCount||0)+'<small>수정 '+Number(p.correctionCount||0)+'</small></td><td>'+esc(p.lastDate||"—")+'<small>'+esc(p.lastItem||"")+'</small></td></tr>';}).join("")+
+      '</tbody></table></div>':'<div class="partner-import-empty"><p class="eyebrow">IMPORT REQUIRED</p><h3>거래처 상세정보를 가져오세요.</h3><p>분석된 53개 거래처의 총괄 수치는 반영되어 있습니다. 대표자·주소·이메일과 계산서 이력은 로그인 후 Firestore에 안전하게 저장하기 위해 거래처 마스터 엑셀을 한 번 가져오면 됩니다.</p><button class="btn primary" data-partner-import>거래처 마스터 가져오기 ↗</button></div>')+
+    '</section></section>';
+}
+function partnerInvoiceMarkup(inv){
+  return '<tr><td>'+esc(inv.date||"—")+'</td><td>'+esc(inv.item||"—")+'</td><td>'+won(inv.supply)+'</td><td>'+won(inv.tax)+'</td><td>'+won(inv.total)+'</td><td><span class="invoice-status '+(inv.correction?"correction":"")+'">'+(inv.correction?"수정":"일반")+'</span></td></tr>';
+}
+function partnerPage(p){
+  var invoices=partnerInvoices(p);
+  var linked=state.clients.find(function(c){
+    var a=String(clientName(c)).replace(/\s|\(주\)|주식회사/g,"").toLowerCase();
+    var b=String(p.name||"").replace(/\s|\(주\)|주식회사/g,"").toLowerCase();
+    return a&&b&&(a===b||a.includes(b)||b.includes(a));
+  });
+  return '<section class="partner-detail">'+
+    '<div class="partner-detail-head"><div><button class="back-link" data-client-index>← CLIENT MASTER</button><p class="eyebrow">TRADE PARTNER / '+esc(p.status||"")+'</p><h1>'+esc(p.name||"거래처")+'</h1><p>'+esc(p.lastItem||"세금계산서 및 거래 이력")+'</p></div><div class="partner-detail-actions"><button class="btn" data-partner-edit="'+esc(p.id)+'">정보 수정</button>'+(linked?'<button class="btn primary" data-client-id="'+esc(linked.id)+'">CLIENT WORKSPACE ↗</button>':'')+'</div></div>'+
+    '<div class="partner-detail-metrics"><div><span>2025 SALES</span><strong>'+won(p.sales2025)+'</strong></div><div><span>2026 SALES</span><strong>'+won(p.sales2026)+'</strong></div><div><span>TOTAL SALES</span><strong>'+won(p.totalSales)+'</strong></div><div><span>INVOICES</span><strong>'+Number(p.invoiceCount||0)+'</strong><small>CORRECTION '+Number(p.correctionCount||0)+'</small></div></div>'+
+    '<div class="partner-detail-grid"><section class="partner-info-panel"><div class="partner-section-head"><p class="eyebrow">01 / BUSINESS PROFILE</p><h2>거래처 정보</h2></div>'+
+      '<div class="partner-info-grid"><div><span>사업자등록번호</span><strong>'+esc(maskBusinessNumber(p.businessNumber))+'</strong></div><div><span>대표자</span><strong>'+esc(p.representative||"—")+'</strong></div><div class="wide"><span>주소</span><strong>'+esc(p.address||"—")+'</strong></div><div><span>업태</span><strong>'+esc(p.industry||"—")+'</strong></div><div><span>종목</span><strong>'+esc(p.category||"—")+'</strong></div><div><span>담당자</span><strong>'+esc(p.manager||"—")+'</strong></div><div><span>연락처</span><strong>'+esc(p.phone||"—")+'</strong></div><div><span>이메일</span><strong>'+esc(p.email||"—")+'</strong></div><div><span>홈페이지</span><strong>'+esc(p.website||"—")+'</strong></div><div><span>최초거래</span><strong>'+esc(p.firstDate||"—")+'</strong></div><div><span>최근거래</span><strong>'+esc(p.lastDate||"—")+'</strong></div></div>'+
+    '</section><section class="partner-info-panel"><div class="partner-section-head"><p class="eyebrow">02 / SALES HISTORY</p><h2>거래 현황</h2></div><div class="partner-sales-notes"><div><span>최근 거래내용</span><strong>'+esc(p.lastItem||"—")+'</strong></div><div><span>최근 품목</span><strong>'+esc(p.recentItems||"—")+'</strong></div><div><span>거래 상태</span><strong>'+esc(p.status||"—")+'</strong></div></div></section></div>'+
+    '<section class="partner-invoices"><div class="partner-section-head"><p class="eyebrow">03 / TAX INVOICE</p><h2>세금계산서 발행 이력</h2><span>'+invoices.length+' RECORDS</span></div>'+
+      (invoices.length?'<div class="partner-table-wrap"><table class="partner-table invoice-table"><thead><tr><th>작성일</th><th>품목</th><th>공급가액</th><th>세액</th><th>합계</th><th>구분</th></tr></thead><tbody>'+invoices.map(partnerInvoiceMarkup).join("")+'</tbody></table></div>':'<div class="empty large">연결된 계산서 이력이 없습니다.</div>')+
+    '</section></section>';
+}
+function partnerForm(p){
+  p=p||{};
+  openModal(p.id?"거래처 정보 수정":"거래처 추가",'<form id="partnerForm"><input id="partnerId" type="hidden" value="'+esc(p.id||"")+'"><div class="form-grid"><label class="field"><span>상호 *</span><input id="partnerName" required value="'+esc(p.name||"")+'"></label><label class="field"><span>사업자등록번호</span><input id="partnerBiz" value="'+esc(p.businessNumber||"")+'"></label></div><div class="form-grid"><label class="field"><span>대표자명</span><input id="partnerRep" value="'+esc(p.representative||"")+'"></label><label class="field"><span>이메일</span><input id="partnerEmail" type="email" value="'+esc(p.email||"")+'"></label></div><label class="field"><span>주소</span><input id="partnerAddress" value="'+esc(p.address||"")+'"></label><div class="form-grid"><label class="field"><span>업태</span><input id="partnerIndustry" value="'+esc(p.industry||"")+'"></label><label class="field"><span>종목</span><input id="partnerCategory" value="'+esc(p.category||"")+'"></label></div><div class="form-grid"><label class="field"><span>담당자</span><input id="partnerManager" value="'+esc(p.manager||"")+'"></label><label class="field"><span>연락처</span><input id="partnerPhone" value="'+esc(p.phone||"")+'"></label></div><label class="field"><span>홈페이지</span><input id="partnerWebsite" value="'+esc(p.website||"")+'"></label><div class="actions"><button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">저장</button></div></form>');
+}
+async function importTradePartnerWorkbook(file){
+  if(!window.XLSX)throw new Error("엑셀 모듈을 불러오지 못했습니다.");
+  var data=await file.arrayBuffer();
+  var book=window.XLSX.read(data,{type:"array",cellDates:false});
+  var masterSheet=book.Sheets["거래처마스터"];
+  var invoiceSheet=book.Sheets["세금계산서원장"];
+  if(!masterSheet)throw new Error("거래처마스터 시트가 필요합니다.");
+  var rows=window.XLSX.utils.sheet_to_json(masterSheet,{defval:""});
+  var invoiceRows=invoiceSheet?window.XLSX.utils.sheet_to_json(invoiceSheet,{defval:""}):[];
+  if(!rows.length)throw new Error("가져올 거래처가 없습니다.");
+  if(rows.length+invoiceRows.length>480)throw new Error("한 번에 가져올 수 있는 데이터 수를 초과했습니다.");
+  var batch=writeBatch(db);
+  rows.forEach(function(r){
+    var biz=String(r["사업자등록번호"]||"").trim();
+    var id=(biz.replace(/[^0-9]/g,"")||uid("partner"));
+    batch.set(doc(db,"tradePartners",id),{
+      id:id,businessNumber:biz,name:String(r["거래처명"]||"").trim(),representative:String(r["대표자명"]||"").trim(),
+      address:String(r["주소"]||"").trim(),email:String(r["이메일"]||"").trim(),industry:String(r["업태"]||"").trim(),
+      category:String(r["종목"]||"").trim(),manager:String(r["담당자"]||"").trim(),phone:String(r["연락처"]||"").trim(),
+      website:String(r["홈페이지"]||"").trim(),firstDate:String(r["최초거래일"]||"").slice(0,10),lastDate:String(r["최근거래일"]||"").slice(0,10),
+      sales2025:Number(r["2025 공급가액"]||0),sales2026:Number(r["2026 공급가액"]||0),totalSales:Number(r["누적 공급가액"]||0),
+      invoiceCount:Number(r["발행기록"]||0),correctionCount:Number(r["수정건수"]||0),recentItems:String(r["최근 품목(최대5)"]||""),
+      lastItem:String(r["최근 거래내용"]||""),status:String(r["거래상태"]||""),importedAt:serverTimestamp(),importedBy:state.user.uid
+    },{merge:true});
+  });
+  invoiceRows.forEach(function(r,i){
+    var approval=String(r["승인번호"]||"").trim();
+    var id=(approval||("invoice_"+i+"_"+String(r["사업자등록번호"]||"").replace(/[^0-9]/g,""))).replace(/\//g,"-");
+    batch.set(doc(db,"taxInvoices",id),{
+      id:id,businessNumber:String(r["사업자등록번호"]||"").trim(),name:String(r["거래처명"]||"").trim(),date:String(r["작성일"]||"").slice(0,10),
+      year:Number(r["연도"]||0),supply:Number(r["공급가액"]||0),tax:Number(r["세액"]||0),total:Number(r["합계금액"]||0),
+      correction:String(r["수정여부"]||"")==="수정",salesType:String(r["매출구분"]||""),item:String(r["품목명"]||""),approval:approval,
+      importedAt:serverTimestamp()
+    },{merge:true});
+  });
+  await batch.commit();
+  toast("거래처 "+rows.length+"곳과 계산서 "+invoiceRows.length+"건을 가져왔습니다.");
+}
+
 function renderContent(){
   var c=activeClient();
   $("#clientList").innerHTML=clientList();
