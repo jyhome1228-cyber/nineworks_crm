@@ -1136,3 +1136,14 @@ aside .panel{border-top-color:#323232}
   .partner-info-grid>div:nth-child(odd):not(.wide){padding-right:0;border-right:0}
   .partner-info-grid>div:nth-child(even){padding-left:0}
 }
+
+/* Journal meeting records: keep feedback distinct from completed meetings */
+.journal-meeting-card{padding:18px 0 22px;border-bottom:1px solid #242424}
+.journal-meeting-head{display:flex;gap:14px;align-items:center;justify-content:space-between}
+.journal-meeting-head strong{color:#c7c7c3;font-size:12px;font-weight:600}
+.journal-meeting-head span{color:#8d8981;font-size:9px;text-align:right;max-width:220px}
+.journal-meeting-client{font-size:10px;color:#77746f;margin:8px 0 14px}
+.journal-followups{margin-top:14px;padding:13px 16px;border:1px solid #2c2b2a;border-radius:4px}
+.journal-followups>span{font-size:9px;color:#85817a;letter-spacing:.03em}
+.journal-followups ul{margin:8px 0 0;padding-left:18px}
+.journal-followups li{font-size:11px;color:#aaa6a0;line-height:1.65;padding:3px 0}
