@@ -18,11 +18,14 @@ const today=function(){
 };
 const won=function(v){return Math.round(Number(v||0)).toLocaleString("ko-KR")+"원";};
 
-const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],activeClientId:"",view:"desk",journalDate:today(),journals:[],journalError:"",query:"",unsubs:[]};
+const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],tradePartners:[],taxInvoices:[],activeClientId:"",activePartnerId:"",view:"desk",journalDate:today(),journals:[],journalError:"",query:"",partnerQuery:"",unsubs:[]};
 
 function cleanup(){state.unsubs.forEach(function(f){if(f)f();});state.unsubs=[];}
 function clientName(c){return c&&c.name?c.name:(c&&c.clientName?c.clientName:"이름 없음");}
 function activeClient(){return state.clients.find(function(c){return c.id===state.activeClientId;})||null;}
+function activePartner(){return state.tradePartners.find(function(p){return p.id===state.activePartnerId;})||null;}
+function maskBusinessNumber(v){var s=String(v||"");if(!s)return "—";var d=s.replace(/[^0-9]/g,"");if(d.length<8)return s;return d.slice(0,3)+"-**-"+d.slice(-5);}
+function partnerInvoices(p){return state.taxInvoices.filter(function(x){return x.businessNumber===p.businessNumber;}).sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});}
 function formatDate(v){if(!v)return "—";var d=new Date(v+"T00:00:00");if(isNaN(d.getTime()))return v;return String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");}
 function timestampMs(v){if(!v)return 0;if(typeof v==="number")return v;if(v&&typeof v.toMillis==="function")return v.toMillis();return 0;}
 function toast(msg){var el=$("#toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";document.body.appendChild(el);}el.textContent=msg;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){el.hidden=true;},1800);}
@@ -94,7 +97,7 @@ function shell(){
   '</header>'+
   '<div class="workspace">'+
     '<aside id="sidebar" class="sidebar">'+
-      '<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(state.view==="client"?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT WORKSPACE</small></button><button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>03</span><strong>JOURNAL</strong><small>DAILY / HISTORY</small></button></nav>'+
+      '<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(["clients","client","partner"].includes(state.view)?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT / SALES MASTER</small></button><button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>03</span><strong>JOURNAL</strong><small>DAILY / HISTORY</small></button></nav>'+
       '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 함께 일하고 있는 클라이언트와 프로젝트를 관리합니다.</p></div>'+
       '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
       '<div id="clientList" class="client-list">'+clientList()+'</div>'+
@@ -102,7 +105,7 @@ function shell(){
     '</aside>'+
     '<main class="main"><div id="content" class="content"></div></main>'+
   '</div>'+
-  '<div id="modalBackdrop" class="modal-backdrop" hidden></div><section id="modal" class="modal" hidden></section>'+
+  '<input id="partnerImport" type="file" accept=".xlsx,.xls" hidden><div id="modalBackdrop" class="modal-backdrop" hidden></div><section id="modal" class="modal" hidden></section>'+
   '</div>';
 }
 
