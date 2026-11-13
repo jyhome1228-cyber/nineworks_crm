@@ -378,7 +378,7 @@ function renderContent(){
   $("#clientList").innerHTML=clientList();
   if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
   if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
-  if(state.view==="clients"){$("#content").innerHTML=clientsDashboard();var ps=$("#partnerSearch");if(ps)ps.addEventListener("input",function(e){state.partnerQuery=e.target.value;renderContent();});return;}
+  if(state.view==="clients"){$("#content").innerHTML=clientsDashboard();var ps=$("#partnerSearch");if(ps)ps.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.partnerQuery=v;renderContent();var next=$("#partnerSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
   if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientsDashboard();return;}
   $("#content").innerHTML=c?clientPage(c):'<div class="empty-page"><div><p class="eyebrow">CLIENT WORKSPACE</p><h2>클라이언트를 선택하세요.</h2><p>왼쪽에서 클라이언트를 선택하면 현재 작업, 작업 로그, 미팅 기록과 계약 정보를 한 번에 볼 수 있습니다.</p></div></div>';
 }
