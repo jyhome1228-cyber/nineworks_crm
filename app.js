@@ -179,27 +179,70 @@ function briefingText(){
   return parts.join(" ");
 }
 function dashboardPage(){
-  var tasks=todayTasks(),todayLog=logsOnDay(today()),workOnly=todayLog.filter(function(l){return (l.type||"work")==="work";}).length;
+  var tasks=todayTasks(),todayLog=logsOnDay(today());
+  var workOnly=todayLog.filter(function(l){return (l.type||"work")==="work";}).length;
   var meetings=todayLog.filter(function(l){return l.type==="meeting";}).length;
-  var workload=tasks.length+todayLog.length;
+  var completedToday=state.todos.filter(function(t){return t.done&&dateKeyFromValue(t.completedAt)===today()||t.completedDate===today();}).length;
+  var weekDays=recentDays(7);
+  var weekLogs=state.logs.filter(function(l){var key=l.date||dateKeyFromValue(l.createdAt);return key>=weekDays[0]&&key<=weekDays[6];}).length;
   var clientLoads=clientWorkload(),attention=attentionItems();
   var recent=state.logs.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||Number(b.createdAtMs||0)-Number(a.createdAtMs||0);}).slice(0,8);
-  var d=new Date(),dateLabel=d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}).toUpperCase();
-  return '<section class="desk-page">'+
-    '<section class="desk-hero compact">'+
-      '<div class="desk-hero-copy"><p class="eyebrow">NINEWORKS / WORK DESK</p><h1>오늘의 업무</h1><p>'+esc(briefingText())+'</p></div>'+
-      '<div class="desk-hero-side compact"><span>'+esc(dateLabel)+'</span><strong>'+workload+'</strong><small>DAILY WORKLOAD · OPEN '+tasks.length+' · LOG '+todayLog.length+'</small></div>'+
+  var sales=partnerSalesTotals();
+  var journal=state.journals.find(function(j){return j.date===today();});
+  var d=new Date(),dateLabel=d.toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"});
+  return '<section class="desk-page overview-dashboard">'+
+    '<section class="overview-head">'+
+      '<div><p class="eyebrow">NINEWORKS / WORK DESK</p><h1>업무 대시보드</h1><p>'+esc(dateLabel)+' · '+esc(briefingText())+'</p></div>'+
+      '<div class="overview-status"><span>TODAY</span><strong>'+tasks.length+'</strong><small>OPEN WORK</small></div>'+
     '</section>'+
-    '<section class="desk-metrics"><div><span>01 / TODAY LOAD</span><strong>'+workload+'</strong><small>현재 업무 + 오늘 기록</small></div><div><span>02 / OPEN WORK</span><strong>'+openTasks().length+'</strong><small>진행 중 전체 업무</small></div><div><span>03 / TODAY LOG</span><strong>'+workOnly+'</strong><small>오늘 작업 기록</small></div><div><span>04 / MEETING</span><strong>'+meetings+'</strong><small>오늘 미팅 기록</small></div><div><span>05 / ACTIVE CLIENT</span><strong>'+activeClientCount()+'</strong><small>최근 14일 기준</small></div></section>'+
-    '<section class="desk-grid primary">'+
-      '<div class="desk-block"><div class="desk-block-head"><div><p class="eyebrow">01 / TODAY WORK</p><h2>오늘 처리할 업무</h2></div><span>'+tasks.length+' WORKS</span></div><div class="desk-task-list">'+(tasks.length?tasks.slice(0,10).map(dashboardTaskMarkup).join(""):'<div class="empty large">현재 등록된 업무가 없습니다.</div>')+'</div></div>'+
-      '<div class="desk-block"><div class="desk-block-head"><div><p class="eyebrow">02 / NEED ATTENTION</p><h2>확인이 필요한 것</h2></div><span>'+attention.length+' ITEMS</span></div><div class="attention-list">'+(attention.length?attention.map(function(x){return '<button class="attention-item" '+(x.client?'data-client-id="'+esc(x.client.id)+'"':'')+'><span>'+esc(x.type)+'</span><strong>'+esc(x.title)+'</strong><small>'+esc(x.meta)+'</small></button>';}).join(""):'<div class="empty large">지금 바로 확인할 이슈가 없습니다.</div>')+'</div></div>'+
+
+    '<section class="overview-kpis">'+
+      '<div><span>01 / 오늘 할 일</span><strong>'+tasks.length+'</strong><small>현재 처리 대상</small></div>'+
+      '<div><span>02 / 오늘 완료</span><strong>'+completedToday+'</strong><small>완료 처리</small></div>'+
+      '<div><span>03 / 이번 주 기록</span><strong>'+weekLogs+'</strong><small>작업 + 미팅</small></div>'+
+      '<div><span>04 / 활성 클라이언트</span><strong>'+activeClientCount()+'</strong><small>최근 14일 기준</small></div>'+
+      '<div><span>05 / 2026 매출</span><strong>'+won(sales.sales2026)+'</strong><small>공급가액 기준</small></div>'+
+      '<div><span>06 / 미수금</span><strong>'+won(totalOutstanding())+'</strong><small>계약 기준</small></div>'+
     '</section>'+
-    '<section class="desk-grid secondary">'+
-      '<div class="desk-block workload-block"><div class="desk-block-head"><div><p class="eyebrow">03 / DAILY WORKLOAD</p><h2>최근 7일 업무량</h2><p>작업 로그와 미팅 기록 기준</p></div><span>7 DAYS</span></div><div class="workload-chart">'+workloadBars()+'</div></div>'+
-      '<div class="desk-block"><div class="desk-block-head"><div><p class="eyebrow">04 / CLIENT LOAD</p><h2>클라이언트별 업무량</h2></div><span>7 DAYS + OPEN</span></div><div class="client-load-list">'+(clientLoads.length?clientLoads.map(function(x){return '<button class="client-load-row" data-client-id="'+esc(x.c.id)+'"><span>'+esc(clientName(x.c))+'</span><div><i style="width:'+Math.min(100,x.total*12)+'%"></i></div><strong>'+x.total+'</strong><small>OPEN '+x.open+' · LOG '+x.recent+'</small></button>';}).join(""):'<div class="empty large">집계할 업무가 없습니다.</div>')+'</div></div>'+
+
+    '<section class="overview-grid top">'+
+      '<article class="overview-panel today-panel">'+
+        '<div class="overview-panel-head"><div><p class="eyebrow">TODAY WORK</p><h2>오늘 처리할 업무</h2></div><span>'+tasks.length+' WORKS</span></div>'+
+        '<div class="desk-task-list">'+(tasks.length?tasks.slice(0,8).map(dashboardTaskMarkup).join(""):'<div class="empty large">현재 등록된 업무가 없습니다.</div>')+'</div>'+
+      '</article>'+
+      '<article class="overview-panel attention-panel">'+
+        '<div class="overview-panel-head"><div><p class="eyebrow">NEED ATTENTION</p><h2>확인이 필요한 것</h2></div><span>'+attention.length+' ITEMS</span></div>'+
+        '<div class="attention-list">'+(attention.length?attention.slice(0,6).map(function(x){return '<button class="attention-item" '+(x.client?'data-client-id="'+esc(x.client.id)+'"':'')+'><span>'+esc(x.type)+'</span><strong>'+esc(x.title)+'</strong><small>'+esc(x.meta)+'</small></button>';}).join(""):'<div class="empty large">지금 바로 확인할 이슈가 없습니다.</div>')+'</div>'+
+      '</article>'+
     '</section>'+
-    '<section class="desk-block recent-block"><div class="desk-block-head"><div><p class="eyebrow">05 / RECENT ACTIVITY</p><h2>최근 업무 기록</h2></div><span>LATEST '+recent.length+'</span></div><div class="recent-grid">'+(recent.length?recent.map(function(l){var c=clientForLog(l);return '<article class="recent-item"><time>'+esc(formatDate(l.date||dateKeyFromValue(l.createdAt)))+'</time><span>'+esc(c?clientName(c):(l.client||"GENERAL"))+'</span><strong>'+esc(l.title||"업무 기록")+'</strong><small>'+esc(l.type==="meeting"?"MEETING":(l.project||"WORK LOG"))+'</small></article>';}).join(""):'<div class="empty large">아직 업무 기록이 없습니다.</div>')+'</div></section>'+
+
+    '<section class="overview-grid middle">'+
+      '<article class="overview-panel workload-panel">'+
+        '<div class="overview-panel-head"><div><p class="eyebrow">7 DAY WORKLOAD</p><h2>최근 업무량</h2><p>작업 로그와 미팅 기록 기준</p></div><span>'+weekLogs+' RECORDS</span></div>'+
+        '<div class="workload-chart compact-chart">'+workloadBars()+'</div>'+
+      '</article>'+
+      '<article class="overview-panel clientload-panel">'+
+        '<div class="overview-panel-head"><div><p class="eyebrow">CLIENT LOAD</p><h2>클라이언트별 업무량</h2><p>최근 7일 기록 + 열린 업무</p></div><span>TOP '+clientLoads.length+'</span></div>'+
+        '<div class="client-load-list">'+(clientLoads.length?clientLoads.map(function(x){return '<button class="client-load-row" data-client-id="'+esc(x.c.id)+'"><span>'+esc(clientName(x.c))+'</span><div><i style="width:'+Math.min(100,x.total*12)+'%"></i></div><strong>'+x.total+'</strong><small>OPEN '+x.open+' · LOG '+x.recent+'</small></button>';}).join(""):'<div class="empty large">집계할 업무가 없습니다.</div>')+'</div>'+
+      '</article>'+
+    '</section>'+
+
+    '<section class="overview-grid bottom">'+
+      '<article class="overview-panel finance-panel">'+
+        '<div class="overview-panel-head"><div><p class="eyebrow">BUSINESS SNAPSHOT</p><h2>매출·거래 현황</h2></div><button class="section-link" data-client-index>CLIENTS ↗</button></div>'+
+        '<div class="finance-snapshot">'+
+          '<div><span>2025 SALES</span><strong>'+won(sales.sales2025)+'</strong></div>'+
+          '<div><span>2026 SALES</span><strong>'+won(sales.sales2026)+'</strong></div>'+
+          '<div><span>PARTNERS</span><strong>'+sales.count+'</strong></div>'+
+          '<div><span>INVOICES</span><strong>'+sales.invoices+'</strong><small>수정 '+sales.corrections+'</small></div>'+
+        '</div>'+
+        '<div class="journal-status"><span>DAILY JOURNAL</span><strong>'+(journal?'오늘 업무일지 저장됨':'오늘 업무일지 미저장')+'</strong><button class="section-link" data-journal-nav>JOURNAL ↗</button></div>'+
+      '</article>'+
+      '<article class="overview-panel recent-panel">'+
+        '<div class="overview-panel-head"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>최근 업무 기록</h2></div><span>LATEST '+recent.length+'</span></div>'+
+        '<div class="overview-recent-list">'+(recent.length?recent.map(function(l){var c=clientForLog(l);return '<article class="overview-recent-item"><time>'+esc(formatDate(l.date||dateKeyFromValue(l.createdAt)))+'</time><div><span>'+esc(c?clientName(c):(l.client||"GENERAL"))+'</span><strong>'+esc(l.title||"업무 기록")+'</strong><small>'+esc(l.type==="meeting"?"MEETING":(l.project||"WORK LOG"))+'</small></div></article>';}).join(""):'<div class="empty large">아직 업무 기록이 없습니다.</div>')+'</div>'+
+      '</article>'+
+    '</section>'+
   '</section>';
 }
 
@@ -390,6 +433,7 @@ async function importTradePartnerWorkbook(file){
 
 function renderContent(){
   var c=activeClient();
+  var sidebar=$("#sidebar");if(sidebar)sidebar.dataset.view=state.view;
   $("#clientList").innerHTML=clientList();
   if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
   if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
