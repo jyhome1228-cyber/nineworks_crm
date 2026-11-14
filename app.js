@@ -18,7 +18,7 @@ const today=function(){
 };
 const won=function(v){return Math.round(Number(v||0)).toLocaleString("ko-KR")+"원";};
 
-const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],tradePartners:[],taxInvoices:[],activeClientId:"",activePartnerId:"",view:"desk",journalDate:today(),journals:[],journalError:"",query:"",partnerQuery:"",unsubs:[]};
+const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],tradePartners:[],taxInvoices:[],activeClientId:"",activePartnerId:"",view:"desk",journalDate:today(),journals:[],journalError:"",weeklyReports:[],weeklySelection:"",weeklyError:"",query:"",partnerQuery:"",unsubs:[]};
 
 function cleanup(){state.unsubs.forEach(function(f){if(f)f();});state.unsubs=[];}
 function clientName(c){return c&&c.name?c.name:(c&&c.clientName?c.clientName:"이름 없음");}
@@ -102,10 +102,11 @@ function shell(){
         '<button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button>'+
         '<button class="desk-nav-item '+(["clients","client"].includes(state.view)?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>WORK & MEETING</small></button>'+
         '<button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>03</span><strong>JOURNAL</strong><small>DAILY / HISTORY</small></button>'+
+        '<button class="desk-nav-item '+(state.view==="weekly"?"active":"")+'" data-weekly-nav><span>04</span><strong>WEEKLY REPORT</strong><small>WEEKLY / HISTORY</small></button>'+
       '</nav>'+
       '<div class="nav-group-label business">BUSINESS</div>'+
       '<nav class="desk-nav business-nav">'+
-        '<button class="desk-nav-item '+(["finance","partner"].includes(state.view)?"active":"")+'" data-finance-nav><span>04</span><strong>FINANCE & TAX</strong><small>SALES / INVOICE / CONTRACT</small></button>'+
+        '<button class="desk-nav-item '+(["finance","partner"].includes(state.view)?"active":"")+'" data-finance-nav><span>05</span><strong>FINANCE & TAX</strong><small>SALES / INVOICE / CONTRACT</small></button>'+
       '</nav>'+
       '<div class="client-side-area">'+
         '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 진행 중인 클라이언트 업무를 빠르게 확인합니다.</p></div>'+
@@ -287,6 +288,55 @@ function clientPage(c){
   '</section>';
 }
 
+
+function weekMonday(value){
+  var d=new Date((value||today())+"T12:00:00");
+  if(isNaN(d.getTime()))return "";
+  d.setDate(d.getDate()-(d.getDay()+6)%7);
+  return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+}
+function weeklyList(items){
+  return items.slice().sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");}).map(function(r){
+    return '<button class="weekly-archive-item '+(r.weekStart===state.weeklySelection?"active":"")+'" data-weekly-open="'+esc(r.weekStart)+'"><strong>'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</strong><small>'+esc(r.title||"주간 업무보고서")+'</small></button>';
+  }).join("");
+}
+function weeklyRows(rows){
+  return rows&&rows.length?'<div class="weekly-projects">'+rows.map(function(x){
+    return '<article><div><strong>'+esc(x.client||x.project||"기타")+'</strong><p>'+esc(x.summary||x.detail||"")+'</p></div><span>'+esc(x.status||"확인 필요")+'</span></article>';
+  }).join("")+'</div>':'<p class="journal-empty">확인된 항목이 없습니다.</p>';
+}
+function weeklyBullets(items){
+  return items&&items.length?'<ul class="journal-bullets">'+items.map(function(x){return '<li>'+esc(typeof x==="string"?x:(x.text||x.summary||x.title||""))+'</li>';}).join("")+'</ul>':'<p class="journal-empty">확인된 기록이 없습니다.</p>';
+}
+function weeklyReportPage(){
+  var selected=state.weeklySelection||weekMonday(today());
+  var r=state.weeklyReports.find(function(x){return x.weekStart===selected;})||null;
+  var days=r&&Array.isArray(r.dailyLoad)?r.dailyLoad:[];
+  var entries=state.journals.filter(function(x){return x.date>=selected&&x.date<= (r&&r.weekEnd||selected);});
+  return '<section class="weekly-page">'+
+    '<div class="weekly-hero"><div><p class="eyebrow">NINEWORKS / WORK REPORT</p><h1>주간 업무보고서</h1><p>월~토 업무를 프로젝트별로 통합합니다. 업무 기록 건수와 실제 완료 건수를 구분합니다.</p></div>'+
+    '<label class="journal-import">IMPORT JSON<input id="weeklyImport" type="file" accept=".json,application/json"></label></div>'+
+    (state.weeklyError?'<p class="journal-error">'+esc(state.weeklyError)+'</p>':'')+
+    '<div class="weekly-layout"><aside class="weekly-archive"><p class="eyebrow">WEEKLY HISTORY</p>'+weeklyList(state.weeklyReports)+'</aside>'+
+    '<div class="weekly-main">'+(r?
+      '<div class="weekly-title"><div><p class="eyebrow">'+esc(r.weekStart)+' — '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.title||"주간 업무보고서")+'</h2><p>'+esc(r.summary||"")+'</p></div><button class="journal-export" data-weekly-export>EXPORT JSON</button></div>'+
+      '<div class="weekly-metrics"><div><span>기록 항목</span><strong>'+esc(r.metrics&&r.metrics.recordCount!=null?r.metrics.recordCount:"—")+'</strong></div><div><span>완료 확인</span><strong>'+esc(r.metrics&&r.metrics.completedCount!=null?r.metrics.completedCount:"확인 필요")+'</strong></div><div><span>피드백</span><strong>'+esc(r.metrics&&r.metrics.feedbackCount!=null?r.metrics.feedbackCount:"—")+'</strong></div><div><span>대기</span><strong>'+esc(r.metrics&&r.metrics.waitingCount!=null?r.metrics.waitingCount:"—")+'</strong></div></div>'+
+      '<section class="weekly-section"><p class="eyebrow">01 / WEEKLY SUMMARY</p><h3>핵심 요약</h3><p>'+esc(r.summary||"")+'</p></section>'+
+      '<section class="weekly-section"><p class="eyebrow">02 / PROJECT STATUS</p><h3>프로젝트별 진행</h3>'+weeklyRows(r.projects)+'</section>'+
+      '<section class="weekly-section"><p class="eyebrow">03 / COMPLETED</p><h3>완료 업무</h3>'+weeklyBullets(r.completed)+'</section>'+
+      '<section class="weekly-section"><p class="eyebrow">04 / CARRYOVER</p><h3>미완료·이월</h3>'+weeklyBullets(r.carryover)+'</section>'+
+      '<section class="weekly-section"><p class="eyebrow">05 / DECISIONS</p><h3>주요 결정·성과</h3>'+weeklyBullets(r.decisions)+'</section>'+
+      '<section class="weekly-section"><p class="eyebrow">06 / MEETINGS</p><h3>미팅·후속 액션</h3>'+weeklyBullets(r.meetings)+'</section>'+
+      '<section class="weekly-section"><p class="eyebrow">07 / WORKLOAD</p><h3>일별 업무 기록</h3><div class="weekly-daily">'+days.map(function(d){return '<div><span>'+esc(d.date||"")+'</span><strong>'+esc(d.count==null?"—":d.count)+'</strong></div>';}).join("")+'</div><p class="weekly-footnote">'+esc(r.workloadNote||"기록 수는 작업 완료 건수 또는 투입 시간을 의미하지 않습니다.")+'</p></section>'+
+      '<section class="weekly-section"><p class="eyebrow">08 / OPERATIONS</p><h3>운영 현황</h3>'+weeklyBullets(r.operations)+'</section>'+
+      '<section class="weekly-section"><p class="eyebrow">09 / RISKS</p><h3>리스크·확인 필요</h3>'+weeklyBullets(r.risks)+'</section>'+
+      '<section class="weekly-section"><p class="eyebrow">10 / NEXT WEEK</p><h3>다음 주 우선순위</h3>'+weeklyBullets(r.nextPriorities)+'</section>'+
+      '<p class="weekly-footnote">출처 및 집계 주의: '+esc(r.sourceNote||"원본 업무일지·일정과 대조가 필요한 항목은 확인 필요로 표시했습니다.")+'</p>'
+    :
+      '<div class="weekly-empty"><h2>아직 저장된 주간 보고서가 없습니다.</h2><p>작성된 주간 보고서 JSON을 가져오면 비공개 Firestore에 날짜별로 저장합니다. 현재 일간 업무일지 등록 '+entries.length+'건이 확인됩니다.</p></div>'
+    )+'</div></div></section>';
+}
+
 function journalList(items){
   if(!items||!items.length)return '<div class="empty large">저장된 업무일지가 없습니다.</div>';
   return items.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");}).map(function(j){
@@ -440,6 +490,7 @@ function renderContent(){
   $("#clientList").innerHTML=clientList();
   if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
   if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
+  if(state.view==="weekly"){$("#content").innerHTML=weeklyReportPage();return;}
   if(state.view==="clients"){$("#content").innerHTML=clientIndexPage();var addInline=$("#addClientInline");if(addInline)addInline.addEventListener("click",function(){clientForm({});});return;}
   if(state.view==="finance"){$("#content").innerHTML=clientsDashboard();var ps=$("#partnerSearch");if(ps)ps.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.partnerQuery=v;renderContent();var next=$("#partnerSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
   if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientsDashboard();return;}
@@ -495,6 +546,9 @@ function bindGlobal(){
     if(e.target.closest("[data-partner-new]")){partnerForm({});return;}
     var pedit=e.target.closest("[data-partner-edit]");if(pedit){var pp=state.tradePartners.find(function(x){return x.id===pedit.dataset.partnerEdit;});if(pp)partnerForm(pp);return;}
     if(e.target.closest("[data-journal-nav]")){state.view="journal";renderContent();$("#sidebar").classList.remove("open");return;}
+    if(e.target.closest("[data-weekly-nav]")){state.view="weekly";state.weeklySelection=state.weeklySelection||weekMonday(today());renderContent();$("#sidebar").classList.remove("open");return;}
+    var wopen=e.target.closest("[data-weekly-open]");if(wopen){state.weeklySelection=wopen.dataset.weeklyOpen;state.view="weekly";renderContent();return;}
+    if(e.target.closest("[data-weekly-export]")){var wr=state.weeklyReports.find(function(x){return x.weekStart===state.weeklySelection;});if(wr){var blob=new Blob([JSON.stringify(wr,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="nineworks-weekly-"+wr.weekStart+".json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},2000);}return;}
     var openJournal=e.target.closest("[data-journal-open]");if(openJournal){state.journalDate=openJournal.dataset.journalOpen;state.view="journal";renderContent();return;}
     if(e.target.closest("[data-journal-export]")){var item=state.journals.find(function(j){return j.date===state.journalDate;});if(item){var blob=new Blob([JSON.stringify(item,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="nineworks-journal-"+item.date+".json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},2000);}return;}
     var complete=e.target.closest("[data-complete-task]");if(complete){completeTask(complete.dataset.completeTask);return;}
@@ -503,6 +557,20 @@ function bindGlobal(){
   $("#clientSearch").addEventListener("input",function(e){state.query=e.target.value;$("#clientList").innerHTML=clientList();});
   document.addEventListener("change",async function(e){
     if(e.target.id==="journalDate"){state.journalDate=e.target.value||today();renderContent();return;}
+    if(e.target.id==="weeklyImport"){
+      var wf=e.target.files&&e.target.files[0];if(!wf)return;
+      try{
+        if(wf.size>1000000)throw new Error("1MB 이하 JSON만 가져올 수 있습니다.");
+        var w=JSON.parse(await wf.text());
+        if(!w||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(w.weekStart||"")||!Array.isArray(w.projects)||!Array.isArray(w.dailyLoad))throw new Error("weekStart, projects, dailyLoad 형식을 확인하세요.");
+        if(weekMonday(w.weekStart)!==w.weekStart)throw new Error("weekStart는 월요일이어야 합니다.");
+        var existing=state.weeklyReports.find(function(x){return x.weekStart===w.weekStart;});
+        if(existing&&!window.confirm(w.weekStart+" 주간보고서를 갱신할까요?"))return;
+        await setDoc(doc(db,"weeklyReports",w.weekStart),Object.assign({},w,{schemaVersion:1,updatedAt:serverTimestamp(),updatedBy:state.user.uid}),{merge:true});
+        state.weeklySelection=w.weekStart;state.weeklyError="";toast("주간보고서를 저장했습니다.");
+      }catch(err){console.error(err);state.weeklyError="주간보고서를 저장하지 못했습니다: "+(err.message||"형식·권한 오류");renderContent();}
+      return;
+    }
     if(e.target.id==="partnerImport"){var pf=e.target.files&&e.target.files[0];if(!pf)return;try{await importTradePartnerWorkbook(pf);e.target.value="";}catch(err){console.error(err);toast(err.message||"거래처 자료를 가져오지 못했습니다.");}return;}
     if(e.target.id!=="journalImport")return;
     var file=e.target.files&&e.target.files[0];if(!file)return;
@@ -564,6 +632,7 @@ async function subscribe(user){
   state.unsubs.push(onSnapshot(collection(db,"workLogs"),function(snap){state.logs=snap.docs.map(function(d){var data=d.data();return Object.assign({id:d.id,createdAtMs:timestampMs(data.createdAt)},data);});renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"tradePartners"),function(snap){state.tradePartners=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("tradePartners unavailable",err);}));
   state.unsubs.push(onSnapshot(collection(db,"taxInvoices"),function(snap){state.taxInvoices=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("taxInvoices unavailable",err);}));
+  state.unsubs.push(onSnapshot(collection(db,"weeklyReports"),function(snap){state.weeklyReports=snap.docs.map(function(d){return Object.assign({weekStart:d.id},d.data());});state.weeklySelection=state.weeklySelection||weekMonday(today());state.weeklyError="";renderContent();},function(err){console.warn("weeklyReports unavailable",err);state.weeklyError="주간보고서 Firestore 접근 권한과 연결을 확인하세요.";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"dailyJournals"),function(snap){state.journals=snap.docs.map(function(d){return Object.assign({date:d.id},d.data());});state.journalError="";renderContent();},function(err){console.warn("dailyJournals unavailable",err);state.journalError="업무일지 데이터 접근 권한 또는 연결을 확인하세요.";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"financeContracts"),function(snap){state.contracts=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("financeContracts unavailable",err);state.contracts=[];renderContent();}));
 }
