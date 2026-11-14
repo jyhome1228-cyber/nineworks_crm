@@ -1497,3 +1497,42 @@ aside .panel{border-top-color:#323232}
   .nw-section.compact-section .nw-section-head h2{font-size:21px}
   .finance-jump{align-items:flex-start;flex-direction:column}
 }
+
+
+/* WORK JOURNAL SNAPSHOT */
+.work-journal-snapshot{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border-bottom:1px solid #202020
+}
+.work-journal-snapshot>div{
+  min-height:86px;
+  padding:15px 13px;
+  border-right:1px solid #202020;
+  border-bottom:1px solid #202020
+}
+.work-journal-snapshot>div:nth-child(2n){border-right:0}
+.work-journal-snapshot span{
+  display:block;
+  color:#53524d;
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:.08em
+}
+.work-journal-snapshot strong{
+  display:block;
+  margin-top:12px;
+  color:#dedbd3;
+  font-size:16px;
+  font-weight:500
+}
+
+/* Work Desk should not visually carry finance cues */
+.overview-dashboard .finance-panel,
+.overview-dashboard .finance-snapshot{display:none!important}
+
+@media(max-width:760px){
+  .work-journal-snapshot{grid-template-columns:1fr}
+  .work-journal-snapshot>div,
+  .work-journal-snapshot>div:nth-child(2n){border-right:0}
+}
