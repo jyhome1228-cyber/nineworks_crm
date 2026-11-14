@@ -93,15 +93,27 @@ function shell(){
   return '<div class="site-shell">'+
   '<header class="site-header">'+
     '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><span class="site-kicker">NINEWORKS / WORK DESK</span></div>'+
-    '<div class="site-header-right"><span class="site-meta">PERSONAL OPERATING SYSTEM · 2026</span><button class="header-action" id="addWorkLog">WORK LOG ↗</button><button class="header-action solid" id="addMeeting">MEETING ↗</button><button class="header-menu" id="mobileClients">CLIENTS</button></div>'+
+    '<div class="site-header-right"><span class="site-meta">PERSONAL OPERATING SYSTEM · 2026</span><button class="header-action" id="addWorkLog">WORK LOG ↗</button><button class="header-action solid" id="addMeeting">MEETING ↗</button><button class="header-menu" id="mobileClients">MENU</button></div>'+
   '</header>'+
   '<div class="workspace">'+
     '<aside id="sidebar" class="sidebar">'+
-      '<nav class="desk-nav"><button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button><button class="desk-nav-item '+(["clients","client","partner"].includes(state.view)?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>CLIENT / SALES MASTER</small></button><button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>03</span><strong>JOURNAL</strong><small>DAILY / HISTORY</small></button></nav>'+
-      '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 함께 일하고 있는 클라이언트와 프로젝트를 관리합니다.</p></div>'+
-      '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
-      '<div id="clientList" class="client-list">'+clientList()+'</div>'+
-      '<div class="side-actions"><button class="btn primary" id="addClient">＋ ADD CLIENT</button><div class="user-mini"><strong>'+esc(state.profile&&state.profile.name||state.user&&state.user.email||"NINEWORKS")+'</strong><span>'+esc(state.profile&&state.profile.role||"OWNER")+'</span></div><button class="btn" id="logoutBtn">LOGOUT ↗</button></div>'+
+      '<div class="nav-group-label">WORK</div>'+
+      '<nav class="desk-nav">'+
+        '<button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button>'+
+        '<button class="desk-nav-item '+(["clients","client"].includes(state.view)?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>WORK & MEETING</small></button>'+
+        '<button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>03</span><strong>JOURNAL</strong><small>DAILY / HISTORY</small></button>'+
+      '</nav>'+
+      '<div class="nav-group-label business">BUSINESS</div>'+
+      '<nav class="desk-nav business-nav">'+
+        '<button class="desk-nav-item '+(["finance","partner"].includes(state.view)?"active":"")+'" data-finance-nav><span>04</span><strong>FINANCE & TAX</strong><small>SALES / INVOICE / CONTRACT</small></button>'+
+      '</nav>'+
+      '<div class="client-side-area">'+
+        '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 진행 중인 클라이언트 업무를 빠르게 확인합니다.</p></div>'+
+        '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
+        '<div id="clientList" class="client-list">'+clientList()+'</div>'+
+        '<div class="side-actions"><button class="btn primary" id="addClient">＋ ADD CLIENT</button></div>'+
+      '</div>'+
+      '<div class="side-user-area"><div class="user-mini"><strong>'+esc(state.profile&&state.profile.name||state.user&&state.user.email||"NINEWORKS")+'</strong><span>'+esc(state.profile&&state.profile.role||"OWNER")+'</span></div><button class="btn" id="logoutBtn">LOGOUT ↗</button></div>'+
     '</aside>'+
     '<main class="main"><div id="content" class="content"></div></main>'+
   '</div>'+
