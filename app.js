@@ -312,7 +312,8 @@ function weeklyReportPage(){
   var selected=state.weeklySelection||weekMonday(today());
   var r=state.weeklyReports.find(function(x){return x.weekStart===selected;})||null;
   var days=r&&Array.isArray(r.dailyLoad)?r.dailyLoad:[];
-  var entries=state.journals.filter(function(x){return x.date>=selected&&x.date<= (r&&r.weekEnd||selected);});
+  var endDate=new Date(selected+"T12:00:00");endDate.setDate(endDate.getDate()+5);var currentEnd=[endDate.getFullYear(),String(endDate.getMonth()+1).padStart(2,"0"),String(endDate.getDate()).padStart(2,"0")].join("-");
+  var entries=state.journals.filter(function(x){return x.date>=selected&&x.date<=(r&&r.weekEnd||currentEnd);});
   return '<section class="weekly-page">'+
     '<div class="weekly-hero"><div><p class="eyebrow">NINEWORKS / WORK REPORT</p><h1>주간 업무보고서</h1><p>월~토 업무를 프로젝트별로 통합합니다. 업무 기록 건수와 실제 완료 건수를 구분합니다.</p></div>'+
     '<label class="journal-import">IMPORT JSON<input id="weeklyImport" type="file" accept=".json,application/json"></label></div>'+
@@ -331,7 +332,7 @@ function weeklyReportPage(){
       '<section class="weekly-section"><p class="eyebrow">08 / OPERATIONS</p><h3>운영 현황</h3>'+weeklyBullets(r.operations)+'</section>'+
       '<section class="weekly-section"><p class="eyebrow">09 / RISKS</p><h3>리스크·확인 필요</h3>'+weeklyBullets(r.risks)+'</section>'+
       '<section class="weekly-section"><p class="eyebrow">10 / NEXT WEEK</p><h3>다음 주 우선순위</h3>'+weeklyBullets(r.nextPriorities)+'</section>'+
-      '<p class="weekly-footnote">출처 및 집계 주의: '+esc(r.sourceNote||"원본 업무일지·일정과 대조가 필요한 항목은 확인 필요로 표시했습니다.")+'</p>'
+      '<p class="weekly-footnote">출처 및 집계 주의: '+esc(r.sourceNote||"원본 업무일지·일정과 대조가 필요한 항목은 확인 필요로 표시했습니다.")+'</p>'+(Array.isArray(r.sourceLinks)&&/^https:\/\//.test(r.sourceLinks[0]||"")?'<p class="weekly-footnote"><a href="'+esc(r.sourceLinks[0])+'" target="_blank" rel="noopener noreferrer">원본 주간보고서 확인 ↗</a></p>':'')
     :
       '<div class="weekly-empty"><h2>아직 저장된 주간 보고서가 없습니다.</h2><p>작성된 주간 보고서 JSON을 가져오면 비공개 Firestore에 날짜별로 저장합니다. 현재 일간 업무일지 등록 '+entries.length+'건이 확인됩니다.</p></div>'
     )+'</div></div></section>';
