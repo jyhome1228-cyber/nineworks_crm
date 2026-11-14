@@ -258,43 +258,59 @@ function dashboardPage(){
   '</section>';
 }
 
-function clientPage(c){
-  var todos=clientTodos(c),logs=clientLogs(c,"work"),meetings=clientLogs(c,"meeting"),contracts=clientContracts(c);
-  var totalContract=contracts.reduce(function(n,x){return n+bill(x);},0);
-  var totalOutstanding=contracts.reduce(function(n,x){return n+outstanding(x);},0);
-  return '<section class="client-page">'+
-    '<div class="client-hero">'+
-      '<div class="client-hero-copy"><p class="eyebrow">NINEWORKS / CLIENT WORKSPACE</p><h1>'+esc(clientName(c))+'</h1><p class="client-lead">'+esc(c.work||c.description||"클라이언트의 현재 업무와 기록, 미팅과 계약 흐름을 한 곳에서 관리합니다.")+'</p></div>'+
-      '<div class="client-hero-actions"><button class="hero-link" data-action="task">ADD CURRENT WORK ↗</button><button class="hero-link" data-action="log">ADD WORK LOG ↗</button><button class="hero-link" data-action="meeting">ADD MEETING ↗</button></div>'+
+function clientIndexPage(){
+  var q=state.query.trim().toLowerCase();
+  var clients=state.clients.filter(function(c){return !q||((clientName(c)+" "+(c.type||"")+" "+(c.work||"")).toLowerCase().includes(q));})
+    .sort(function(a,b){
+      var ao=clientTodos(a).length,bo=clientTodos(b).length;
+      return bo-ao||clientName(a).localeCompare(clientName(b),"ko");
+    });
+  return '<section class="client-index-page">'+
+    '<div class="client-index-head"><div><p class="eyebrow">NINEWORKS / CLIENT WORKSPACE</p><h1>클라이언트 업무</h1><p>업무, 작업 로그, 미팅 기록을 클라이언트별로 관리합니다. 세무·매출·계약은 Finance & Tax에서 별도로 확인합니다.</p></div><button class="btn primary" id="addClientInline">＋ ADD CLIENT</button></div>'+
+    '<div class="client-index-summary"><div><span>ACTIVE CLIENTS</span><strong>'+state.clients.length+'</strong></div><div><span>OPEN WORK</span><strong>'+openTasks().length+'</strong></div><div><span>THIS WEEK LOG</span><strong>'+state.logs.filter(function(l){var k=l.date||dateKeyFromValue(l.createdAt);return k>=recentDays(7)[0];}).length+'</strong></div></div>'+
+    '<div class="client-work-table">'+
+      '<div class="client-work-head"><span>CLIENT</span><span>OPEN WORK</span><span>RECENT LOG</span><span>MEETING</span><span>STATUS</span></div>'+
+      (clients.length?clients.map(function(c){
+        var logs=clientLogs(c,"work"),meetings=clientLogs(c,"meeting"),open=clientTodos(c).length;
+        return '<button class="client-work-row" data-client-id="'+esc(c.id)+'"><div><strong>'+esc(clientName(c))+'</strong><small>'+esc(c.type||"CLIENT")+'</small></div><b>'+open+'</b><span>'+esc(logs[0]?formatDate(logs[0].date):"—")+'</span><span>'+meetings.length+'</span><em>'+(open?"ACTIVE":"CLEAR")+'</em></button>';
+      }).join(""):'<div class="empty large">등록된 클라이언트가 없습니다.</div>')+
     '</div>'+
-    '<div class="client-facts">'+
-      '<div><span>01 / OPEN WORK</span><strong>'+todos.length+'</strong></div>'+
-      '<div><span>02 / WORK LOG</span><strong>'+logs.length+'</strong></div>'+
-      '<div><span>03 / MEETING</span><strong>'+meetings.length+'</strong></div>'+
-      '<div><span>04 / OUTSTANDING</span><strong>'+won(totalOutstanding)+'</strong><small>TOTAL '+won(totalContract)+'</small></div>'+
-    '</div>'+
-    '<section class="nw-section">'+
-      '<div class="nw-section-head"><div><p class="eyebrow">01 / CURRENT WORK</p><h2>지금 진행 중인 업무를<br>가장 먼저 확인합니다.</h2></div><button class="section-link" data-action="task">ADD WORK ↗</button></div>'+
-      '<div class="nw-section-body">'+(todos.length?todos.map(taskMarkup).join(""):'<div class="empty large">현재 진행 중인 작업이 없습니다.</div>')+'</div>'+
-    '</section>'+
-    '<section class="nw-section">'+
-      '<div class="nw-section-head"><div><p class="eyebrow">02 / WORK LOG</p><h2>작업의 흐름을<br>날짜별 기록으로 남깁니다.</h2></div><button class="section-link" data-action="log">ADD LOG ↗</button></div>'+
-      '<div class="nw-section-body timeline">'+(logs.length?logs.map(logMarkup).join(""):'<div class="empty large">아직 작업 로그가 없습니다.</div>')+'</div>'+
-    '</section>'+
-    '<section class="nw-section">'+
-      '<div class="nw-section-head"><div><p class="eyebrow">03 / MEETING</p><h2>논의한 내용과 결정,<br>다음 액션을 연결합니다.</h2></div><button class="section-link" data-action="meeting">ADD MEETING ↗</button></div>'+
-      '<div class="nw-section-body meeting-list">'+(meetings.length?meetings.map(meetingMarkup).join(""):'<div class="empty large">등록된 미팅 기록이 없습니다.</div>')+'</div>'+
-    '</section>'+
-    '<section class="nw-section split-section">'+
-      '<div class="nw-section-head"><div><p class="eyebrow">04 / CLIENT & CONTRACT</p><h2>관계와 계약 정보까지<br>하나의 기준으로 봅니다.</h2></div><button class="section-link" data-action="edit-client">EDIT CLIENT ↗</button></div>'+
-      '<div class="split-info">'+
-        '<div class="client-profile-block"><div class="info-row"><span>TYPE</span><strong>'+esc(c.type||"—")+'</strong></div><div class="info-row"><span>CONTACT</span><strong>'+esc(c.contact||c.manager||"—")+'</strong></div><div class="info-row"><span>PHONE</span><strong>'+esc(c.phone||"—")+'</strong></div><div class="info-row"><span>EMAIL</span><strong>'+esc(c.email||"—")+'</strong></div><div class="info-row"><span>NOTE</span><strong>'+esc(c.note||"—")+'</strong></div></div>'+
-        '<div class="contract-list">'+(contracts.length?contracts.map(contractMarkup).join(""):'<div class="empty large">연결된 계약이 없습니다.</div>')+'</div>'+
-      '</div>'+
-    '</section>'+
   '</section>';
 }
 
+function clientPage(c){
+  var todos=clientTodos(c),logs=clientLogs(c,"work"),meetings=clientLogs(c,"meeting");
+  var latest=[].concat(logs,meetings).sort(function(a,b){return (b.date||"").localeCompare(a.date||"");})[0];
+  return '<section class="client-page work-only">'+
+    '<div class="client-hero compact-client">'+
+      '<div class="client-hero-copy"><p class="eyebrow">CLIENT / WORKSPACE</p><h1>'+esc(clientName(c))+'</h1><p class="client-lead">'+esc(c.work||c.description||"현재 업무, 작업 로그와 미팅 기록을 관리합니다.")+'</p></div>'+
+      '<div class="client-hero-actions"><button class="hero-link" data-action="task">ADD WORK ↗</button><button class="hero-link" data-action="log">ADD LOG ↗</button><button class="hero-link" data-action="meeting">ADD MEETING ↗</button></div>'+
+    '</div>'+
+    '<div class="client-facts work-facts">'+
+      '<div><span>01 / OPEN WORK</span><strong>'+todos.length+'</strong></div>'+
+      '<div><span>02 / WORK LOG</span><strong>'+logs.length+'</strong></div>'+
+      '<div><span>03 / MEETING</span><strong>'+meetings.length+'</strong></div>'+
+      '<div><span>04 / LAST UPDATE</span><strong class="date-value">'+esc(latest?formatDate(latest.date):"—")+'</strong></div>'+
+    '</div>'+
+    '<section class="nw-section compact-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">01 / CURRENT WORK</p><h2>진행 중인 업무</h2><p>지금 실제로 처리하고 있는 업무만 봅니다.</p></div><button class="section-link" data-action="task">ADD WORK ↗</button></div>'+
+      '<div class="nw-section-body">'+(todos.length?todos.map(taskMarkup).join(""):'<div class="empty large">현재 진행 중인 작업이 없습니다.</div>')+'</div>'+
+    '</section>'+
+    '<section class="nw-section compact-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">02 / WORK LOG</p><h2>작업 기록</h2><p>날짜별 작업 히스토리를 남깁니다.</p></div><button class="section-link" data-action="log">ADD LOG ↗</button></div>'+
+      '<div class="nw-section-body timeline">'+(logs.length?logs.map(logMarkup).join(""):'<div class="empty large">아직 작업 로그가 없습니다.</div>')+'</div>'+
+    '</section>'+
+    '<section class="nw-section compact-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">03 / MEETING</p><h2>미팅 기록</h2><p>논의 내용, 결정사항과 다음 액션을 관리합니다.</p></div><button class="section-link" data-action="meeting">ADD MEETING ↗</button></div>'+
+      '<div class="nw-section-body meeting-list">'+(meetings.length?meetings.map(meetingMarkup).join(""):'<div class="empty large">등록된 미팅 기록이 없습니다.</div>')+'</div>'+
+    '</section>'+
+    '<section class="nw-section compact-section client-profile-section">'+
+      '<div class="nw-section-head"><div><p class="eyebrow">04 / CLIENT PROFILE</p><h2>클라이언트 정보</h2><p>업무 연락에 필요한 기본정보만 유지합니다.</p></div><button class="section-link" data-action="edit-client">EDIT CLIENT ↗</button></div>'+
+      '<div class="client-profile-only"><div class="info-row"><span>TYPE</span><strong>'+esc(c.type||"—")+'</strong></div><div class="info-row"><span>CONTACT</span><strong>'+esc(c.contact||c.manager||"—")+'</strong></div><div class="info-row"><span>PHONE</span><strong>'+esc(c.phone||"—")+'</strong></div><div class="info-row"><span>EMAIL</span><strong>'+esc(c.email||"—")+'</strong></div><div class="info-row"><span>NOTE</span><strong>'+esc(c.note||"—")+'</strong></div></div>'+
+      '<div class="finance-jump"><span>세무·매출·계약 정보는 별도 관리합니다.</span><button class="section-link" data-finance-nav>FINANCE & TAX ↗</button></div>'+
+    '</section>'+
+  '</section>';
+}
 
 function journalList(items){
   if(!items||!items.length)return '<div class="empty large">저장된 업무일지가 없습니다.</div>';
@@ -366,7 +382,7 @@ function clientsDashboard(){
     return !q||((p.name||"")+" "+(p.representative||"")+" "+(p.address||"")+" "+(p.industry||"")+" "+(p.category||"")).toLowerCase().includes(q);
   }).sort(function(a,b){return Number(b.sales2026||0)-Number(a.sales2026||0)||String(a.name||"").localeCompare(String(b.name||""),"ko");});
   return '<section class="partner-dashboard">'+
-    '<section class="partner-hero"><div><p class="eyebrow">NINEWORKS / CLIENT MASTER</p><h1>거래처 관리</h1><p>2025·2026 세금계산서 거래처와 현재 클라이언트 정보를 한 곳에서 관리합니다. 대표자·주소·업태·종목·담당자와 매출 이력을 연결합니다.</p></div><div class="partner-hero-actions"><button class="btn" data-partner-new>＋ 거래처 추가</button><button class="btn primary" data-partner-import>거래처 마스터 가져오기 ↗</button></div></section>'+
+    '<section class="partner-hero"><div><p class="eyebrow">NINEWORKS / FINANCE & TAX</p><h1>세무·매출 관리</h1><p>거래처, 매출, 세금계산서, 계약과 미수 정보를 업무 영역과 분리해서 관리합니다.</p></div><div class="partner-hero-actions"><button class="btn" data-partner-new>＋ 거래처 추가</button><button class="btn primary" data-partner-import>거래처 마스터 가져오기 ↗</button></div></section>'+
     '<section class="partner-metrics">'+
       '<div><span>01 / PARTNERS</span><strong>'+totals.count+'</strong><small>전체 거래처</small></div>'+
       '<div><span>02 / 2026 ACTIVE</span><strong>'+totals.active2026+'</strong><small>2026 거래 발생</small></div>'+
@@ -374,7 +390,7 @@ function clientsDashboard(){
       '<div><span>04 / 2026 SALES</span><strong>'+won(totals.sales2026)+'</strong><small>11월 10일까지</small></div>'+
       '<div><span>05 / INVOICES</span><strong>'+totals.invoices+'</strong><small>수정 '+totals.corrections+'건</small></div>'+
     '</section>'+
-    '<section class="partner-list-section"><div class="partner-list-head"><div><p class="eyebrow">CLIENT DATABASE</p><h2>거래처 마스터</h2></div><label class="partner-search"><input id="partnerSearch" type="search" placeholder="상호 / 대표자 / 주소 / 업태 / 종목 검색" value="'+esc(state.partnerQuery)+'"></label></div>'+
+    '<section class="partner-list-section"><div class="partner-list-head"><div><p class="eyebrow">TAX / PARTNER DATABASE</p><h2>거래처·계산서 마스터</h2></div><label class="partner-search"><input id="partnerSearch" type="search" placeholder="상호 / 대표자 / 주소 / 업태 / 종목 검색" value="'+esc(state.partnerQuery)+'"></label></div>'+
     (partners.length?'<div class="partner-table-wrap"><table class="partner-table"><thead><tr><th>거래처</th><th>대표자</th><th>주소 / 업태·종목</th><th>2025</th><th>2026</th><th>발행</th><th>최근거래</th></tr></thead><tbody>'+
       partners.map(function(p){return '<tr data-partner-id="'+esc(p.id)+'"><td><strong>'+esc(p.name||"—")+'</strong><small>'+esc(maskBusinessNumber(p.businessNumber))+'</small></td><td>'+esc(p.representative||"—")+'</td><td><span>'+esc(p.address||"—")+'</span><small>'+esc([p.industry,p.category].filter(Boolean).join(" / ")||"업태·종목 미입력")+'</small></td><td>'+won(p.sales2025)+'</td><td><strong>'+won(p.sales2026)+'</strong></td><td>'+Number(p.invoiceCount||0)+'<small>수정 '+Number(p.correctionCount||0)+'</small></td><td>'+esc(p.lastDate||"—")+'<small>'+esc(p.lastItem||"")+'</small></td></tr>';}).join("")+
       '</tbody></table></div>':'<div class="partner-import-empty"><p class="eyebrow">IMPORT REQUIRED</p><h3>거래처 상세정보를 가져오세요.</h3><p>분석된 53개 거래처의 총괄 수치는 반영되어 있습니다. 대표자·주소·이메일과 계산서 이력은 로그인 후 Firestore에 안전하게 저장하기 위해 거래처 마스터 엑셀을 한 번 가져오면 됩니다.</p><button class="btn primary" data-partner-import>거래처 마스터 가져오기 ↗</button></div>')+
@@ -391,7 +407,7 @@ function partnerPage(p){
     return a&&b&&(a===b||a.includes(b)||b.includes(a));
   });
   return '<section class="partner-detail">'+
-    '<div class="partner-detail-head"><div><button class="back-link" data-client-index>← CLIENT MASTER</button><p class="eyebrow">TRADE PARTNER / '+esc(p.status||"")+'</p><h1>'+esc(p.name||"거래처")+'</h1><p>'+esc(p.lastItem||"세금계산서 및 거래 이력")+'</p></div><div class="partner-detail-actions"><button class="btn" data-partner-edit="'+esc(p.id)+'">정보 수정</button>'+(linked?'<button class="btn primary" data-client-id="'+esc(linked.id)+'">CLIENT WORKSPACE ↗</button>':'')+'</div></div>'+
+    '<div class="partner-detail-head"><div><button class="back-link" data-finance-nav>← FINANCE & TAX</button><p class="eyebrow">TRADE PARTNER / '+esc(p.status||"")+'</p><h1>'+esc(p.name||"거래처")+'</h1><p>'+esc(p.lastItem||"세금계산서 및 거래 이력")+'</p></div><div class="partner-detail-actions"><button class="btn" data-partner-edit="'+esc(p.id)+'">정보 수정</button>'+(linked?'<button class="btn primary" data-client-id="'+esc(linked.id)+'">CLIENT WORKSPACE ↗</button>':'')+'</div></div>'+
     '<div class="partner-detail-metrics"><div><span>2025 SALES</span><strong>'+won(p.sales2025)+'</strong></div><div><span>2026 SALES</span><strong>'+won(p.sales2026)+'</strong></div><div><span>TOTAL SALES</span><strong>'+won(p.totalSales)+'</strong></div><div><span>INVOICES</span><strong>'+Number(p.invoiceCount||0)+'</strong><small>CORRECTION '+Number(p.correctionCount||0)+'</small></div></div>'+
     '<div class="partner-detail-grid"><section class="partner-info-panel"><div class="partner-section-head"><p class="eyebrow">01 / BUSINESS PROFILE</p><h2>거래처 정보</h2></div>'+
       '<div class="partner-info-grid"><div><span>사업자등록번호</span><strong>'+esc(maskBusinessNumber(p.businessNumber))+'</strong></div><div><span>대표자</span><strong>'+esc(p.representative||"—")+'</strong></div><div class="wide"><span>주소</span><strong>'+esc(p.address||"—")+'</strong></div><div><span>업태</span><strong>'+esc(p.industry||"—")+'</strong></div><div><span>종목</span><strong>'+esc(p.category||"—")+'</strong></div><div><span>담당자</span><strong>'+esc(p.manager||"—")+'</strong></div><div><span>연락처</span><strong>'+esc(p.phone||"—")+'</strong></div><div><span>이메일</span><strong>'+esc(p.email||"—")+'</strong></div><div><span>홈페이지</span><strong>'+esc(p.website||"—")+'</strong></div><div><span>최초거래</span><strong>'+esc(p.firstDate||"—")+'</strong></div><div><span>최근거래</span><strong>'+esc(p.lastDate||"—")+'</strong></div></div>'+
