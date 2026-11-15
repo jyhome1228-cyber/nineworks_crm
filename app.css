@@ -1701,3 +1701,437 @@ aside .panel{border-top-color:#323232}
   .report-row small{display:none}
   .monthly-snapshot{grid-template-columns:1fr 1fr}
 }
+
+
+/* 2026-11-15 — MATCH 9WORKS.KR TYPOGRAPHIC SYSTEM */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap');
+
+html,body,button,input,textarea,select{
+  font-family:'Noto Sans KR',Arial,sans-serif!important;
+  word-break:keep-all;
+}
+body{font-size:14px}
+
+/* HOME SITE SCALE */
+.eyebrow,
+.nw-login-label,
+.site-kicker,
+.site-meta,
+.nav-group-label,
+.desk-nav-item span,
+.desk-nav-item small,
+.overview-kpis span,
+.client-facts span,
+.projects-summary span,
+.reports-summary span,
+.partner-metrics span,
+.partner-detail-metrics span,
+.partner-info-grid span,
+.partner-sales-notes span,
+.partner-table th,
+.client-work-head,
+.project-status-head{
+  font-size:10px!important;
+  line-height:1.5!important;
+  letter-spacing:.03em!important;
+  font-weight:500!important;
+  color:#858585!important;
+}
+
+.btn,
+.header-action,
+.header-menu,
+.hero-link,
+.section-link,
+.back-link,
+.journal-export{
+  font-size:12px!important;
+  font-weight:500!important;
+  letter-spacing:-.025em!important;
+}
+
+/* LOGIN — SAME COMPOSITION AS 9WORKS.KR */
+.nw-login-page{
+  position:relative;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow:hidden;
+  background:#080808;
+  color:#f5f5f5;
+}
+.nw-login-ambient{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  background:radial-gradient(ellipse 62% 55% at 50% 63%,rgba(36,39,45,.35),transparent 78%);
+}
+.nw-login-ambient:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:58%;
+  width:min(92vw,1160px);
+  height:min(85vw,980px);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse at 50% 47%,rgba(171,176,188,.20) 0%,rgba(114,121,135,.14) 17%,rgba(72,79,92,.08) 39%,rgba(32,35,42,.03) 58%,transparent 76%);
+  filter:blur(61px);
+}
+.nw-login-ambient:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(to right,rgba(193,197,207,.08) 1px,transparent 1px),linear-gradient(to bottom,rgba(193,197,207,.08) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 380px 330px at 50% 58%,rgba(0,0,0,.58),transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 380px 330px at 50% 58%,rgba(0,0,0,.58),transparent 100%);
+}
+.nw-login-splash{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  display:grid;
+  place-items:center;
+  background:#080808;
+  transition:opacity .6s ease,visibility .6s ease;
+}
+.nw-login-splash img{
+  width:172px;
+  filter:brightness(0) invert(1);
+  animation:nwAppear 1.1s ease both;
+}
+.nw-login-splash.done{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+@keyframes nwAppear{
+  from{opacity:0;transform:translateY(7px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.nw-login-header{
+  position:relative;
+  z-index:1;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  padding:56px 24px 0;
+}
+.nw-login-logo{
+  display:block;
+  width:145px;
+  height:auto;
+  filter:brightness(0) invert(1);
+}
+.nw-login-content{
+  position:relative;
+  z-index:1;
+  width:min(calc(100% - 40px),660px);
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:70px 0 100px;
+}
+.nw-login-intro h1{
+  margin:10px 0 24px;
+  font-size:clamp(27px,2.65vw,36px)!important;
+  line-height:1.45!important;
+  letter-spacing:-.055em!important;
+  font-weight:500!important;
+}
+.nw-login-copy{
+  max-width:600px;
+  color:#b0b0b0;
+  font-size:clamp(14px,1.06vw,15px)!important;
+  line-height:1.95!important;
+  letter-spacing:-.022em;
+  font-weight:400;
+}
+.nw-login-copy p{margin:0 0 12px}
+.nw-login-form{
+  width:min(100%,430px);
+  margin-top:30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 14px;
+  text-align:left;
+}
+.nw-login-form label{display:grid;gap:7px}
+.nw-login-form label span{
+  font-size:12px;
+  color:#e5e5e5;
+  font-weight:400;
+}
+.nw-login-form input{
+  width:100%;
+  min-height:43px;
+  border:1px solid #444;
+  border-radius:0;
+  background:#171717;
+  color:#f5f5f5;
+  padding:11px 12px;
+  font-size:13px!important;
+  outline:none;
+}
+.nw-login-form input:focus{border-color:#ddd}
+.nw-login-form button{
+  grid-column:1 / -1;
+  min-height:45px;
+  margin-top:3px;
+  border:1px solid #f5f5f5;
+  border-radius:0;
+  background:#f5f5f5;
+  color:#111;
+  font-size:13px!important;
+  font-weight:500!important;
+}
+.nw-login-form #loginMsg{
+  grid-column:1 / -1;
+  min-height:18px;
+  margin:0;
+  text-align:center;
+  color:#929292;
+  font-size:11px;
+}
+.nw-login-footer{
+  position:relative;
+  z-index:1;
+  padding:0 20px 34px;
+  color:#666;
+  font-size:10px;
+  letter-spacing:.03em;
+  text-align:center;
+}
+
+/* APP HEADER */
+.site-header{
+  height:76px!important;
+  padding:0 28px!important;
+}
+.site-logo{
+  width:145px!important;
+  filter:brightness(0) invert(1)!important;
+}
+.site-header-left{gap:18px!important}
+.site-kicker,.site-meta{font-size:10px!important}
+
+/* PAGE TITLES — NEVER GIANT */
+.overview-head h1,
+.projects-head h1,
+.reports-head h1,
+.client-index-head h1,
+.client-hero.compact-client h1,
+.partner-dashboard .partner-hero h1,
+.partner-detail-head h1,
+.journal-hero h1,
+.weekly-hero h1{
+  font-size:clamp(27px,2.65vw,36px)!important;
+  line-height:1.45!important;
+  letter-spacing:-.055em!important;
+  font-weight:500!important;
+  margin-top:8px!important;
+  margin-bottom:14px!important;
+}
+.overview-head p:last-child,
+.projects-head p:last-child,
+.reports-head p:last-child,
+.client-index-head p:last-child,
+.client-hero.compact-client .client-lead,
+.partner-dashboard .partner-hero p:last-child,
+.partner-detail-head p:last-child,
+.journal-hero p,
+.weekly-hero p{
+  font-size:14px!important;
+  line-height:1.85!important;
+  letter-spacing:-.02em!important;
+  color:#a8a8a8!important;
+}
+
+/* SECTION TITLES */
+.overview-panel-head h2,
+.projects-section-head h2,
+.reports-panel-head h2,
+.nw-section.compact-section .nw-section-head h2,
+.partner-dashboard .partner-list-head h2,
+.partner-section-head h2,
+.journal-section h3,
+.journal-head h2,
+.weekly-section h2{
+  font-size:20px!important;
+  line-height:1.5!important;
+  letter-spacing:-.04em!important;
+  font-weight:500!important;
+}
+.overview-panel-head p,
+.nw-section.compact-section .nw-section-head p:last-child,
+.projects-section-head p,
+.reports-panel-head p{
+  font-size:12px!important;
+  line-height:1.7!important;
+  color:#8e8e8e!important;
+}
+
+/* DATA / BODY READABILITY */
+.desk-task-main strong,
+.task strong,
+.log-item strong,
+.meeting strong,
+.client-work-row strong,
+.project-status-row strong,
+.report-row strong,
+.overview-recent-item strong,
+.partner-table td strong,
+.partner-info-grid strong,
+.partner-sales-notes strong{
+  font-size:13px!important;
+  line-height:1.6!important;
+  font-weight:500!important;
+}
+.desk-task-main p,
+.task small,
+.log-item p,
+.meeting>p,
+.meeting-section p,
+.client-work-row small,
+.project-status-row b,
+.overview-recent-item small,
+.partner-table td,
+.partner-table td small,
+.partner-info-grid strong,
+.partner-sales-notes strong,
+.info-row strong{
+  font-size:12px!important;
+  line-height:1.7!important;
+}
+.desk-task-meta span,
+.task-project,
+.log-item time,
+.meeting time,
+.meeting .attendees,
+.tag,
+.project-status-row>span,
+.project-status-row time,
+.project-status-row em,
+.report-row>span,
+.report-row small,
+.overview-recent-item time,
+.overview-recent-item span{
+  font-size:10px!important;
+  line-height:1.5!important;
+}
+
+/* KPI VALUES */
+.overview-kpis strong,
+.client-index-summary strong,
+.client-facts.work-facts strong,
+.projects-summary strong,
+.reports-summary strong,
+.partner-dashboard .partner-metrics strong,
+.partner-detail-metrics strong{
+  font-size:24px!important;
+  line-height:1.2!important;
+  font-weight:500!important;
+}
+.overview-kpis small,
+.client-index-summary small,
+.client-facts.work-facts small,
+.projects-summary small,
+.reports-summary small,
+.partner-metrics small,
+.partner-detail-metrics small{
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+
+/* SIDEBAR READABILITY */
+.nav-group-label{font-size:10px!important}
+.desk-nav-item strong{font-size:12px!important;font-weight:500!important}
+.desk-nav-item small{font-size:10px!important}
+.desk-nav-item span{font-size:10px!important}
+.side-intro h2{font-size:20px!important;font-weight:500!important}
+.side-intro p:last-child{font-size:12px!important;line-height:1.7!important}
+.client-button strong{font-size:12px!important}
+.client-button small,.client-count{font-size:10px!important}
+.client-search input{font-size:12px!important}
+
+/* TABLES */
+.client-work-head,
+.project-status-head,
+.partner-table th{font-size:10px!important}
+.client-work-row,
+.project-status-row,
+.partner-table td{font-size:12px!important}
+
+/* MAIN SPACING */
+.content{padding-left:40px!important;padding-right:40px!important}
+.overview-head,
+.projects-head,
+.reports-head,
+.client-index-head,
+.partner-hero,
+.partner-detail-head{
+  padding-top:48px!important;
+  padding-bottom:28px!important;
+}
+.overview-grid,
+.project-overview-panel,
+.projects-section,
+.reports-grid,
+.partner-list-section{
+  margin-top:42px!important;
+}
+
+/* OPENING INTRO */
+.opening-intro{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:grid;
+  place-items:center;
+  background:#080808;
+  transition:opacity .6s ease,visibility .6s ease;
+}
+.opening-intro-inner{
+  opacity:0;
+  transform:translateY(7px);
+  transition:opacity .55s ease,transform .55s ease;
+}
+.opening-intro.show .opening-intro-inner{opacity:1;transform:translateY(0)}
+.opening-intro.hide{opacity:0;visibility:hidden;pointer-events:none}
+.opening-intro img{
+  width:172px;
+  filter:brightness(0) invert(1);
+}
+
+@media(max-width:600px){
+  .nw-login-header{padding-top:38px}
+  .nw-login-logo{width:125px}
+  .nw-login-splash img{width:154px}
+  .nw-login-content{width:min(calc(100% - 42px),460px);padding:65px 0 90px}
+  .nw-login-intro h1{font-size:clamp(25px,6.1vw,30px)!important;margin-bottom:20px!important}
+  .nw-login-copy{font-size:13.5px!important;line-height:1.9!important}
+  .nw-login-form{grid-template-columns:1fr;width:100%;max-width:360px}
+  .nw-login-form button,.nw-login-form #loginMsg{grid-column:1}
+  .site-logo{width:125px!important}
+  .content{padding-left:18px!important;padding-right:18px!important}
+  .overview-head h1,
+  .projects-head h1,
+  .reports-head h1,
+  .client-index-head h1,
+  .client-hero.compact-client h1,
+  .partner-dashboard .partner-hero h1,
+  .partner-detail-head h1,
+  .journal-hero h1,
+  .weekly-hero h1{font-size:28px!important}
+  .overview-panel-head h2,
+  .projects-section-head h2,
+  .reports-panel-head h2,
+  .nw-section.compact-section .nw-section-head h2{font-size:18px!important}
+}
