@@ -235,6 +235,88 @@ function dashboardPage(){
   '</section>';
 }
 
+function projectRecords(){
+  var map={};
+  function ensure(client,project){
+    var cname=client||"GENERAL";
+    var pname=project||"운영 업무";
+    var key=cname+"__"+pname;
+    if(!map[key])map[key]={key:key,client:cname,project:pname,open:[],logs:[],meetings:[],lastDate:"",status:"대기",nextAction:"",due:""};
+    return map[key];
+  }
+  state.todos.forEach(function(t){
+    var c=clientForTask(t);
+    var item=ensure(c?clientName(c):(t.client||"GENERAL"),t.project||"운영 업무");
+    if(!t.done)item.open.push(t);
+  });
+  state.logs.forEach(function(l){
+    var c=clientForLog(l);
+    var item=ensure(c?clientName(c):(l.client||"GENERAL"),l.project||"운영 업무");
+    if(l.type==="meeting")item.meetings.push(l);else item.logs.push(l);
+    var key=l.date||dateKeyFromValue(l.createdAt);
+    if(key>item.lastDate)item.lastDate=key;
+  });
+  return Object.keys(map).map(function(k){
+    var p=map[k];
+    p.open.sort(function(a,b){return (a.due||"9999-12-31").localeCompare(b.due||"9999-12-31");});
+    var next=p.open[0]||null;
+    p.nextAction=next?(next.title||"업무"):"—";
+    p.due=next&&next.due?next.due:"";
+    if(p.open.some(function(t){return t.due&&t.due<today();}))p.status="지연";
+    else if(p.open.length)p.status="진행";
+    else if(p.lastDate&&p.lastDate>=recentDays(7)[0])p.status="검수";
+    else if(p.logs.length||p.meetings.length)p.status="대기";
+    else p.status="대기";
+    return p;
+  }).sort(function(a,b){
+    var order={지연:0,진행:1,검수:2,대기:3};
+    return order[a.status]-order[b.status]||b.open.length-a.open.length||a.client.localeCompare(b.client,"ko");
+  });
+}
+function projectStatusTable(limit){
+  var rows=projectRecords();
+  if(limit)rows=rows.slice(0,limit);
+  if(!rows.length)return '<div class="empty large">아직 프로젝트 데이터가 없습니다.</div>';
+  return '<div class="project-status-table">'+
+    '<div class="project-status-head"><span>CLIENT</span><span>PROJECT</span><span>STATUS</span><span>NEXT ACTION</span><span>DUE</span></div>'+
+    rows.map(function(p){
+      var c=clientByName(p.client);
+      return '<button class="project-status-row" '+(c?'data-client-id="'+esc(c.id)+'"':'')+'><span>'+esc(p.client)+'</span><strong>'+esc(p.project)+'</strong><em data-status="'+esc(p.status)+'">'+esc(p.status)+'</em><b>'+esc(p.nextAction)+'</b><time>'+esc(p.due?formatDate(p.due):"—")+'</time></button>';
+    }).join("")+
+  '</div>';
+}
+function projectsPage(){
+  var projects=projectRecords();
+  var active=projects.filter(function(p){return p.status==="진행";}).length;
+  var overdue=projects.filter(function(p){return p.status==="지연";}).length;
+  var review=projects.filter(function(p){return p.status==="검수";}).length;
+  return '<section class="projects-page">'+
+    '<div class="projects-head"><div><p class="eyebrow">NINEWORKS / PROJECTS</p><h1>프로젝트 관리</h1><p>클라이언트별 진행 상태, 다음 액션과 마감일을 한 화면에서 확인합니다.</p></div></div>'+
+    '<div class="projects-summary"><div><span>ALL PROJECTS</span><strong>'+projects.length+'</strong></div><div><span>ACTIVE</span><strong>'+active+'</strong></div><div><span>REVIEW</span><strong>'+review+'</strong></div><div><span>OVERDUE</span><strong>'+overdue+'</strong></div></div>'+
+    '<section class="projects-section"><div class="projects-section-head"><p class="eyebrow">PROJECT STATUS</p><h2>현재 프로젝트</h2></div>'+projectStatusTable()+'</section>'+
+  '</section>';
+}
+function reportsPage(){
+  var month=today().slice(0,7);
+  var monthLogs=state.logs.filter(function(l){return (l.date||dateKeyFromValue(l.createdAt)).slice(0,7)===month;});
+  var monthMeetings=monthLogs.filter(function(l){return l.type==="meeting";}).length;
+  var monthJournals=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;}).length;
+  var weekly=state.weeklyReports.slice().sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");});
+  return '<section class="reports-page">'+
+    '<div class="reports-head"><div><p class="eyebrow">NINEWORKS / REPORTS</p><h1>업무 보고서</h1><p>일간 기록을 주간·월간 단위로 묶어 운영 현황을 확인합니다.</p></div></div>'+
+    '<div class="reports-summary"><div><span>THIS MONTH LOG</span><strong>'+monthLogs.length+'</strong></div><div><span>MEETINGS</span><strong>'+monthMeetings+'</strong></div><div><span>DAILY JOURNAL</span><strong>'+monthJournals+'</strong></div><div><span>WEEKLY REPORT</span><strong>'+weekly.length+'</strong></div></div>'+
+    '<div class="reports-grid">'+
+      '<section class="reports-panel"><div class="reports-panel-head"><div><p class="eyebrow">WEEKLY REPORT</p><h2>주간보고서</h2></div><button class="section-link" data-weekly-nav>OPEN WEEKLY ↗</button></div>'+
+      (weekly.length?weekly.slice(0,6).map(function(w){return '<button class="report-row" data-weekly-open="'+esc(w.weekStart||"")+'"><span>'+esc(w.weekStart||"")+'</span><strong>'+esc(w.summary||w.title||"주간업무보고서")+'</strong><small>'+esc((w.projects||[]).length)+' PROJECTS</small></button>';}).join(""):'<div class="empty large">저장된 주간보고서가 없습니다.</div>')+
+      '</section>'+
+      '<section class="reports-panel"><div class="reports-panel-head"><div><p class="eyebrow">MONTHLY SNAPSHOT</p><h2>'+esc(month.replace("-","."))+' 월간 현황</h2></div></div>'+
+        '<div class="monthly-snapshot"><div><span>WORK LOG</span><strong>'+monthLogs.filter(function(l){return l.type!=="meeting";}).length+'</strong></div><div><span>MEETING</span><strong>'+monthMeetings+'</strong></div><div><span>DAILY JOURNAL</span><strong>'+monthJournals+'</strong></div><div><span>ACTIVE CLIENT</span><strong>'+activeClientCount()+'</strong></div></div>'+
+        '<p class="monthly-note">월간보고서는 Daily·Weekly 데이터가 누적되는 구조로 확장합니다.</p>'+
+      '</section>'+
+    '</div>'+
+  '</section>';
+}
+
 function clientIndexPage(){
   var q=state.query.trim().toLowerCase();
   var clients=state.clients.filter(function(c){return !q||((clientName(c)+" "+(c.type||"")+" "+(c.work||"")).toLowerCase().includes(q));})
