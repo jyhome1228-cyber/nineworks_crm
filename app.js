@@ -76,7 +76,21 @@ function activeClientCount(){
 }
 
 function loginView(){
-  return '<div class="login"><section class="login-visual"><img class="login-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><div class="login-copy"><p class="eyebrow">CLIENT WORKSPACE</p><h1>Client.<br>Work.<br>Log.</h1><p>클라이언트별 현재 작업, 작업 로그, 미팅 내용과 계약 정보를 한 곳에 계속 쌓아가는 나인웍스 내부 워크스페이스.</p></div><span style="color:#50504c;font-size:9px">NINEWORKS · INTERNAL ONLY</span></section><section class="login-form-wrap"><form id="loginForm" class="login-card"><p class="eyebrow">ADMIN ACCESS</p><h2>로그인</h2><p>기존 나인웍스 관리자 계정으로 접속합니다.</p><label class="field"><span>이메일</span><input id="loginEmail" type="email" autocomplete="email" required></label><label class="field"><span>비밀번호</span><input id="loginPassword" type="password" autocomplete="current-password" required></label><button class="btn primary full" type="submit">로그인</button><p id="loginMsg" class="login-msg"></p></form></section></div>';
+  return '<div class="nw-login-page">'+
+    '<div class="nw-login-ambient" aria-hidden="true"></div>'+
+    '<div class="nw-login-splash" id="loginSplash"><img src="./assets/nineworks-renewal-logo.svg" alt=""></div>'+
+    '<header class="nw-login-header"><img class="nw-login-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS"></header>'+
+    '<main class="nw-login-content">'+
+      '<section class="nw-login-intro"><p class="nw-login-label">NINEWORKS / WORK DESK</p><h1>나인웍스 업무 관리 시스템</h1><div class="nw-login-copy"><p>클라이언트와 프로젝트, 업무 기록과 보고서를 하나의 흐름으로 관리합니다.</p><p>내부 업무 데이터를 확인하려면 관리자 계정으로 로그인해 주세요.</p></div></section>'+
+      '<form id="loginForm" class="nw-login-form">'+
+        '<label><span>이메일</span><input id="loginEmail" type="email" autocomplete="email" required></label>'+
+        '<label><span>비밀번호</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>'+
+        '<button type="submit">로그인</button>'+
+        '<p id="loginMsg"></p>'+
+      '</form>'+
+    '</main>'+
+    '<footer class="nw-login-footer">© 2026 NINEWORKS</footer>'+
+  '</div>';
 }
 
 function clientList(){
@@ -92,7 +106,7 @@ function clientList(){
 function shell(){
   return '<div class="site-shell">'+
   '<header class="site-header">'+
-    '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-logo.svg" alt="NINEWORKS"><span class="site-kicker">NINEWORKS / WORK DESK</span></div>'+
+    '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS"><span class="site-kicker">NINEWORKS / WORK DESK</span></div>'+
     '<div class="site-header-right"><span class="site-meta">PERSONAL OPERATING SYSTEM · 2026</span><button class="header-action" id="addWorkLog">WORK LOG ↗</button><button class="header-action solid" id="addMeeting">MEETING ↗</button><button class="header-menu" id="mobileClients">MENU</button></div>'+
   '</header>'+
   '<div class="workspace">'+
@@ -730,6 +744,7 @@ async function subscribe(user){
 }
 
 function bindLogin(){
+  var splash=$("#loginSplash");if(splash){setTimeout(function(){splash.classList.add("done");},1150);setTimeout(function(){if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);},1800);}
   $("#loginForm").addEventListener("submit",async function(e){e.preventDefault();var msg=$("#loginMsg");msg.textContent="로그인 중...";try{await signInWithEmailAndPassword(auth,$("#loginEmail").value.trim(),$("#loginPassword").value);msg.textContent="";}catch(err){console.error(err);msg.textContent="이메일 또는 비밀번호를 확인하세요.";}});
 }
 onAuthStateChanged(auth,function(user){if(user)subscribe(user);else{cleanup();state.user=null;state.profile=null;$("#app").innerHTML=loginView();bindLogin();}});
