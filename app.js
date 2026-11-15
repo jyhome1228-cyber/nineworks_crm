@@ -373,6 +373,73 @@ function reportsPage(){
   '</section>';
 }
 
+function taxPage(){
+  var totals=partnerSalesTotals();
+  var contracts=state.contracts.slice().sort(function(a,b){return outstanding(b)-outstanding(a);});
+  var invoices=state.taxInvoices.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
+  var billed=contracts.reduce(function(n,c){return n+bill(c);},0);
+  var receivedTotal=contracts.reduce(function(n,c){return n+received(c);},0);
+  var outstandingTotal=contracts.reduce(function(n,c){return n+outstanding(c);},0);
+  return '<section class="tax-page">'+
+    '<div class="tax-head"><div><p class="eyebrow">NINEWORKS / TAX & FINANCE</p><h1>세무</h1><p>매출, 세금계산서, 계약금과 미수 현황만 모아서 확인합니다.</p></div></div>'+
+    '<div class="tax-summary">'+
+      '<div><span>2025 매출</span><strong>'+won(totals.sales2025)+'</strong><small>공급가액 기준</small></div>'+
+      '<div><span>2026 매출</span><strong>'+won(totals.sales2026)+'</strong><small>11월 10일까지</small></div>'+
+      '<div><span>계약 청구액</span><strong>'+won(billed)+'</strong><small>등록 계약 기준</small></div>'+
+      '<div><span>입금액</span><strong>'+won(receivedTotal)+'</strong><small>등록 입금 기준</small></div>'+
+      '<div><span>미수금</span><strong>'+won(outstandingTotal)+'</strong><small>확인 필요 금액</small></div>'+
+    '</div>'+
+    '<div class="tax-grid">'+
+      '<section class="tax-panel"><div class="tax-panel-head"><div><p class="eyebrow">01 / CONTRACT</p><h2>계약·수금 현황</h2></div><span>'+contracts.length+' CONTRACTS</span></div>'+
+      (contracts.length?'<div class="tax-contract-list">'+contracts.slice(0,12).map(function(c){return '<article><div><strong>'+esc(c.clientName||"—")+'</strong><small>'+esc(c.projectName||c.contractType||"계약")+'</small></div><span>'+won(bill(c))+'</span><em>'+won(outstanding(c))+' 미수</em></article>';}).join("")+'</div>':'<div class="empty large">등록된 계약이 없습니다.</div>')+
+      '</section>'+
+      '<section class="tax-panel"><div class="tax-panel-head"><div><p class="eyebrow">02 / TAX INVOICE</p><h2>최근 세금계산서</h2></div><span>'+totals.invoices+' RECORDS</span></div>'+
+      (invoices.length?'<div class="tax-invoice-list">'+invoices.slice(0,12).map(function(inv){var p=state.tradePartners.find(function(x){return x.businessNumber===inv.businessNumber;});return '<button '+(p?'data-partner-id="'+esc(p.id)+'"':'')+'><time>'+esc(inv.date||"—")+'</time><div><strong>'+esc(inv.name||"—")+'</strong><small>'+esc(inv.item||"")+'</small></div><span>'+won(inv.supply)+'</span><em>'+(inv.correction?"수정":"일반")+'</em></button>';}).join("")+'</div>':'<div class="empty large">가져온 계산서 이력이 없습니다.</div>')+
+      '</section>'+
+    '</div>'+
+  '</section>';
+}
+
+function clientManagementPage(){
+  var q=state.query.trim().toLowerCase();
+  var clients=state.clients.filter(function(c){return !q||((clientName(c)+" "+(c.type||"")+" "+(c.work||"")).toLowerCase().includes(q));})
+    .sort(function(a,b){return clientName(a).localeCompare(clientName(b),"ko");});
+  var partners=state.tradePartners.filter(function(p){return !q||((p.name||"")+" "+(p.representative||"")+" "+(p.address||"")+" "+(p.industry||"")+" "+(p.category||"")).toLowerCase().includes(q);})
+    .sort(function(a,b){return String(a.name||"").localeCompare(String(b.name||""),"ko");});
+  return '<section class="client-management-page">'+
+    '<div class="client-management-head"><div><p class="eyebrow">NINEWORKS / CLIENT MANAGEMENT</p><h1>거래처관리</h1><p>현재 클라이언트와 세금계산서 거래처 기본정보를 한 곳에서 관리합니다.</p></div><div><button class="btn" id="addClientInline">＋ CLIENT</button><button class="btn primary" data-partner-new>＋ 거래처</button></div></div>'+
+    '<label class="management-search"><input id="managementSearch" type="search" placeholder="거래처 / 담당자 / 주소 / 업태 / 종목 검색" value="'+esc(state.query)+'"></label>'+
+    '<section class="management-section"><div class="management-section-head"><div><p class="eyebrow">01 / ACTIVE CLIENT</p><h2>현재 클라이언트</h2></div><span>'+clients.length+'</span></div>'+
+      (clients.length?'<div class="management-client-list">'+clients.map(function(c){var open=clientTodos(c).length,logs=clientLogs(c,"work"),meetings=clientLogs(c,"meeting");return '<button data-client-id="'+esc(c.id)+'"><div><strong>'+esc(clientName(c))+'</strong><small>'+esc(c.type||"CLIENT")+'</small></div><span>'+open+' 업무</span><span>'+meetings.length+' 미팅</span><em>'+esc(logs[0]?formatDate(logs[0].date):"—")+'</em></button>';}).join("")+'</div>':'<div class="empty large">등록된 클라이언트가 없습니다.</div>')+
+    '</section>'+
+    '<section class="management-section"><div class="management-section-head"><div><p class="eyebrow">02 / PARTNER MASTER</p><h2>거래처 기본정보</h2></div><div><span>'+partners.length+'</span><button class="section-link" data-partner-import>IMPORT XLS ↗</button></div></div>'+
+      (partners.length?'<div class="management-partner-table"><div class="management-partner-head"><span>거래처</span><span>대표자</span><span>업태·종목</span><span>주소</span><span>최근거래</span></div>'+partners.map(function(p){return '<button data-partner-id="'+esc(p.id)+'"><div><strong>'+esc(p.name||"—")+'</strong><small>'+esc(maskBusinessNumber(p.businessNumber))+'</small></div><span>'+esc(p.representative||"—")+'</span><span>'+esc([p.industry,p.category].filter(Boolean).join(" / ")||"—")+'</span><span>'+esc(p.address||"—")+'</span><em>'+esc(p.lastDate||"—")+'</em></button>';}).join("")+'</div>':'<div class="partner-import-empty"><h3>거래처 마스터를 가져오세요.</h3><p>세금계산서 분석 파일을 불러오면 대표자, 주소, 이메일과 거래 이력을 연결합니다.</p><button class="btn primary" data-partner-import>IMPORT XLS ↗</button></div>')+
+    '</section>'+
+  '</section>';
+}
+
+function allMeetings(){
+  return state.logs.filter(function(l){return l.type==="meeting";}).sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||Number(b.createdAtMs||0)-Number(a.createdAtMs||0);});
+}
+function meetingManagementPage(){
+  var meetings=allMeetings();
+  var weekStart=recentDays(7)[0];
+  var thisWeek=meetings.filter(function(m){return (m.date||"")>=weekStart;});
+  var followups=meetings.filter(function(m){return String(m.nextAction||"").trim();});
+  var clients={};meetings.forEach(function(m){if(m.client)clients[m.client]=1;});
+  return '<section class="meeting-management-page">'+
+    '<div class="meeting-management-head"><div><p class="eyebrow">NINEWORKS / MEETING MANAGEMENT</p><h1>미팅관리</h1><p>클라이언트별 미팅 내용, 결정사항과 다음 액션을 날짜순으로 관리합니다.</p></div><button class="btn primary" id="addMeetingGlobal">＋ MEETING</button></div>'+
+    '<div class="meeting-management-summary"><div><span>전체 미팅</span><strong>'+meetings.length+'</strong></div><div><span>이번 주</span><strong>'+thisWeek.length+'</strong></div><div><span>후속 액션</span><strong>'+followups.length+'</strong></div><div><span>관련 클라이언트</span><strong>'+Object.keys(clients).length+'</strong></div></div>'+
+    '<section class="meeting-management-list"><div class="meeting-management-list-head"><span>DATE</span><span>CLIENT / PROJECT</span><span>MEETING</span><span>NEXT ACTION</span></div>'+
+    (meetings.length?meetings.map(function(m){var c=clientForLog(m);return '<article><time>'+esc(m.date||"—")+'</time><div><strong>'+esc(c?clientName(c):(m.client||"GENERAL"))+'</strong><small>'+esc(m.project||"")+'</small></div><div><strong>'+esc(m.title||"미팅")+'</strong><small>'+esc(m.decisions||m.content||"")+'</small></div><div><span>'+esc(m.nextAction||"—")+'</span>'+(c?'<button class="section-link" data-client-id="'+esc(c.id)+'">CLIENT ↗</button>':'')+'</div></article>';}).join(""):'<div class="empty large">등록된 미팅 기록이 없습니다.</div>')+
+    '</section>'+
+  '</section>';
+}
+function meetingManagerForm(){
+  var options=state.clients.slice().sort(function(a,b){return clientName(a).localeCompare(clientName(b),"ko");}).map(function(c){return '<option value="'+esc(c.id)+'">'+esc(clientName(c))+'</option>';}).join("");
+  openModal("미팅 기록",'<form id="meetingManagerForm"><label class="field"><span>클라이언트 *</span><select id="meetingClient" required><option value="">선택</option>'+options+'</select></label><div class="form-grid"><label class="field"><span>미팅명 *</span><input id="meetingTitle" required></label><label class="field"><span>미팅일</span><input id="meetingDate" type="date" value="'+today()+'"></label></div><label class="field"><span>참석자</span><input id="meetingAttendees"></label><label class="field"><span>프로젝트 / 브랜드</span><input id="meetingProject"></label><label class="field"><span>미팅 내용 *</span><textarea id="meetingContent" rows="5" required></textarea></label><label class="field"><span>결정사항</span><textarea id="meetingDecisions" rows="3"></textarea></label><label class="field"><span>다음 액션</span><textarea id="meetingNext" rows="3"></textarea></label><div class="actions"><button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">저장</button></div></form>');
+}
+
 function clientIndexPage(){
   var q=state.query.trim().toLowerCase();
   var clients=state.clients.filter(function(c){return !q||((clientName(c)+" "+(c.type||"")+" "+(c.work||"")).toLowerCase().includes(q));})
@@ -572,7 +639,7 @@ function partnerPage(p){
     return a&&b&&(a===b||a.includes(b)||b.includes(a));
   });
   return '<section class="partner-detail">'+
-    '<div class="partner-detail-head"><div><button class="back-link" data-finance-nav>← FINANCE & TAX</button><p class="eyebrow">TRADE PARTNER / '+esc(p.status||"")+'</p><h1>'+esc(p.name||"거래처")+'</h1><p>'+esc(p.lastItem||"세금계산서 및 거래 이력")+'</p></div><div class="partner-detail-actions"><button class="btn" data-partner-edit="'+esc(p.id)+'">정보 수정</button>'+(linked?'<button class="btn primary" data-client-id="'+esc(linked.id)+'">CLIENT WORKSPACE ↗</button>':'')+'</div></div>'+
+    '<div class="partner-detail-head"><div><button class="back-link" data-client-index>← 거래처관리</button><p class="eyebrow">TRADE PARTNER / '+esc(p.status||"")+'</p><h1>'+esc(p.name||"거래처")+'</h1><p>'+esc(p.lastItem||"세금계산서 및 거래 이력")+'</p></div><div class="partner-detail-actions"><button class="btn" data-partner-edit="'+esc(p.id)+'">정보 수정</button>'+(linked?'<button class="btn primary" data-client-id="'+esc(linked.id)+'">CLIENT WORKSPACE ↗</button>':'')+'</div></div>'+
     '<div class="partner-detail-metrics"><div><span>2025 SALES</span><strong>'+won(p.sales2025)+'</strong></div><div><span>2026 SALES</span><strong>'+won(p.sales2026)+'</strong></div><div><span>TOTAL SALES</span><strong>'+won(p.totalSales)+'</strong></div><div><span>INVOICES</span><strong>'+Number(p.invoiceCount||0)+'</strong><small>CORRECTION '+Number(p.correctionCount||0)+'</small></div></div>'+
     '<div class="partner-detail-grid"><section class="partner-info-panel"><div class="partner-section-head"><p class="eyebrow">01 / BUSINESS PROFILE</p><h2>거래처 정보</h2></div>'+
       '<div class="partner-info-grid"><div><span>사업자등록번호</span><strong>'+esc(maskBusinessNumber(p.businessNumber))+'</strong></div><div><span>대표자</span><strong>'+esc(p.representative||"—")+'</strong></div><div class="wide"><span>주소</span><strong>'+esc(p.address||"—")+'</strong></div><div><span>업태</span><strong>'+esc(p.industry||"—")+'</strong></div><div><span>종목</span><strong>'+esc(p.category||"—")+'</strong></div><div><span>담당자</span><strong>'+esc(p.manager||"—")+'</strong></div><div><span>연락처</span><strong>'+esc(p.phone||"—")+'</strong></div><div><span>이메일</span><strong>'+esc(p.email||"—")+'</strong></div><div><span>홈페이지</span><strong>'+esc(p.website||"—")+'</strong></div><div><span>최초거래</span><strong>'+esc(p.firstDate||"—")+'</strong></div><div><span>최근거래</span><strong>'+esc(p.lastDate||"—")+'</strong></div></div>'+
