@@ -826,6 +826,17 @@ function bindLogin(){
 
 
 
+window.NINEWORKS_BOOT=function(){
+  try{
+    sessionStorage.setItem("nineworks_crm_unlocked","1");
+    enterTestWorkspace();
+  }catch(err){
+    console.error("Manual test boot failed",err);
+    var root=document.getElementById("app");
+    if(root)root.innerHTML='<div style="min-height:100vh;background:#080808;color:#fff;display:grid;place-items:center;font-family:Arial,sans-serif"><div style="text-align:center"><strong>NINEWORKS CRM</strong><p style="font-size:12px;color:#888">대시보드를 불러오지 못했습니다.</p></div></div>';
+  }
+};
+
 function bootImmediate(){
   try{
     $("#app").innerHTML=loginView();
