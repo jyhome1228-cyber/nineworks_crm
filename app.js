@@ -84,7 +84,7 @@ function lockApp(){
   $("#app").innerHTML=loginView();
   bindLogin();
 }
-const CRM_ACCESS_CODE="1228";
+
 function gateUnlocked(){return sessionStorage.getItem("nineworks_crm_unlocked")==="1";}
 function testMode(){return !auth.currentUser;}
 function lockApp(){
