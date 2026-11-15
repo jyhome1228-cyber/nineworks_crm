@@ -695,18 +695,33 @@ function taxPage(){
 
 function clientManagementPage(){
   var q=state.query.trim().toLowerCase();
-  var clients=effectiveClients().filter(function(c){return !q||((clientName(c)+" "+(c.type||"")+" "+(c.work||"")).toLowerCase().includes(q));})
-    .sort(function(a,b){return clientName(a).localeCompare(clientName(b),"ko");});
-  var partners=effectivePartners().filter(function(p){return !q||((p.name||"")+" "+(p.representative||"")+" "+(p.address||"")+" "+(p.industry||"")+" "+(p.category||"")+" "+(p.status||"")).toLowerCase().includes(q);})
-    .sort(function(a,b){return String(a.name||"").localeCompare(String(b.name||""),"ko");});
+  var partners=effectivePartners().filter(function(p){
+    return !q||((p.name||"")+" "+(p.lastItem||"")+" "+(p.status||"")).toLowerCase().includes(q);
+  }).sort(partnerSortRecent);
+  var current=partners.filter(function(p){return Number(p.sales2026||0)>0;});
+  var past=partners.filter(function(p){return Number(p.sales2026||0)<=0;});
+  function rows(list,year){
+    return list.map(function(p){
+      var amount=year===2026?Number(p.sales2026||0):Number(p.sales2025||0);
+      return '<button class="partner-finance-row" data-partner-id="'+esc(p.id)+'">'+
+        '<div><strong>'+esc(p.name||"—")+'</strong><small>'+esc(p.status||"")+'</small></div>'+
+        '<span>'+won(amount)+'</span>'+
+        '<span>'+won(p.totalSales||0)+'</span>'+
+        '<time>'+esc(p.lastDate||"—")+'</time>'+
+        '<em>'+esc(p.lastItem||"—")+'</em>'+
+      '</button>';
+    }).join("");
+  }
   return '<section class="client-management-page">'+
-    '<div class="client-management-head"><div><h1>거래처관리</h1><p>현재 클라이언트와 세금계산서 거래처 기본정보를 한 곳에서 관리합니다.</p></div><div><button class="btn" id="addClientInline">클라이언트 추가</button><button class="btn primary" data-partner-new>거래처 추가</button></div></div>'+
-    '<label class="management-search"><input id="managementSearch" type="search" placeholder="거래처 / 담당자 / 주소 / 업태 / 종목 검색" value="'+esc(state.query)+'"></label>'+
-    '<section class="management-section"><div class="management-section-head"><div><h2>현재 클라이언트</h2></div><span>'+clients.length+(state.clients.length?'':' · 세금계산서 기준')+'</span></div>'+
-      (clients.length?'<div class="management-client-list">'+clients.map(function(c){var open=clientTodos(c).length,logs=clientLogs(c,"work"),meetings=clientLogs(c,"meeting");return '<button data-client-id="'+esc(c.id)+'"><div><strong>'+esc(clientName(c))+'</strong><small>'+esc(c.type||"CLIENT")+'</small></div><span>'+open+' 업무</span><span>'+meetings.length+' 미팅</span><em>'+esc(logs[0]?formatDate(logs[0].date):"—")+'</em></button>';}).join("")+'</div>':'<div class="empty large">등록된 클라이언트가 없습니다.</div>')+
+    '<div class="client-management-head"><div><h1>거래처관리</h1><p>세금계산서 기준 거래액과 최근 거래일을 중심으로 관리합니다.</p></div><div><button class="btn primary" data-partner-new>거래처 추가</button></div></div>'+
+    '<label class="management-search"><input id="managementSearch" type="search" placeholder="거래처명 또는 최근 거래내용 검색" value="'+esc(state.query)+'"></label>'+
+    '<section class="management-section"><div class="management-section-head"><div><h2>2026 거래처</h2></div><span>'+current.length+'개 · 최근 거래순</span></div>'+
+      '<div class="partner-finance-head"><span>거래처</span><span>2026 거래액</span><span>누적 거래액</span><span>최근 거래</span><span>최근 거래내용</span></div>'+
+      (current.length?'<div class="partner-finance-list">'+rows(current,2026)+'</div>':'<div class="empty large">2026년 거래처가 없습니다.</div>')+
     '</section>'+
-    '<section class="management-section"><div class="management-section-head"><div><h2>거래처 기본정보</h2></div><div><span>'+partners.length+(usingTaxSnapshot()?' · 세금계산서 기준':'')+'</span><button class="section-link" data-partner-import>엑셀 불러오기</button></div></div>'+
-      (partners.length?'<div class="management-partner-table"><div class="management-partner-head"><span>거래처</span><span>대표자</span><span>업태·종목</span><span>주소</span><span>최근거래</span></div>'+partners.map(function(p){var snapshot=String(p.id||"").indexOf("snapshot_")===0;return '<button '+(snapshot?'':'data-partner-id="'+esc(p.id)+'"')+'><div><strong>'+esc(p.name||"—")+'</strong><small>'+esc(snapshot?(p.status||"세금계산서 기반"):maskBusinessNumber(p.businessNumber))+'</small></div><span>'+esc(snapshot?(p.status||"—"):(p.representative||"—"))+'</span><span>'+esc(snapshot?"세금계산서 기반":[p.industry,p.category].filter(Boolean).join(" / ")||"—")+'</span><span>'+esc(snapshot?"상세정보는 Firebase 연결 후 표시":(p.address||"—"))+'</span><em>'+esc(p.lastDate||"—")+'</em></button>';}).join("")+'</div>':'<div class="partner-import-empty"><h3>거래처 자료를 불러오세요.</h3><p>세금계산서 분석 파일을 불러오면 대표자, 주소, 이메일과 거래 이력을 연결합니다.</p><button class="btn primary" data-partner-import>엑셀 불러오기</button></div>')+
+    '<section class="management-section past-partners"><div class="management-section-head"><div><h2>과거 거래처</h2></div><span>'+past.length+'개 · 2026 거래 없음</span></div>'+
+      '<div class="partner-finance-head"><span>거래처</span><span>2025 거래액</span><span>누적 거래액</span><span>최근 거래</span><span>최근 거래내용</span></div>'+
+      (past.length?'<div class="partner-finance-list">'+rows(past,2025)+'</div>':'<div class="empty large">과거 거래처가 없습니다.</div>')+
     '</section>'+
   '</section>';
 }
@@ -1007,25 +1022,30 @@ function closeModal(){$("#modalBackdrop").hidden=true;$("#modal").hidden=true;do
 
 function clientInfoModal(c){
   if(!c)return;
+  var p=partnerByClient(c)||c;
   var open=clientTodos(c).length;
   var logs=clientLogs(c,"work");
   var meetings=clientLogs(c,"meeting");
-  var last=logs[0]||meetings[0]||null;
   openModal("거래처 정보",
     '<div class="info-popup">'+
-      '<div class="info-popup-title"><h3>'+esc(clientName(c))+'</h3><p>'+esc(c.type||"클라이언트")+'</p></div>'+
+      '<div class="info-popup-title"><h3>'+esc(clientName(c))+'</h3><p>'+esc(Number(p.sales2026||0)>0?"2026 거래":"과거 거래")+'</p></div>'+
       '<div class="info-popup-grid">'+
+        '<div><span>2026 거래액</span><strong>'+won(p.sales2026||0)+'</strong></div>'+
+        '<div><span>누적 거래액</span><strong>'+won(p.totalSales||0)+'</strong></div>'+
+        '<div><span>발행 기록</span><strong>'+Number(p.invoiceCount||0)+'건</strong></div>'+
+        '<div><span>최근 거래</span><strong>'+esc(p.lastDate||"—")+'</strong></div>'+
+      '</div>'+
+      '<div class="info-popup-list">'+
+        '<div><span>2025 거래액</span><strong>'+won(p.sales2025||0)+'</strong></div>'+
+        '<div><span>수정 계산서</span><strong>'+Number(p.correctionCount||0)+'건</strong></div>'+
+        '<div><span>최초 거래</span><strong>'+esc(p.firstDate||"—")+'</strong></div>'+
+        '<div><span>최근 거래내용</span><strong>'+esc(p.lastItem||"—")+'</strong></div>'+
         '<div><span>진행 업무</span><strong>'+open+'건</strong></div>'+
         '<div><span>작업 기록</span><strong>'+logs.length+'건</strong></div>'+
         '<div><span>미팅 기록</span><strong>'+meetings.length+'건</strong></div>'+
-        '<div><span>최근 업데이트</span><strong>'+esc(last?formatDate(last.date):formatDate(c.lastDate||""))+'</strong></div>'+
-      '</div>'+
-      '<div class="info-popup-list">'+
-        '<div><span>담당자</span><strong>'+esc(c.contact||c.manager||"—")+'</strong></div>'+
-        '<div><span>연락처</span><strong>'+esc(c.phone||"—")+'</strong></div>'+
-        '<div><span>이메일</span><strong>'+esc(c.email||"—")+'</strong></div>'+
-        '<div><span>업무 설명</span><strong>'+esc(c.work||c.description||"—")+'</strong></div>'+
-        '<div><span>메모</span><strong>'+esc(c.note||"—")+'</strong></div>'+
+        (c.contact||c.manager?'<div><span>담당자</span><strong>'+esc(c.contact||c.manager)+'</strong></div>':'')+
+        (c.phone?'<div><span>연락처</span><strong>'+esc(c.phone)+'</strong></div>':'')+
+        (c.email?'<div><span>이메일</span><strong>'+esc(c.email)+'</strong></div>':'')+
       '</div>'+
       (!c.snapshot?'<div class="info-popup-actions"><button class="btn" data-client-edit-popup="'+esc(c.id)+'">정보 수정</button></div>':'')+
     '</div>'
@@ -1034,25 +1054,25 @@ function clientInfoModal(c){
 
 function partnerInfoModal(p){
   if(!p)return;
-  var snapshot=String(p.id||"").indexOf("snapshot_")===0;
+  var snapshot=String(p.id||"").indexOf("tax_")===0;
+  var active=Number(p.sales2026||0)>0;
   openModal("거래처 정보",
     '<div class="info-popup">'+
-      '<div class="info-popup-title"><h3>'+esc(p.name||"거래처")+'</h3><p>'+esc(snapshot?(p.status||"세금계산서 기준"):(p.status||"거래처"))+'</p></div>'+
+      '<div class="info-popup-title"><h3>'+esc(p.name||"거래처")+'</h3><p>'+esc(active?"2026 거래":"과거 거래")+'</p></div>'+
       '<div class="info-popup-grid">'+
-        '<div><span>최근 거래</span><strong>'+esc(p.lastDate||"—")+'</strong></div>'+
-        '<div><span>2025 공급가액</span><strong>'+won(p.sales2025||0)+'</strong></div>'+
-        '<div><span>2026 공급가액</span><strong>'+won(p.sales2026||0)+'</strong></div>'+
+        '<div><span>2026 거래액</span><strong>'+won(p.sales2026||0)+'</strong></div>'+
+        '<div><span>누적 거래액</span><strong>'+won(p.totalSales||0)+'</strong></div>'+
         '<div><span>발행 기록</span><strong>'+Number(p.invoiceCount||0)+'건</strong></div>'+
+        '<div><span>최근 거래</span><strong>'+esc(p.lastDate||"—")+'</strong></div>'+
       '</div>'+
       '<div class="info-popup-list">'+
-        '<div><span>사업자등록번호</span><strong>'+esc(snapshot?"—":maskBusinessNumber(p.businessNumber))+'</strong></div>'+
-        '<div><span>대표자</span><strong>'+esc(p.representative||"—")+'</strong></div>'+
-        '<div><span>주소</span><strong>'+esc(p.address||"—")+'</strong></div>'+
-        '<div><span>업태</span><strong>'+esc(p.industry||"—")+'</strong></div>'+
-        '<div><span>종목</span><strong>'+esc(p.category||"—")+'</strong></div>'+
-        '<div><span>담당자</span><strong>'+esc(p.manager||"—")+'</strong></div>'+
-        '<div><span>연락처</span><strong>'+esc(p.phone||"—")+'</strong></div>'+
-        '<div><span>이메일</span><strong>'+esc(p.email||"—")+'</strong></div>'+
+        '<div><span>2025 거래액</span><strong>'+won(p.sales2025||0)+'</strong></div>'+
+        '<div><span>수정 계산서</span><strong>'+Number(p.correctionCount||0)+'건</strong></div>'+
+        '<div><span>최초 거래</span><strong>'+esc(p.firstDate||"—")+'</strong></div>'+
+        '<div><span>최근 거래내용</span><strong>'+esc(p.lastItem||"—")+'</strong></div>'+
+        (!snapshot&&p.representative?'<div><span>대표자</span><strong>'+esc(p.representative)+'</strong></div>':'')+
+        (!snapshot&&p.address?'<div><span>주소</span><strong>'+esc(p.address)+'</strong></div>':'')+
+        (!snapshot&&p.email?'<div><span>이메일</span><strong>'+esc(p.email)+'</strong></div>':'')+
       '</div>'+
       (!snapshot?'<div class="info-popup-actions"><button class="btn" data-partner-edit-popup="'+esc(p.id)+'">정보 수정</button></div>':'')+
     '</div>'
