@@ -49,6 +49,97 @@ function effectiveClients(){return state.clients.length?state.clients:TAX_CLIENT
 function effectivePartners(){return state.tradePartners.length?state.tradePartners:TAX_PARTNER_SNAPSHOT;}
 function usingTaxSnapshot(){return !state.tradePartners.length;}
 
+const DAILY_REPORT_SNAPSHOT=[{
+  date:"2026-11-14",
+  summary:"NINEWORKS CRM 정보구조 개편, 주간보고 체계 구축, 사자가온다 홈페이지 개선을 중심으로 업무를 정리했습니다.",
+  reviewStatus:"AUTO SNAPSHOT",
+  automationSaved:false,
+  revision:1,
+  entries:[
+    {client:"NINEWORKS",project:"CRM",title:"CRM 대시보드 및 정보위계 정리",details:"대시보드 구성, 제목 크기, 정보 위계, 모바일 스타일을 정리했습니다.",status:"완료",nextAction:"실서비스 QA"},
+    {client:"NINEWORKS",project:"CRM",title:"업무·세무 메뉴 분리",details:"WORK / BUSINESS 영역을 분리하고 업무와 세무를 독립 관리하도록 개편했습니다.",status:"완료",nextAction:"실데이터 연결 검증"},
+    {client:"NINEWORKS",project:"운영",title:"주간업무보고 체계 구축",details:"11/8~14 업무캘린더를 취합하고 주간보고 화면과 Firestore 읽기/쓰기 구조를 구현했습니다.",status:"진행",nextAction:"자동 DB 저장 검증"},
+    {client:"사자가온다",project:"Homepage",title:"홈페이지 비주얼 개선",details:"블랙 히어로, 동물 일러스트, 화이트 타이포와 공통 헤더를 정리했습니다.",status:"검수",nextAction:"실서비스 모바일·문의 기능 점검"}
+  ],
+  decisions:[
+    "WORK DESK와 CLIENTS는 업무·작업 기록·미팅 중심으로, FINANCE & TAX는 매출·세금계산서·계약·미수금 중심으로 분리",
+    "일간·주간 보고서를 CRM에서 조회 가능한 구조로 연결"
+  ],
+  pending:[
+    "CRM 일간·주간 보고서 Firestore 자동저장 검증",
+    "사자가온다 홈페이지 실서비스 비주얼·문의 기능 검수",
+    "ORIENTIVE·BITESS 이월 피드백 정리"
+  ],
+  operations:{note:"11월 14일 기준 내부 운영 체계 개편과 보고서 구조 구축을 진행했습니다."},
+  reflection:"업무와 세무를 독립시키고 보고서 화면까지 연결했으며, 다음 단계는 자동 보고서 생성 → 비공개 DB 저장 → 화면 재조회까지 완결하는 것입니다.",
+  tomorrowPriorities:[
+    "CRM 일간·주간 보고서 Firestore 저장 및 재조회 검증",
+    "9workscrm.cloud 메뉴·모바일 레이아웃 QA",
+    "사자가온다 실서비스 점검",
+    "ORIENTIVE·BITESS 다음 액션 정리"
+  ],
+  meetings:[]
+}];
+
+const WEEKLY_REPORT_SNAPSHOT=[{
+  weekStart:"2026-11-09",
+  weekEnd:"2026-11-14",
+  title:"NINEWORKS 주간 업무보고서",
+  summary:"ORIENTIVE 상담 전환 및 신뢰 콘텐츠, BITESS 패키지 A/B 방향 정리, NINEWORKS 자사 사이트와 CRM 재설계가 핵심이었습니다.",
+  automationSaved:false,
+  revision:1,
+  projects:[
+    {client:"ORIENTIVE",project:"Website / Branding",summary:"상담 CTA, 모바일·상세 UI, 실적·후킹 보강",status:"검수"},
+    {client:"NINEWORKS",project:"Website / CRM",summary:"홈페이지 개편, 채용, 업무·세무 분리, 거래처·계산서 구조",status:"진행"},
+    {client:"BITESS",project:"Package",summary:"A/B 디자인 미팅 및 제형 디벨롭",status:"진행"},
+    {client:"S2H",project:"Website / CRM",summary:"관리자, 상품/셀러 검색·CSV 기능 개선",status:"검수"},
+    {client:"TerraSAVE",project:"Website",summary:"SEO·관리자·증빙서류 정리",status:"검수"}
+  ],
+  completed:[
+    "CRM 화면 코드 개편",
+    "ORIENTIVE 상담 CTA 구현",
+    "S2H CRM 기능 변경",
+    "TerraSAVE SEO 코드 반영"
+  ],
+  carryover:[
+    "ORIENTIVE 문의폼 실수신 및 모바일 QA",
+    "BITESS 기능성 표시 및 실제 제형 검수",
+    "CRM Firestore 자동 저장",
+    "계약·견적·인쇄 일정 확인"
+  ],
+  decisions:[
+    "WORK DESK 업무/세무 분리",
+    "ORIENTIVE 신뢰도 강화",
+    "BITESS 원안 유지와 고급화 디벨롭"
+  ],
+  meetings:["BITESS 및 ORIENTIVE 피드백 후속 액션 정리"],
+  dailyLoad:[
+    {date:"2026-11-09",count:3},{date:"2026-11-10",count:6},{date:"2026-11-11",count:8},
+    {date:"2026-11-12",count:9},{date:"2026-11-13",count:15},{date:"2026-11-14",count:1}
+  ],
+  clientLoad:[
+    {client:"ORIENTIVE",count:8},{client:"NINEWORKS",count:6},{client:"플레이버니즈",count:4},{client:"BITESS",count:3},{client:"파인비",count:3}
+  ],
+  metrics:{recordCount:42,completedCount:0,feedbackCount:5,waitingCount:3},
+  operations:["일간업무일지 자동 작성 실행 확인","주간보고 화면 및 Firestore 구조 반영"],
+  risks:["실제 Firestore 자동저장 미검증","일부 거래처·계산서 실제 적재 여부 확인 필요"],
+  nextPriorities:[
+    "Daily/Weekly Firestore 저장·조회 검증",
+    "ORIENTIVE 문의·모바일 QA",
+    "BITESS 패키지 수정 및 문구 검수",
+    "GGM·S2H·TerraSAVE 실운영 점검"
+  ],
+  workloadNote:"등록 기록 수는 실제 완료 업무 수나 투입 시간을 의미하지 않습니다.",
+  sourceNote:"최근 ChatGPT 작업 기록, 업무일지, GitHub 변경 이력 기반 테스트 스냅샷"
+}];
+
+function hydrateTestReportSnapshots(){
+  if(!state.journals.length)state.journals=DAILY_REPORT_SNAPSHOT.map(function(x){return Object.assign({},x);});
+  if(!state.weeklyReports.length)state.weeklyReports=WEEKLY_REPORT_SNAPSHOT.map(function(x){return Object.assign({},x);});
+  state.weeklySelection=state.weeklySelection||"2026-11-09";
+  if(!state.journalDate||state.journalDate===today())state.journalDate=DAILY_REPORT_SNAPSHOT[0].date;
+}
+
 
 function cleanup(){state.unsubs.forEach(function(f){if(f)f();});state.unsubs=[];}
 function clientName(c){return c&&c.name?c.name:(c&&c.clientName?c.clientName:"이름 없음");}
@@ -167,6 +258,12 @@ function shell(){
         '<button class="desk-nav-item '+(["finance"].includes(state.view)?"active":"")+'" data-finance-nav><span>02</span><strong>세무</strong><small>SALES / TAX / CONTRACT</small></button>'+
         '<button class="desk-nav-item '+(["clients","client","partner"].includes(state.view)?"active":"")+'" data-client-index><span>03</span><strong>거래처관리</strong><small>CLIENT / PARTNER MASTER</small></button>'+
         '<button class="desk-nav-item '+(state.view==="meetings"?"active":"")+'" data-meetings-nav><span>04</span><strong>미팅관리</strong><small>MEETING / FOLLOW-UP</small></button>'+
+      '</nav>'+
+      '<nav class="work-subnav" aria-label="업무 세부 메뉴">'+
+        '<button class="'+(state.view==="desk"?"active":"")+'" data-workdesk>오늘 업무</button>'+
+        '<button class="'+(["reports","weekly"].includes(state.view)?"active":"")+'" data-reports-nav>업무보고</button>'+
+        '<button class="'+(state.view==="projects"?"active":"")+'" data-projects-nav>프로젝트</button>'+
+        '<button class="'+(state.view==="journal"?"active":"")+'" data-journal-nav>업무일지</button>'+
       '</nav>'+
       '<div class="client-side-area">'+
         '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 진행 중인 클라이언트를 빠르게 확인합니다.</p></div>'+
@@ -924,6 +1021,7 @@ function enterTestWorkspace(){
   cleanup();
   state.user=(auth&&auth.currentUser)||null;
   state.profile=state.user?state.profile:{name:"박재영",role:"TEST MODE"};
+  if(!state.user)hydrateTestReportSnapshots();
   $("#app").innerHTML=shell();
   bindGlobal();
   renderContent();
