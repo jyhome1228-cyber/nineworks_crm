@@ -134,6 +134,7 @@ function shell(){
     '<main class="main"><div id="content" class="content"></div></main>'+
   '</div>'+
   '<input id="partnerImport" type="file" accept=".xlsx,.xls" hidden><div id="modalBackdrop" class="modal-backdrop" hidden></div><section id="modal" class="modal" hidden></section>'+
+  '<div id="openingIntro" class="opening-intro"><div class="opening-intro-inner"><img src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS"></div></div>'+
   '</div>';
 }
 
