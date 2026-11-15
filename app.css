@@ -2135,3 +2135,147 @@ body{font-size:14px}
   .reports-panel-head h2,
   .nw-section.compact-section .nw-section-head h2{font-size:18px!important}
 }
+
+
+/* 2026-11-15 — COMPACT TYPE PASS */
+.nw-login-content{
+  width:min(calc(100% - 48px),560px)!important;
+  padding:54px 0 76px!important;
+}
+.nw-login-label{
+  font-size:9px!important;
+  letter-spacing:.08em!important;
+}
+.nw-login-intro h1{
+  font-size:clamp(22px,1.9vw,27px)!important;
+  line-height:1.5!important;
+  letter-spacing:-.045em!important;
+  margin:8px 0 18px!important;
+}
+.nw-login-copy{
+  max-width:520px!important;
+  font-size:12.5px!important;
+  line-height:1.85!important;
+}
+.nw-login-copy p{margin-bottom:9px!important}
+.nw-login-form{
+  width:min(100%,390px)!important;
+  margin-top:24px!important;
+  gap:8px 12px!important;
+}
+.nw-login-form label span{
+  font-size:10px!important;
+}
+.nw-login-form input{
+  min-height:39px!important;
+  padding:9px 10px!important;
+  font-size:12px!important;
+}
+.nw-login-form button{
+  min-height:40px!important;
+  font-size:11px!important;
+}
+.nw-login-form #loginMsg{font-size:10px!important}
+.nw-login-footer{font-size:9px!important}
+.nw-login-logo{width:132px!important}
+.nw-login-splash img{width:150px!important}
+
+/* Whole app: smaller, denser hierarchy */
+.overview-head h1,
+.projects-head h1,
+.reports-head h1,
+.client-index-head h1,
+.client-hero.compact-client h1,
+.partner-dashboard .partner-hero h1,
+.partner-detail-head h1,
+.journal-hero h1,
+.weekly-hero h1{
+  font-size:clamp(24px,2.2vw,30px)!important;
+  line-height:1.4!important;
+  margin:6px 0 10px!important;
+}
+.overview-head p:last-child,
+.projects-head p:last-child,
+.reports-head p:last-child,
+.client-index-head p:last-child,
+.client-hero.compact-client .client-lead,
+.partner-dashboard .partner-hero p:last-child,
+.partner-detail-head p:last-child,
+.journal-hero p,
+.weekly-hero p{
+  font-size:11.5px!important;
+  line-height:1.75!important;
+}
+.overview-panel-head h2,
+.projects-section-head h2,
+.reports-panel-head h2,
+.nw-section.compact-section .nw-section-head h2,
+.partner-dashboard .partner-list-head h2,
+.partner-section-head h2,
+.journal-section h3,
+.journal-head h2,
+.weekly-section h2{
+  font-size:16px!important;
+  line-height:1.45!important;
+}
+.overview-panel-head p,
+.nw-section.compact-section .nw-section-head p:last-child,
+.projects-section-head p,
+.reports-panel-head p{
+  font-size:10px!important;
+}
+.desk-task-main strong,
+.task strong,
+.log-item strong,
+.meeting strong,
+.client-work-row strong,
+.project-status-row strong,
+.report-row strong,
+.overview-recent-item strong,
+.partner-table td strong{
+  font-size:11px!important;
+}
+.desk-task-main p,
+.task small,
+.log-item p,
+.meeting>p,
+.meeting-section p,
+.client-work-row small,
+.project-status-row b,
+.overview-recent-item small,
+.partner-table td,
+.partner-table td small,
+.info-row strong{
+  font-size:10px!important;
+}
+.overview-kpis strong,
+.client-index-summary strong,
+.client-facts.work-facts strong,
+.projects-summary strong,
+.reports-summary strong,
+.partner-dashboard .partner-metrics strong,
+.partner-detail-metrics strong{
+  font-size:20px!important;
+}
+.desk-nav-item strong{font-size:10px!important}
+.desk-nav-item small{font-size:8px!important}
+.side-intro h2{font-size:17px!important}
+.side-intro p:last-child{font-size:10px!important}
+.client-button strong{font-size:10px!important}
+.client-button small,.client-count{font-size:8px!important}
+.client-search input{font-size:10px!important}
+
+@media(max-width:600px){
+  .nw-login-content{padding:48px 0 66px!important}
+  .nw-login-intro h1{font-size:23px!important}
+  .nw-login-copy{font-size:12px!important}
+  .overview-head h1,
+  .projects-head h1,
+  .reports-head h1,
+  .client-index-head h1,
+  .client-hero.compact-client h1,
+  .partner-dashboard .partner-hero h1,
+  .partner-detail-head h1,
+  .journal-hero h1,
+  .weekly-hero h1{font-size:24px!important}
+}
