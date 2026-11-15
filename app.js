@@ -700,9 +700,10 @@ function renderContent(){
   if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
   if(state.view==="weekly"){$("#content").innerHTML=weeklyReportPage();return;}
   if(state.view==="reports"){$("#content").innerHTML=reportsPage();return;}
-  if(state.view==="clients"){$("#content").innerHTML=clientIndexPage();var addInline=$("#addClientInline");if(addInline)addInline.addEventListener("click",function(){clientForm({});});return;}
-  if(state.view==="finance"){$("#content").innerHTML=clientsDashboard();var ps=$("#partnerSearch");if(ps)ps.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.partnerQuery=v;renderContent();var next=$("#partnerSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
-  if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientsDashboard();return;}
+  if(state.view==="clients"){$("#content").innerHTML=clientManagementPage();var addInline=$("#addClientInline");if(addInline)addInline.addEventListener("click",function(){clientForm({});});var ms=$("#managementSearch");if(ms)ms.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.query=v;renderContent();var next=$("#managementSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
+  if(state.view==="finance"){$("#content").innerHTML=taxPage();return;}
+  if(state.view==="meetings"){$("#content").innerHTML=meetingManagementPage();var mg=$("#addMeetingGlobal");if(mg)mg.addEventListener("click",meetingManagerForm);return;}
+  if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientManagementPage();return;}
   $("#content").innerHTML=c?clientPage(c):'<div class="empty-page"><div><p class="eyebrow">CLIENT WORKSPACE</p><h2>클라이언트를 선택하세요.</h2><p>왼쪽에서 클라이언트를 선택하면 현재 작업, 작업 로그, 미팅 기록과 계약 정보를 한 번에 볼 수 있습니다.</p></div></div>';
 }
 function openModal(title,body){
@@ -753,6 +754,7 @@ function bindGlobal(){
     if(e.target.closest("[data-projects-nav]")){state.view="projects";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-client-index]")){state.view="clients";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-finance-nav]")){state.view="finance";renderContent();$("#sidebar").classList.remove("open");return;}
+    if(e.target.closest("[data-meetings-nav]")){state.view="meetings";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-reports-nav]")){state.view="reports";renderContent();$("#sidebar").classList.remove("open");return;}
     var partner=e.target.closest("[data-partner-id]");if(partner){state.activePartnerId=partner.dataset.partnerId;state.view="partner";renderContent();return;}
     if(e.target.closest("[data-partner-import]")){$("#partnerImport").click();return;}
@@ -800,11 +802,28 @@ function bindGlobal(){
   });
   $("#addClient").addEventListener("click",function(){clientForm({});});
   $("#addWorkLog").addEventListener("click",function(){if(activeClient())logForm();else toast("클라이언트를 먼저 선택하세요.");});
-  $("#addMeeting").addEventListener("click",function(){if(activeClient())meetingForm();else toast("클라이언트를 먼저 선택하세요.");});
+  $("#addMeeting").addEventListener("click",function(){if(state.view==="meetings"||!activeClient())meetingManagerForm();else meetingForm();});
   $("#logoutBtn").addEventListener("click",function(){lockApp();});
   $("#mobileClients").addEventListener("click",function(){$("#sidebar").classList.toggle("open");});
 
   document.addEventListener("submit",async function(e){
+    if(e.target.id==="meetingManagerForm"){
+      e.preventDefault();
+      var cid=$("#meetingClient").value;
+      var c=state.clients.find(function(x){return x.id===cid;});
+      if(!c){toast("클라이언트를 선택하세요.");return;}
+      if(!state.user){toast("테스트 보기 모드에서는 저장되지 않습니다.");closeModal();return;}
+      var next=$("#meetingNext").value.trim(),project=$("#meetingProject").value.trim();
+      try{
+        await saveLog({type:"meeting",clientId:c.id,client:clientName(c),title:$("#meetingTitle").value.trim(),date:$("#meetingDate").value||today(),attendees:$("#meetingAttendees").value.trim(),content:$("#meetingContent").value.trim(),decisions:$("#meetingDecisions").value.trim(),nextAction:next,project:project});
+        if(next){
+          var mid=uid("todo");
+          await setDoc(doc(db,"todos",mid),{id:mid,clientId:c.id,client:clientName(c),title:next,project:project,due:"",memo:"미팅에서 생성된 다음 액션",done:false,createdAt:serverTimestamp()});
+        }
+        closeModal();toast(next?"미팅과 다음 액션을 저장했습니다.":"미팅 기록을 저장했습니다.");
+      }catch(err){console.error(err);toast("미팅을 저장하지 못했습니다.");}
+      return;
+    }
     if(e.target.id==="partnerForm"){
       e.preventDefault();var pid=$("#partnerId").value;var biz=$("#partnerBiz").value.trim();if(!pid)pid=(biz.replace(/[^0-9]/g,"")||uid("partner"));var existing=state.tradePartners.find(function(x){return x.id===pid;})||{};
       try{await setDoc(doc(db,"tradePartners",pid),Object.assign({},existing,{id:pid,businessNumber:biz,name:$("#partnerName").value.trim(),representative:$("#partnerRep").value.trim(),address:$("#partnerAddress").value.trim(),email:$("#partnerEmail").value.trim(),industry:$("#partnerIndustry").value.trim(),category:$("#partnerCategory").value.trim(),manager:$("#partnerManager").value.trim(),phone:$("#partnerPhone").value.trim(),website:$("#partnerWebsite").value.trim(),updatedAt:serverTimestamp(),updatedBy:state.user.uid}),{merge:true});state.activePartnerId=pid;state.view="partner";closeModal();toast("거래처 정보를 저장했습니다.");}catch(err){console.error(err);toast("거래처 정보를 저장하지 못했습니다.");}return;
