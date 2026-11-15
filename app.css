@@ -2679,3 +2679,369 @@ body{font-size:14px}
     font-size:17px!important;
   }
 }
+
+
+/* 2026-11-15 — FOUR AREA CRM IA */
+.compact-main-nav .nav-group-label{
+  margin-bottom:10px!important;
+}
+.primary-four-nav{
+  margin-bottom:0!important;
+  border-top:1px solid #222;
+}
+.primary-four-nav .desk-nav-item{
+  min-height:58px;
+  padding:12px 4px!important;
+  border-bottom:1px solid #1f1f1f;
+}
+.primary-four-nav .desk-nav-item strong{
+  font-size:12px!important;
+  color:#d9d9d5;
+}
+.primary-four-nav .desk-nav-item small{
+  margin-top:2px;
+  font-size:9px!important;
+}
+.primary-four-nav .desk-nav-item.active strong{color:#fff}
+.primary-four-nav .desk-nav-item.active:before{background:#f3f1ea}
+
+.sidebar[data-view="clients"] .client-side-area,
+.sidebar[data-view="client"] .client-side-area,
+.sidebar[data-view="partner"] .client-side-area{
+  display:block;
+}
+
+/* shared page heads */
+.tax-page,
+.client-management-page,
+.meeting-management-page{
+  max-width:1380px;
+  margin:0 auto;
+  padding:48px 0 84px;
+}
+.tax-head,
+.client-management-head,
+.meeting-management-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:28px;
+  padding-bottom:28px;
+  border-bottom:1px solid #262626;
+}
+.tax-head h1,
+.client-management-head h1,
+.meeting-management-head h1{
+  margin:6px 0 10px;
+  font-size:30px!important;
+  line-height:1.4!important;
+  letter-spacing:-.05em!important;
+  font-weight:500!important;
+}
+.tax-head p:last-child,
+.client-management-head p:last-child,
+.meeting-management-head p:last-child{
+  max-width:700px;
+  margin:0;
+  color:#8d8d88;
+  font-size:12px;
+  line-height:1.75;
+}
+.client-management-head>div:last-child{
+  display:flex;
+  gap:8px;
+}
+
+/* TAX */
+.tax-summary{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  border-bottom:1px solid #262626;
+}
+.tax-summary>div{
+  min-height:96px;
+  padding:16px 14px;
+  border-right:1px solid #262626;
+}
+.tax-summary>div:last-child{border-right:0}
+.tax-summary span,
+.meeting-management-summary span{
+  display:block;
+  color:#66655f;
+  font-size:10px;
+  font-weight:500;
+}
+.tax-summary strong,
+.meeting-management-summary strong{
+  display:block;
+  margin-top:12px;
+  font-size:20px;
+  font-weight:500;
+  letter-spacing:-.035em;
+}
+.tax-summary small{
+  display:block;
+  margin-top:4px;
+  color:#52514c;
+  font-size:9px;
+}
+.tax-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:38px;
+  margin-top:48px;
+}
+.tax-panel{
+  border-top:1px solid #292929;
+}
+.tax-panel-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  padding:17px 0;
+  border-bottom:1px solid #202020;
+}
+.tax-panel-head h2{
+  margin:6px 0 0;
+  font-size:18px;
+  font-weight:500;
+}
+.tax-panel-head>span{
+  color:#55544f;
+  font-size:9px;
+}
+.tax-contract-list article,
+.tax-invoice-list button{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:14px;
+  align-items:center;
+  width:100%;
+  padding:14px 0;
+  border:0;
+  border-bottom:1px solid #1d1d1d;
+  background:transparent;
+  color:#999891;
+  text-align:left;
+}
+.tax-contract-list strong,
+.tax-invoice-list strong{
+  display:block;
+  color:#e5e3dc;
+  font-size:11px;
+  font-weight:500;
+}
+.tax-contract-list small,
+.tax-invoice-list small{
+  display:block;
+  margin-top:3px;
+  color:#55544f;
+  font-size:9px;
+}
+.tax-contract-list span,
+.tax-invoice-list span,
+.tax-contract-list em,
+.tax-invoice-list em,
+.tax-invoice-list time{
+  font-size:10px;
+  font-style:normal;
+  white-space:nowrap;
+}
+.tax-contract-list em{color:#b18a84}
+.tax-invoice-list em{color:#77766f}
+
+/* CLIENT MANAGEMENT */
+.management-search{
+  display:block;
+  margin:28px 0 0;
+}
+.management-search input{
+  width:100%;
+  height:42px;
+  border:0;
+  border-bottom:1px solid #303030;
+  background:transparent;
+  color:#e5e5e2;
+  font-size:11px;
+  outline:none;
+}
+.management-section{
+  margin-top:46px;
+  border-top:1px solid #292929;
+}
+.management-section-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:20px;
+  padding:17px 0;
+  border-bottom:1px solid #202020;
+}
+.management-section-head h2{
+  margin:6px 0 0;
+  font-size:18px;
+  font-weight:500;
+}
+.management-section-head>span,
+.management-section-head>div:last-child>span{
+  color:#5a5954;
+  font-size:10px;
+}
+.management-section-head>div:last-child{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.management-client-list>button{
+  display:grid;
+  grid-template-columns:minmax(220px,1.3fr) 90px 90px 90px;
+  gap:18px;
+  align-items:center;
+  width:100%;
+  padding:15px 0;
+  border:0;
+  border-bottom:1px solid #1d1d1d;
+  background:transparent;
+  color:#8f8e87;
+  text-align:left;
+}
+.management-client-list strong,
+.management-partner-table strong{
+  display:block;
+  color:#e4e2db;
+  font-size:11px;
+  font-weight:500;
+}
+.management-client-list small,
+.management-partner-table small{
+  display:block;
+  margin-top:3px;
+  color:#55544f;
+  font-size:9px;
+}
+.management-client-list span,
+.management-client-list em{
+  font-size:10px;
+  font-style:normal;
+}
+.management-partner-head,
+.management-partner-table>button{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) 90px 150px minmax(220px,1.35fr) 90px;
+  gap:16px;
+  align-items:center;
+}
+.management-partner-head{
+  padding:11px 0;
+  border-bottom:1px solid #252525;
+  color:#55544f;
+  font-size:9px;
+}
+.management-partner-table>button{
+  width:100%;
+  padding:14px 0;
+  border:0;
+  border-bottom:1px solid #1d1d1d;
+  background:transparent;
+  color:#909089;
+  text-align:left;
+}
+.management-partner-table>button span,
+.management-partner-table>button em{
+  font-size:10px;
+  font-style:normal;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* MEETINGS */
+.meeting-management-summary{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border-bottom:1px solid #262626;
+}
+.meeting-management-summary>div{
+  min-height:92px;
+  padding:16px 14px;
+  border-right:1px solid #262626;
+}
+.meeting-management-summary>div:last-child{border-right:0}
+.meeting-management-list{
+  margin-top:48px;
+  border-top:1px solid #292929;
+}
+.meeting-management-list-head,
+.meeting-management-list article{
+  display:grid;
+  grid-template-columns:88px minmax(160px,.8fr) minmax(220px,1.2fr) minmax(180px,1fr);
+  gap:18px;
+  align-items:start;
+}
+.meeting-management-list-head{
+  padding:12px 0;
+  border-bottom:1px solid #252525;
+  color:#55544f;
+  font-size:9px;
+}
+.meeting-management-list article{
+  padding:17px 0;
+  border-bottom:1px solid #1d1d1d;
+}
+.meeting-management-list time{
+  color:#696862;
+  font-size:10px;
+}
+.meeting-management-list strong{
+  display:block;
+  color:#e1dfd8;
+  font-size:11px;
+  font-weight:500;
+}
+.meeting-management-list small{
+  display:block;
+  margin-top:4px;
+  color:#5f5e58;
+  font-size:9px;
+  line-height:1.55;
+}
+.meeting-management-list article>div:last-child{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.meeting-management-list article>div:last-child>span{
+  color:#aaa8a0;
+  font-size:10px;
+  line-height:1.6;
+}
+
+@media(max-width:1050px){
+  .tax-grid{grid-template-columns:1fr}
+  .tax-summary{grid-template-columns:repeat(3,1fr)}
+  .management-partner-head{display:none}
+  .management-partner-table>button{grid-template-columns:1fr 90px 1fr}
+  .management-partner-table>button span:nth-of-type(3),
+  .management-partner-table>button em{display:none}
+  .meeting-management-list-head{display:none}
+  .meeting-management-list article{grid-template-columns:74px 1fr 1fr}
+  .meeting-management-list article>div:last-child{grid-column:2 / -1}
+}
+@media(max-width:760px){
+  .tax-page,.client-management-page,.meeting-management-page{padding-top:36px}
+  .tax-head,.client-management-head,.meeting-management-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .tax-head h1,.client-management-head h1,.meeting-management-head h1{font-size:26px!important}
+  .tax-summary,.meeting-management-summary{grid-template-columns:1fr 1fr}
+  .tax-summary>div,.meeting-management-summary>div{border-bottom:1px solid #262626}
+  .management-client-list>button{grid-template-columns:1fr 56px 56px}
+  .management-client-list>button em{display:none}
+  .management-partner-table>button{grid-template-columns:1fr 72px}
+  .management-partner-table>button span:nth-of-type(2){display:none}
+  .meeting-management-list article{grid-template-columns:62px 1fr}
+  .meeting-management-list article>div:nth-of-type(2),
+  .meeting-management-list article>div:last-child{grid-column:2}
+}
