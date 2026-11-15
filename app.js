@@ -222,6 +222,10 @@ function dashboardPage(){
       '<article class="overview-panel today-panel"><div class="overview-panel-head"><div><p class="eyebrow">TODAY WORK</p><h2>오늘 처리할 업무</h2></div><span>'+tasks.length+' WORKS</span></div><div class="desk-task-list">'+(tasks.length?tasks.slice(0,8).map(dashboardTaskMarkup).join(""):'<div class="empty large">현재 등록된 업무가 없습니다.</div>')+'</div></article>'+
       '<article class="overview-panel attention-panel"><div class="overview-panel-head"><div><p class="eyebrow">NEED ATTENTION</p><h2>확인이 필요한 것</h2></div><span>'+attention.length+' ITEMS</span></div><div class="attention-list">'+(attention.length?attention.slice(0,6).map(function(x){return '<button class="attention-item" '+(x.client?'data-client-id="'+esc(x.client.id)+'"':'')+'><span>'+esc(x.type)+'</span><strong>'+esc(x.title)+'</strong><small>'+esc(x.meta)+'</small></button>';}).join(""):'<div class="empty large">지금 바로 확인할 업무 이슈가 없습니다.</div>')+'</div></article>'+
     '</section>'+
+    '<section class="overview-panel project-overview-panel">'+
+      '<div class="overview-panel-head"><div><p class="eyebrow">PROJECT STATUS</p><h2>현재 프로젝트</h2><p>진행 상태와 다음 액션을 우선순위 순으로 봅니다.</p></div><button class="section-link" data-projects-nav>ALL PROJECTS ↗</button></div>'+
+      projectStatusTable(7)+
+    '</section>'+
     '<section class="overview-grid middle">'+
       '<article class="overview-panel workload-panel"><div class="overview-panel-head"><div><p class="eyebrow">7 DAY WORKLOAD</p><h2>최근 업무량</h2><p>작업 로그와 미팅 기록 기준</p></div><span>'+weekLogs+' RECORDS</span></div><div class="workload-chart compact-chart">'+workloadBars()+'</div></article>'+
       '<article class="overview-panel clientload-panel"><div class="overview-panel-head"><div><p class="eyebrow">CLIENT LOAD</p><h2>클라이언트별 업무량</h2><p>최근 7일 기록 + 열린 업무</p></div><span>TOP '+clientLoads.length+'</span></div><div class="client-load-list">'+(clientLoads.length?clientLoads.map(function(x){return '<button class="client-load-row" data-client-id="'+esc(x.c.id)+'"><span>'+esc(clientName(x.c))+'</span><div><i style="width:'+Math.min(100,x.total*12)+'%"></i></div><strong>'+x.total+'</strong><small>OPEN '+x.open+' · LOG '+x.recent+'</small></button>';}).join(""):'<div class="empty large">집계할 업무가 없습니다.</div>')+'</div></article>'+
@@ -573,8 +577,10 @@ function renderContent(){
   var sidebar=$("#sidebar");if(sidebar)sidebar.dataset.view=state.view;
   $("#clientList").innerHTML=clientList();
   if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
+  if(state.view==="projects"){$("#content").innerHTML=projectsPage();return;}
   if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
   if(state.view==="weekly"){$("#content").innerHTML=weeklyReportPage();return;}
+  if(state.view==="reports"){$("#content").innerHTML=reportsPage();return;}
   if(state.view==="clients"){$("#content").innerHTML=clientIndexPage();var addInline=$("#addClientInline");if(addInline)addInline.addEventListener("click",function(){clientForm({});});return;}
   if(state.view==="finance"){$("#content").innerHTML=clientsDashboard();var ps=$("#partnerSearch");if(ps)ps.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.partnerQuery=v;renderContent();var next=$("#partnerSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
   if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientsDashboard();return;}
@@ -623,8 +629,10 @@ function bindGlobal(){
     var cb=e.target.closest("[data-client-id]");if(cb){state.activeClientId=cb.dataset.clientId;state.view="client";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return;}
     if(e.target.closest("[data-workdesk]")){state.view="desk";renderContent();return;}
+    if(e.target.closest("[data-projects-nav]")){state.view="projects";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-client-index]")){state.view="clients";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-finance-nav]")){state.view="finance";renderContent();$("#sidebar").classList.remove("open");return;}
+    if(e.target.closest("[data-reports-nav]")){state.view="reports";renderContent();$("#sidebar").classList.remove("open");return;}
     var partner=e.target.closest("[data-partner-id]");if(partner){state.activePartnerId=partner.dataset.partnerId;state.view="partner";renderContent();return;}
     if(e.target.closest("[data-partner-import]")){$("#partnerImport").click();return;}
     if(e.target.closest("[data-partner-new]")){partnerForm({});return;}
