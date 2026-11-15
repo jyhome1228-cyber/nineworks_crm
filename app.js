@@ -862,17 +862,18 @@ async function importTradePartnerWorkbook(file){
 function renderContent(){
   var c=activeClient();
   var sidebar=$("#sidebar");if(sidebar)sidebar.dataset.view=state.view;
-  $("#clientList").innerHTML=clientList();
-  if(state.view==="desk"){$("#content").innerHTML=dashboardPage();return;}
-  if(state.view==="projects"){$("#content").innerHTML=projectsPage();return;}
-  if(state.view==="journal"){$("#content").innerHTML=journalPage();return;}
-  if(state.view==="weekly"){$("#content").innerHTML=weeklyReportPage();return;}
-  if(state.view==="reports"){$("#content").innerHTML=reportsPage();return;}
-  if(state.view==="clients"){$("#content").innerHTML=clientManagementPage();var addInline=$("#addClientInline");if(addInline)addInline.addEventListener("click",function(){clientForm({});});var ms=$("#managementSearch");if(ms)ms.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.query=v;renderContent();var next=$("#managementSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
+  var clientListEl=$("#clientList");if(clientListEl)clientListEl.innerHTML=clientList();
+
+  if(state.view==="daily"){$("#content").innerHTML=dailyReportMainPage();return;}
+  if(state.view==="weekly"){$("#content").innerHTML=weeklyReportMainPage();return;}
+  if(state.view==="monthly"){$("#content").innerHTML=monthlyReportPage();return;}
   if(state.view==="finance"){$("#content").innerHTML=taxPage();return;}
-  if(state.view==="meetings"){$("#content").innerHTML=meetingManagementPage();var mg=$("#addMeetingGlobal");if(mg)mg.addEventListener("click",meetingManagerForm);return;}
+  if(state.view==="clients"){$("#content").innerHTML=clientManagementPage();var addInline=$("#addClientInline");if(addInline)addInline.addEventListener("click",function(){clientForm({});});var ms=$("#managementSearch");if(ms)ms.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.query=v;renderContent();var next=$("#managementSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
   if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientManagementPage();return;}
-  $("#content").innerHTML=c?clientPage(c):'<div class="empty-page"><div><p class="eyebrow">CLIENT WORKSPACE</p><h2>클라이언트를 선택하세요.</h2><p>왼쪽에서 클라이언트를 선택하면 현재 작업, 작업 로그, 미팅 기록과 계약 정보를 한 번에 볼 수 있습니다.</p></div></div>';
+  if(state.view==="client"){$("#content").innerHTML=c?clientPage(c):clientManagementPage();return;}
+
+  state.view="daily";
+  $("#content").innerHTML=dailyReportMainPage();
 }
 function openModal(title,body){
   $("#modal").innerHTML='<div class="modal-head"><div><p class="eyebrow">NINEWORKS CRM</p><h3>'+esc(title)+'</h3></div><button class="x" data-close-modal>×</button></div><div class="modal-body">'+body+'</div>';
@@ -918,26 +919,27 @@ function bindGlobal(){
   document.addEventListener("click",function(e){
     var cb=e.target.closest("[data-client-id]");if(cb){state.activeClientId=cb.dataset.clientId;state.view="client";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return;}
-    if(e.target.closest("[data-workdesk]")){state.view="desk";renderContent();return;}
-    if(e.target.closest("[data-projects-nav]")){state.view="projects";renderContent();$("#sidebar").classList.remove("open");return;}
+    if(e.target.closest("[data-daily-nav]")){state.view="daily";renderContent();$("#sidebar").classList.remove("open");return;}
+    if(e.target.closest("[data-monthly-nav]")){state.view="monthly";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-client-index]")){state.view="clients";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-finance-nav]")){state.view="finance";renderContent();$("#sidebar").classList.remove("open");return;}
-    if(e.target.closest("[data-meetings-nav]")){state.view="meetings";renderContent();$("#sidebar").classList.remove("open");return;}
-    if(e.target.closest("[data-reports-nav]")){state.view="reports";renderContent();$("#sidebar").classList.remove("open");return;}
+
+    var dailyDate=e.target.closest("[data-daily-report-date]");if(dailyDate){state.journalDate=dailyDate.dataset.dailyReportDate;state.view="daily";renderContent();return;}
+    var weeklyDate=e.target.closest("[data-weekly-report-date]");if(weeklyDate){state.weeklySelection=weeklyDate.dataset.weeklyReportDate;state.view="weekly";renderContent();return;}
     var partner=e.target.closest("[data-partner-id]");if(partner){state.activePartnerId=partner.dataset.partnerId;state.view="partner";renderContent();return;}
     if(e.target.closest("[data-partner-import]")){$("#partnerImport").click();return;}
     if(e.target.closest("[data-partner-new]")){partnerForm({});return;}
     var pedit=e.target.closest("[data-partner-edit]");if(pedit){var pp=state.tradePartners.find(function(x){return x.id===pedit.dataset.partnerEdit;});if(pp)partnerForm(pp);return;}
-    if(e.target.closest("[data-journal-nav]")){state.view="journal";renderContent();$("#sidebar").classList.remove("open");return;}
-    if(e.target.closest("[data-weekly-nav]")){state.view="weekly";state.weeklySelection=state.weeklySelection||weekMonday(today());renderContent();$("#sidebar").classList.remove("open");return;}
+
+    if(e.target.closest("[data-weekly-nav]")){state.view="weekly";state.weeklySelection=state.weeklySelection||(state.weeklyReports[0]&&state.weeklyReports[0].weekStart)||weekMonday(today());renderContent();$("#sidebar").classList.remove("open");return;}
     var wopen=e.target.closest("[data-weekly-open]");if(wopen){state.weeklySelection=wopen.dataset.weeklyOpen;state.view="weekly";renderContent();return;}
     if(e.target.closest("[data-weekly-export]")){var wr=state.weeklyReports.find(function(x){return x.weekStart===state.weeklySelection;});if(wr){var blob=new Blob([JSON.stringify(wr,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="nineworks-weekly-"+wr.weekStart+".json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},2000);}return;}
-    var openJournal=e.target.closest("[data-journal-open]");if(openJournal){state.journalDate=openJournal.dataset.journalOpen;state.view="journal";renderContent();return;}
+    var openJournal=e.target.closest("[data-journal-open]");if(openJournal){state.journalDate=openJournal.dataset.journalOpen;state.view="daily";renderContent();return;}
     if(e.target.closest("[data-journal-export]")){var item=state.journals.find(function(j){return j.date===state.journalDate;});if(item){var blob=new Blob([JSON.stringify(item,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="nineworks-journal-"+item.date+".json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},2000);}return;}
     var complete=e.target.closest("[data-complete-task]");if(complete){completeTask(complete.dataset.completeTask);return;}
     var action=e.target.closest("[data-action]");if(action){var c=activeClient();if(!c)return;var a=action.dataset.action;if(a==="task")taskForm();if(a==="log")logForm();if(a==="meeting")meetingForm();if(a==="edit-client")clientForm(c);}
   });
-  $("#clientSearch").addEventListener("input",function(e){state.query=e.target.value;$("#clientList").innerHTML=clientList();});
+  var clientSearch=$("#clientSearch");if(clientSearch)clientSearch.addEventListener("input",function(e){state.query=e.target.value;var list=$("#clientList");if(list)list.innerHTML=clientList();});
   document.addEventListener("change",async function(e){
     if(e.target.id==="journalDate"){state.journalDate=e.target.value||today();renderContent();return;}
     if(e.target.id==="weeklyImport"){
@@ -969,10 +971,10 @@ function bindGlobal(){
     }catch(err){console.error(err);state.journalError="파일을 저장하지 못했습니다: "+(err.message||"형식 또는 권한 오류");renderContent();}
   });
   $("#addClient").addEventListener("click",function(){clientForm({});});
-  $("#addWorkLog").addEventListener("click",function(){if(activeClient())logForm();else toast("클라이언트를 먼저 선택하세요.");});
-  $("#addMeeting").addEventListener("click",function(){if(state.view==="meetings"||!activeClient())meetingManagerForm();else meetingForm();});
-  $("#logoutBtn").addEventListener("click",function(){lockApp();});
-  $("#mobileClients").addEventListener("click",function(){$("#sidebar").classList.toggle("open");});
+  var addWork=$("#addWorkLog");if(addWork)addWork.addEventListener("click",function(){if(activeClient())logForm();else toast("거래처관리에서 클라이언트를 선택해 주세요.");});
+  var addMeet=$("#addMeeting");if(addMeet)addMeet.addEventListener("click",function(){if(activeClient())meetingForm();else meetingManagerForm();});
+  var logout=$("#logoutBtn");if(logout)logout.addEventListener("click",function(){lockApp();});
+  var mobileMenu=$("#mobileClients");if(mobileMenu)mobileMenu.addEventListener("click",function(){$("#sidebar").classList.toggle("open");});
 
   document.addEventListener("submit",async function(e){
     if(e.target.id==="meetingManagerForm"){
