@@ -75,21 +75,38 @@ function activeClientCount(){
   }).length;
 }
 
+const CRM_ACCESS_CODE="1228";
+function gateUnlocked(){return sessionStorage.getItem("nineworks_crm_unlocked")==="1";}
+function lockApp(){
+  sessionStorage.removeItem("nineworks_crm_unlocked");
+  cleanup();
+  state.user=null;state.profile=null;
+  $("#app").innerHTML=loginView();
+  bindLogin();
+}
 function loginView(){
-  return '<div class="nw-login-page">'+
-    '<div class="nw-login-ambient" aria-hidden="true"></div>'+
-    '<div class="nw-login-splash" id="loginSplash"><img src="./assets/nineworks-renewal-logo.svg" alt=""></div>'+
-    '<header class="nw-login-header"><img class="nw-login-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS"></header>'+
-    '<main class="nw-login-content">'+
-      '<section class="nw-login-intro"><p class="nw-login-label">NINEWORKS / WORK DESK</p><h1>나인웍스 업무 관리 시스템</h1><div class="nw-login-copy"><p>클라이언트와 프로젝트, 업무 기록과 보고서를 하나의 흐름으로 관리합니다.</p><p>내부 업무 데이터를 확인하려면 관리자 계정으로 로그인해 주세요.</p></div></section>'+
-      '<form id="loginForm" class="nw-login-form">'+
-        '<label><span>이메일</span><input id="loginEmail" type="email" autocomplete="email" required></label>'+
-        '<label><span>비밀번호</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>'+
-        '<button type="submit">로그인</button>'+
+  return '<div class="crm-gate">'+
+    '<div class="crm-gate-splash" id="loginSplash"><img src="./assets/nineworks-renewal-logo.svg" alt=""></div>'+
+    '<main class="crm-gate-center">'+
+      '<img class="crm-gate-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS">'+
+      '<p class="crm-gate-label">NINEWORKS CRM</p>'+
+      '<h1>NINEWORKS CRM</h1>'+
+      '<form id="loginForm" class="crm-gate-form">'+
+        '<input id="crmPasscode" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="PASSWORD" aria-label="비밀번호" required>'+
+        '<button type="submit">ENTER</button>'+
         '<p id="loginMsg"></p>'+
       '</form>'+
+      '<section id="firebaseRecovery" class="firebase-recovery" hidden>'+
+        '<p>이 기기에는 관리자 세션이 없습니다. 최초 1회 관리자 계정을 연결해 주세요.</p>'+
+        '<form id="firebaseRecoveryForm">'+
+          '<input id="recoveryEmail" type="email" autocomplete="email" placeholder="관리자 이메일" required>'+
+          '<input id="recoveryPassword" type="password" autocomplete="current-password" placeholder="관리자 비밀번호" required>'+
+          '<button type="submit">관리자 연결</button>'+
+          '<small id="recoveryMsg"></small>'+
+        '</form>'+
+      '</section>'+
     '</main>'+
-    '<footer class="nw-login-footer">© 2026 NINEWORKS</footer>'+
+    '<footer class="crm-gate-footer">© 2026 NINEWORKS</footer>'+
   '</div>';
 }
 
@@ -695,7 +712,7 @@ function bindGlobal(){
   $("#addClient").addEventListener("click",function(){clientForm({});});
   $("#addWorkLog").addEventListener("click",function(){if(activeClient())logForm();else toast("클라이언트를 먼저 선택하세요.");});
   $("#addMeeting").addEventListener("click",function(){if(activeClient())meetingForm();else toast("클라이언트를 먼저 선택하세요.");});
-  $("#logoutBtn").addEventListener("click",function(){signOut(auth);});
+  $("#logoutBtn").addEventListener("click",function(){lockApp();});
   $("#mobileClients").addEventListener("click",function(){$("#sidebar").classList.toggle("open");});
 
   document.addEventListener("submit",async function(e){
@@ -745,7 +762,57 @@ async function subscribe(user){
 }
 
 function bindLogin(){
-  var splash=$("#loginSplash");if(splash){setTimeout(function(){splash.classList.add("done");},1150);setTimeout(function(){if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);},1800);}
-  $("#loginForm").addEventListener("submit",async function(e){e.preventDefault();var msg=$("#loginMsg");msg.textContent="로그인 중...";try{await signInWithEmailAndPassword(auth,$("#loginEmail").value.trim(),$("#loginPassword").value);msg.textContent="";}catch(err){console.error(err);msg.textContent="이메일 또는 비밀번호를 확인하세요.";}});
+  var splash=$("#loginSplash");
+  if(splash){
+    setTimeout(function(){splash.classList.add("done");},900);
+    setTimeout(function(){if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);},1450);
+  }
+  var pass=$("#crmPasscode");
+  if(pass)setTimeout(function(){pass.focus();},110);
+
+  $("#loginForm").addEventListener("submit",async function(e){
+    e.preventDefault();
+    var msg=$("#loginMsg"),code=$("#crmPasscode").value.trim();
+    if(code!==CRM_ACCESS_CODE){
+      msg.textContent="비밀번호를 확인하세요.";
+      $("#crmPasscode").value="";
+      $("#crmPasscode").focus();
+      return;
+    }
+    sessionStorage.setItem("nineworks_crm_unlocked","1");
+    msg.textContent="";
+    if(auth.currentUser){
+      await subscribe(auth.currentUser);
+      return;
+    }
+    $("#firebaseRecovery").hidden=false;
+    msg.textContent="최초 1회 관리자 세션 연결이 필요합니다.";
+  });
+
+  var recovery=$("#firebaseRecoveryForm");
+  if(recovery){
+    recovery.addEventListener("submit",async function(e){
+      e.preventDefault();
+      var msg=$("#recoveryMsg");msg.textContent="연결 중...";
+      try{
+        await signInWithEmailAndPassword(auth,$("#recoveryEmail").value.trim(),$("#recoveryPassword").value);
+        sessionStorage.setItem("nineworks_crm_unlocked","1");
+        msg.textContent="";
+      }catch(err){
+        console.error(err);
+        msg.textContent="관리자 계정 정보를 확인하세요.";
+      }
+    });
+  }
 }
-onAuthStateChanged(auth,function(user){if(user)subscribe(user);else{cleanup();state.user=null;state.profile=null;$("#app").innerHTML=loginView();bindLogin();}});
+onAuthStateChanged(auth,function(user){
+  if(user&&gateUnlocked()){
+    subscribe(user);
+    return;
+  }
+  cleanup();
+  state.user=user||null;
+  state.profile=null;
+  $("#app").innerHTML=loginView();
+  bindLogin();
+});
