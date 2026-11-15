@@ -4864,3 +4864,42 @@ body{
     display:none;
   }
 }
+
+
+/* 2026-11-15 — SIMPLE PLAIN REPORT EDITOR */
+.modal:has(.plain-report-editor){
+  width:min(900px,calc(100vw - 36px));
+}
+.plain-report-editor{
+  display:grid;
+  gap:20px;
+}
+.plain-report-editor .field{
+  gap:9px;
+}
+.plain-report-editor .field>span{
+  font-size:12px!important;
+}
+.plain-report-editor input,
+.plain-report-editor textarea{
+  font-size:14px!important;
+  line-height:1.75!important;
+}
+.plain-report-editor #reportTitle{
+  min-height:46px!important;
+  font-size:18px!important;
+  font-weight:500!important;
+}
+.plain-report-editor .report-editor-body{
+  min-height:520px!important;
+  padding:18px 16px!important;
+  resize:vertical;
+}
+@media(max-width:700px){
+  .modal:has(.plain-report-editor){
+    width:calc(100vw - 20px);
+  }
+  .plain-report-editor .report-editor-body{
+    min-height:430px!important;
+  }
+}
