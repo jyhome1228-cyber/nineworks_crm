@@ -42,7 +42,7 @@ const today=function(){
 };
 const won=function(v){return Math.round(Number(v||0)).toLocaleString("ko-KR")+"원";};
 
-const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],tradePartners:[],taxInvoices:[],activeClientId:"",activePartnerId:"",view:"desk",journalDate:today(),journals:[],journalError:"",weeklyReports:[],weeklySelection:"",weeklyError:"",query:"",partnerQuery:"",unsubs:[]};
+const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],tradePartners:[],taxInvoices:[],activeClientId:"",activePartnerId:"",view:"desk",journalDate:today(),journals:[],journalError:"",weeklyReports:[],weeklySelection:"",weeklyError:"",automationRuns:[],query:"",partnerQuery:"",unsubs:[]};
 
 function cleanup(){state.unsubs.forEach(function(f){if(f)f();});state.unsubs=[];}
 function clientName(c){return c&&c.name?c.name:(c&&c.clientName?c.clientName:"이름 없음");}
@@ -244,6 +244,25 @@ function briefingText(){
   if(out>0)parts.push("미수금 "+won(out)+"도 함께 확인이 필요합니다.");
   return parts.join(" ");
 }
+function automationReportSnapshot(){
+  var daily=state.journals.find(function(j){return j.date===today();})||null;
+  var weekKey=weekMonday(today());
+  var weekly=state.weeklyReports.find(function(r){return r.weekStart===weekKey;})||null;
+  var runs=state.automationRuns.slice().sort(function(a,b){
+    var av=Number(a.savedAtMs||timestampMs(a.savedAt)||0),bv=Number(b.savedAtMs||timestampMs(b.savedAt)||0);
+    return bv-av;
+  });
+  var last=runs[0]||null;
+  return '<section class="overview-panel auto-report-panel">'+
+    '<div class="overview-panel-head"><div><p class="eyebrow">AUTO REPORT</p><h2>자동 업무보고 기록</h2><p>같은 날짜·주차는 새 문서를 만들지 않고 revision만 갱신합니다.</p></div>'+(last?'<span>'+esc(last.status||"saved").toUpperCase()+'</span>':'<span>READY</span>')+'</div>'+
+    '<div class="auto-report-grid">'+
+      '<div><span>DAILY / '+esc(today())+'</span><strong>'+(daily?(daily.automationSaved?"AUTO SAVED":"SAVED"):"WAITING")+'</strong><small>'+(daily?'REV '+Number(daily.revision||1):'오늘 23:00 생성 예정')+'</small></div>'+
+      '<div><span>WEEKLY / '+esc(weekKey)+'</span><strong>'+(weekly?(weekly.automationSaved?"AUTO SAVED":"SAVED"):"WAITING")+'</strong><small>'+(weekly?'REV '+Number(weekly.revision||1):'토요일 22:00 생성 예정')+'</small></div>'+
+      '<div><span>LAST AUTOMATION</span><strong>'+(last?esc(last.kind||"—").toUpperCase():"—")+'</strong><small>'+(last?esc(last.key||last.runId||""):"저장 이력 대기")+'</small></div>'+
+    '</div>'+
+  '</section>';
+}
+
 function dashboardPage(){
   var tasks=todayTasks(),todayLog=logsOnDay(today());
   var workOnly=todayLog.filter(function(l){return (l.type||"work")==="work";}).length;
@@ -278,6 +297,7 @@ function dashboardPage(){
       '<div class="overview-panel-head"><div><p class="eyebrow">PROJECT STATUS</p><h2>현재 프로젝트</h2><p>진행 상태와 다음 액션을 우선순위 순으로 봅니다.</p></div><button class="section-link" data-projects-nav>ALL PROJECTS ↗</button></div>'+
       projectStatusTable(7)+
     '</section>'+
+    automationReportSnapshot()+
     '<section class="overview-grid middle">'+
       '<article class="overview-panel workload-panel"><div class="overview-panel-head"><div><p class="eyebrow">7 DAY WORKLOAD</p><h2>최근 업무량</h2><p>작업 로그와 미팅 기록 기준</p></div><span>'+weekLogs+' RECORDS</span></div><div class="workload-chart compact-chart">'+workloadBars()+'</div></article>'+
       '<article class="overview-panel clientload-panel"><div class="overview-panel-head"><div><p class="eyebrow">CLIENT LOAD</p><h2>클라이언트별 업무량</h2><p>최근 7일 기록 + 열린 업무</p></div><span>TOP '+clientLoads.length+'</span></div><div class="client-load-list">'+(clientLoads.length?clientLoads.map(function(x){return '<button class="client-load-row" data-client-id="'+esc(x.c.id)+'"><span>'+esc(clientName(x.c))+'</span><div><i style="width:'+Math.min(100,x.total*12)+'%"></i></div><strong>'+x.total+'</strong><small>OPEN '+x.open+' · LOG '+x.recent+'</small></button>';}).join(""):'<div class="empty large">집계할 업무가 없습니다.</div>')+'</div></article>'+
@@ -526,7 +546,7 @@ function weeklyReportPage(){
     (state.weeklyError?'<p class="journal-error">'+esc(state.weeklyError)+'</p>':'')+
     '<div class="weekly-layout"><aside class="weekly-archive"><p class="eyebrow">WEEKLY HISTORY</p>'+weeklyList(state.weeklyReports)+'</aside>'+
     '<div class="weekly-main">'+(r?
-      '<div class="weekly-title"><div><p class="eyebrow">'+esc(r.weekStart)+' — '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.title||"주간 업무보고서")+'</h2><p>'+esc(r.summary||"")+'</p></div><button class="journal-export" data-weekly-export>EXPORT JSON</button></div>'+
+      '<div class="weekly-title"><div><p class="eyebrow">'+esc(r.weekStart)+' — '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.title||"주간 업무보고서")+'</h2><p>'+esc(r.summary||"")+'</p><div class="weekly-auto-status"><span>'+esc(r.automationSaved?"AUTO SAVED":"SAVED")+'</span><span>REV '+Number(r.revision||1)+'</span></div></div><button class="journal-export" data-weekly-export>EXPORT JSON</button></div>'+
       '<div class="weekly-metrics"><div><span>기록 항목</span><strong>'+esc(r.metrics&&r.metrics.recordCount!=null?r.metrics.recordCount:"—")+'</strong></div><div><span>완료 확인</span><strong>'+esc(r.metrics&&r.metrics.completedCount!=null?r.metrics.completedCount:"확인 필요")+'</strong></div><div><span>피드백</span><strong>'+esc(r.metrics&&r.metrics.feedbackCount!=null?r.metrics.feedbackCount:"—")+'</strong></div><div><span>대기</span><strong>'+esc(r.metrics&&r.metrics.waitingCount!=null?r.metrics.waitingCount:"—")+'</strong></div></div>'+
       '<section class="weekly-section"><p class="eyebrow">01 / WEEKLY SUMMARY</p><h3>핵심 요약</h3><p>'+esc(r.summary||"")+'</p></section>'+
       '<section class="weekly-section"><p class="eyebrow">02 / PROJECT STATUS</p><h3>프로젝트별 진행</h3>'+weeklyRows(r.projects)+'</section>'+
@@ -580,7 +600,7 @@ function journalPage(){
     '<div class="journal-layout"><div class="journal-list"><div class="journal-group-header"><p class="eyebrow">01 / ARCHIVE</p><strong>DAILY HISTORY</strong></div>'+journalList(state.journals)+'</div>'+
       '<div class="journal-content">'+(j?
         '<div class="journal-head"><div><p class="eyebrow">02 / DAILY JOURNAL</p><h2>'+esc(j.date||"")+'</h2><p>'+esc(j.summary||"")+'</p></div><button data-journal-export class="journal-export">EXPORT JSON</button></div>'+
-        '<div class="journal-status"><span>'+esc(j.reviewStatus||"저장됨")+'</span><span>'+actions.length+' 기록 항목</span><span>시간·완료 건수는 별도 검증</span></div>'+
+        '<div class="journal-status"><span>'+esc(j.automationSaved?"AUTO SAVED":(j.reviewStatus||"저장됨"))+'</span><span>REV '+Number(j.revision||1)+'</span><span>'+actions.length+' 기록 항목</span></div>'+
         '<div class="journal-section"><p class="eyebrow">01 / TODAY WORK</p><h3>오늘 진행한 업무</h3><div class="journal-work-rows">'+(actions.length?actions.map(function(e){
           return '<article class="journal-work"><div><span>'+esc(e.client||"기타")+' / '+esc(e.project||"")+'</span><strong>'+esc(e.title||"업무")+'</strong><p>'+esc(e.details||"")+'</p><small>'+esc(e.nextAction||"")+'</small></div><em>'+esc(e.status||"확인 필요")+'</em></article>';
         }).join(""):'<p class="journal-empty">등록된 업무가 없습니다.</p>')+'</div></div>'+
@@ -866,6 +886,7 @@ async function subscribe(user){
   state.unsubs.push(onSnapshot(collection(db,"taxInvoices"),function(snap){state.taxInvoices=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("taxInvoices unavailable",err);}));
   state.unsubs.push(onSnapshot(collection(db,"weeklyReports"),function(snap){state.weeklyReports=snap.docs.map(function(d){return Object.assign({weekStart:d.id},d.data());});state.weeklySelection=state.weeklySelection||weekMonday(today());state.weeklyError="";renderContent();},function(err){console.warn("weeklyReports unavailable",err);state.weeklyError="주간보고서 Firestore 접근 권한과 연결을 확인하세요.";renderContent();}));
   state.unsubs.push(onSnapshot(collection(db,"dailyJournals"),function(snap){state.journals=snap.docs.map(function(d){return Object.assign({date:d.id},d.data());});state.journalError="";renderContent();},function(err){console.warn("dailyJournals unavailable",err);state.journalError="업무일지 데이터 접근 권한 또는 연결을 확인하세요.";renderContent();}));
+  state.unsubs.push(onSnapshot(collection(db,"automationRuns"),function(snap){state.automationRuns=snap.docs.map(function(d){var data=d.data();return Object.assign({id:d.id,savedAtMs:timestampMs(data.savedAt)},data);});renderContent();},function(err){console.warn("automationRuns unavailable",err);state.automationRuns=[];}));
   state.unsubs.push(onSnapshot(collection(db,"financeContracts"),function(snap){state.contracts=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("financeContracts unavailable",err);state.contracts=[];renderContent();}));
 }
 
