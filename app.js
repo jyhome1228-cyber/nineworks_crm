@@ -552,13 +552,37 @@ function defaultWeeklyArticle(r){
   out.push("");out.push("## 다음 주 우선순위");(r.nextPriorities||[]).forEach(function(x){out.push("- "+String(x));});
   return out.join("\n");
 }
+function defaultMonthlyArticle(month){
+  var daily=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;});
+  var weekly=state.weeklyReports.filter(function(w){return (w.weekStart||"").slice(0,7)===month;});
+  var workItems=[],decisions=[],pending=[];
+  daily.forEach(function(j){
+    (j.entries||[]).forEach(function(e){workItems.push(e);});
+    (j.decisions||[]).forEach(function(x){decisions.push(x);});
+    (j.pending||[]).forEach(function(x){pending.push(x);});
+  });
+  var clients={};workItems.forEach(function(e){var k=e.client||"기타";clients[k]=(clients[k]||0)+1;});
+  var out=[];
+  out.push("## 이번 달 업무 요약");
+  out.push("이번 달에는 "+workItems.length+"개의 업무 항목, "+daily.length+"개의 일간업무보고, "+weekly.length+"개의 주간업무보고가 기록되어 있습니다.");
+  out.push("");
+  out.push("## 주요 거래처 및 프로젝트");
+  Object.keys(clients).sort(function(a,b){return clients[b]-clients[a];}).slice(0,8).forEach(function(name){out.push("- "+name+" · "+clients[name]+"건");});
+  out.push("");
+  out.push("## 주요 결정과 성과");
+  decisions.forEach(function(x){out.push("- "+String(x));});
+  out.push("");
+  out.push("## 아직 남아 있는 업무");
+  pending.forEach(function(x){out.push("- "+String(x));});
+  return out.join("\n");
+}
 function reportEditorForm(kind,item){
   item=item||{};
   var isDaily=kind==="daily",isWeekly=kind==="weekly",isMonthly=kind==="monthly";
   var key=isDaily?(item.date||today()):isWeekly?(item.weekStart||weekMonday(today())):(item.month||today().slice(0,7));
   var title=item.manualTitle||item.title||(isDaily?"일간업무보고":isWeekly?"주간업무보고":"월간업무보고");
   var summary=item.manualSummary||item.summary||"";
-  var body=item.manualBody||(isDaily?defaultDailyArticle(item):isWeekly?defaultWeeklyArticle(item):(item.body||""));
+  var body=item.manualBody||(isDaily?defaultDailyArticle(item):isWeekly?defaultWeeklyArticle(item):defaultMonthlyArticle(key));
   var keyLabel=isDaily?"날짜":isWeekly?"주 시작일":"월";
   var inputType=isMonthly?"month":"date";
   openModal(item.manualSaved?"보고서 수정":"보고서 작성",
@@ -600,23 +624,25 @@ function dailyReportMainPage(){
   if(!state.journalDate&&items.length)state.journalDate=items[0].date;
   var j=items.find(function(x){return x.date===state.journalDate;})||items[0]||null;
   var entries=j&&Array.isArray(j.entries)?j.entries:[];
+  var body=j&&j.manualBody?'<section class="manual-article-body">'+articleTextToHtml(j.manualBody)+'</section>':
+    (j?
+      '<section><h3>오늘 진행한 업무</h3><div class="simple-work-list">'+(entries.length?entries.map(function(e){return '<article><div><strong>'+esc(e.title||"업무")+'</strong><p>'+esc([e.client,e.project].filter(Boolean).join(" · "))+'</p><small>'+esc(e.details||"")+'</small></div><span>'+esc(e.status||"확인 필요")+'</span></article>';}).join(""):'<p>등록된 업무가 없습니다.</p>')+'</div></section>'+
+      '<section><h3>주요 결정·성과</h3>'+journalBullet(j.decisions)+'</section>'+
+      '<section><h3>미완료·확인 필요</h3>'+journalBullet(j.pending)+'</section>'+
+      '<section><h3>운영 현황</h3><p class="simple-prose">'+esc((j.operations&&j.operations.note)||"")+'</p></section>'+
+      '<section><h3>하루 회고</h3><p class="simple-prose">'+esc(j.reflection||"")+'</p></section>'+
+      '<section><h3>다음 우선순위</h3>'+journalBullet(j.tomorrowPriorities)+'</section>':'');
   return '<section class="simple-report-page">'+
     '<div class="simple-page-head report-page-head"><div><h1>일간업무보고</h1><p>매일 정리된 업무를 날짜별로 확인합니다.</p></div><div class="report-actions"><button data-report-new="daily">새 글 작성</button>'+(j?'<button data-report-edit="daily">수정</button>':'')+'</div></div>'+
     '<div class="simple-report-layout">'+
       '<aside class="simple-report-list">'+
-        (items.length?items.map(function(x){return '<button class="'+(j&&x.date===j.date?"active":"")+'" data-daily-report-date="'+esc(x.date)+'"><strong>'+esc(x.date)+'</strong><span>'+esc(x.summary||"업무보고")+'</span></button>';}).join(""):'<div class="empty large">저장된 일간업무보고가 없습니다.</div>')+
+        (items.length?items.map(function(x){return '<button class="'+(j&&x.date===j.date?"active":"")+'" data-daily-report-date="'+esc(x.date)+'"><strong>'+esc(x.date)+'</strong><span>'+esc(x.manualTitle||x.summary||"업무보고")+'</span></button>';}).join(""):'<div class="empty large">저장된 일간업무보고가 없습니다.</div>')+
       '</aside>'+
-      '<div class="simple-report-detail">'+
+      '<article class="simple-report-detail">'+
       (j?
-        '<div class="simple-report-title"><div><h2>'+esc(j.manualTitle||j.date)+'</h2><p>'+esc(j.manualSummary||j.summary||"")+'</p></div><span>'+esc(j.manualSaved?"직접 저장":(j.automationSaved?"자동저장":(j.reviewStatus||"저장됨")))+'</span></div>'+(j.manualBody?'<section class="manual-article-body">'+articleTextToHtml(j.manualBody)+'</section>':'')+
-        '<section><h3>오늘 진행한 업무</h3><div class="simple-work-list">'+(entries.length?entries.map(function(e){return '<article><div><strong>'+esc(e.title||"업무")+'</strong><p>'+esc([e.client,e.project].filter(Boolean).join(" · "))+'</p><small>'+esc(e.details||"")+'</small></div><span>'+esc(e.status||"확인 필요")+'</span></article>';}).join(""):'<p>등록된 업무가 없습니다.</p>')+'</div></section>'+
-        '<section><h3>주요 결정·성과</h3>'+journalBullet(j.decisions)+'</section>'+
-        '<section><h3>미완료·확인 필요</h3>'+journalBullet(j.pending)+'</section>'+
-        '<section><h3>운영 현황</h3><p class="simple-prose">'+esc((j.operations&&j.operations.note)||"")+'</p></section>'+
-        '<section><h3>하루 회고</h3><p class="simple-prose">'+esc(j.reflection||"")+'</p></section>'+
-        '<section><h3>다음 우선순위</h3>'+journalBullet(j.tomorrowPriorities)+'</section>'
+        '<div class="simple-report-title"><div><h2>'+esc(j.manualTitle||j.date)+'</h2><p>'+esc(j.manualSummary||j.summary||"")+'</p></div><span>'+esc(j.manualSaved?"직접 저장":(j.automationSaved?"자동저장":(j.reviewStatus||"저장됨")))+'</span></div>'+body
         :'<div class="empty large">선택한 날짜의 업무보고가 없습니다.</div>')+
-      '</div>'+
+      '</article>'+
     '</div>'+
   '</section>';
 }
@@ -625,25 +651,25 @@ function weeklyReportMainPage(){
   var items=state.weeklyReports.slice().sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");});
   if(!state.weeklySelection&&items.length)state.weeklySelection=items[0].weekStart;
   var r=items.find(function(x){return x.weekStart===state.weeklySelection;})||items[0]||null;
+  var body=r&&r.manualBody?'<section class="manual-article-body">'+articleTextToHtml(r.manualBody)+'</section>':
+    (r?
+      '<section><h3>이번 주 핵심 내용</h3><p>'+esc(r.summary||"")+'</p></section>'+
+      '<section><h3>프로젝트별 진행사항</h3>'+(Array.isArray(r.projects)&&r.projects.length?r.projects.map(function(p){return '<div class="report-paragraph"><h4>'+esc([p.client,p.project].filter(Boolean).join(" · ")||"프로젝트")+'</h4><p>'+esc(p.summary||p.detail||"")+'</p><p class="report-status-text">'+esc(p.status||"확인 필요")+'</p></div>';}).join(""):'<p>확인된 프로젝트 기록이 없습니다.</p>')+'</section>'+
+      '<section><h3>완료한 업무</h3>'+weeklyBullets(r.completed)+'</section>'+
+      '<section><h3>미완료 및 이월 업무</h3>'+weeklyBullets(r.carryover)+'</section>'+
+      '<section><h3>주요 결정과 성과</h3>'+weeklyBullets(r.decisions)+'</section>'+
+      '<section><h3>미팅 및 후속 액션</h3>'+weeklyBullets(r.meetings)+'</section>'+
+      '<section><h3>운영 현황과 확인이 필요한 부분</h3>'+weeklyBullets(r.operations)+weeklyBullets(r.risks)+'</section>'+
+      '<section><h3>다음 주 우선순위</h3>'+weeklyBullets(r.nextPriorities)+'</section>'+
+      '<footer class="report-article-footer"><p>'+esc(r.sourceNote||"")+'</p></footer>':'');
   return '<section class="article-report-page">'+
     '<div class="article-report-head report-page-head"><div><h1>주간업무보고</h1><p>주차별 업무를 하나의 글처럼 정리해서 확인합니다.</p></div><div class="report-actions"><button data-report-new="weekly">새 글 작성</button>'+(r?'<button data-report-edit="weekly">수정</button>':'')+'</div></div>'+
     '<div class="article-report-shell">'+
       '<aside class="article-report-archive">'+
-        (items.length?items.map(function(x){return '<button class="'+(r&&x.weekStart===r.weekStart?"active":"")+'" data-weekly-report-date="'+esc(x.weekStart)+'"><strong>'+esc(x.weekStart)+' ~ '+esc(x.weekEnd||"")+'</strong><span>'+esc(x.title||"주간업무보고")+'</span></button>';}).join(""):'<p>저장된 주간업무보고가 없습니다.</p>')+
+        (items.length?items.map(function(x){return '<button class="'+(r&&x.weekStart===r.weekStart?"active":"")+'" data-weekly-report-date="'+esc(x.weekStart)+'"><strong>'+esc(x.weekStart)+' ~ '+esc(x.weekEnd||"")+'</strong><span>'+esc(x.manualTitle||x.title||"주간업무보고")+'</span></button>';}).join(""):'<p>저장된 주간업무보고가 없습니다.</p>')+
       '</aside>'+
       '<article class="report-article">'+
-      (r?
-        '<header class="report-article-header"><p class="report-date">'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.manualTitle||r.title||"주간업무보고")+'</h2><p class="report-lead">'+esc(r.manualSummary||r.summary||"")+'</p></header>'+(r.manualBody?'<section class="manual-article-body">'+articleTextToHtml(r.manualBody)+'</section>':'')+
-        '<section><h3>이번 주 핵심 내용</h3><p>'+esc(r.summary||"")+'</p></section>'+
-        '<section><h3>프로젝트별 진행사항</h3>'+(Array.isArray(r.projects)&&r.projects.length?r.projects.map(function(p){return '<div class="report-paragraph"><h4>'+esc([p.client,p.project].filter(Boolean).join(" · ")||"프로젝트")+'</h4><p>'+esc(p.summary||p.detail||"")+'</p><p class="report-status-text">'+esc(p.status||"확인 필요")+'</p></div>';}).join(""):'<p>확인된 프로젝트 기록이 없습니다.</p>')+'</section>'+
-        '<section><h3>완료한 업무</h3>'+weeklyBullets(r.completed)+'</section>'+
-        '<section><h3>미완료 및 이월 업무</h3>'+weeklyBullets(r.carryover)+'</section>'+
-        '<section><h3>주요 결정과 성과</h3>'+weeklyBullets(r.decisions)+'</section>'+
-        '<section><h3>미팅 및 후속 액션</h3>'+weeklyBullets(r.meetings)+'</section>'+
-        '<section><h3>운영 현황과 확인이 필요한 부분</h3>'+weeklyBullets(r.operations)+weeklyBullets(r.risks)+'</section>'+
-        '<section><h3>다음 주 우선순위</h3>'+weeklyBullets(r.nextPriorities)+'</section>'+
-        '<footer class="report-article-footer"><p>'+esc(r.sourceNote||"")+'</p></footer>'
-        :'<div class="article-report-empty">선택한 주간업무보고가 없습니다.</div>')+
+      (r?'<header class="report-article-header"><p class="report-date">'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.manualTitle||r.title||"주간업무보고")+'</h2><p class="report-lead">'+esc(r.manualSummary||r.summary||"")+'</p></header>'+body:'<div class="article-report-empty">선택한 주간업무보고가 없습니다.</div>')+
       '</article>'+
     '</div>'+
   '</section>';
@@ -654,30 +680,25 @@ function monthlyReportPage(){
   var manual=state.monthlyReports.find(function(x){return x.month===month;})||null;
   var daily=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;}).sort(function(a,b){return (a.date||"").localeCompare(b.date||"");});
   var weekly=state.weeklyReports.filter(function(w){return (w.weekStart||"").slice(0,7)===month;}).sort(function(a,b){return (a.weekStart||"").localeCompare(b.weekStart||"");});
-  var workItems=[];
-  var decisions=[];
-  var pending=[];
-  var priorities=[];
-  daily.forEach(function(j){
-    (j.entries||[]).forEach(function(e){workItems.push(e);});
-    (j.decisions||[]).forEach(function(x){decisions.push(x);});
-    (j.pending||[]).forEach(function(x){pending.push(x);});
-    (j.tomorrowPriorities||[]).forEach(function(x){priorities.push(x);});
-  });
-  var clients={};
-  workItems.forEach(function(e){var key=e.client||"기타";clients[key]=(clients[key]||0)+1;});
+  var workItems=[],decisions=[],pending=[];
+  daily.forEach(function(j){(j.entries||[]).forEach(function(e){workItems.push(e);});(j.decisions||[]).forEach(function(x){decisions.push(x);});(j.pending||[]).forEach(function(x){pending.push(x);});});
+  var clients={};workItems.forEach(function(e){var key=e.client||"기타";clients[key]=(clients[key]||0)+1;});
   var topClients=Object.keys(clients).sort(function(a,b){return clients[b]-clients[a];}).slice(0,8);
   var monthText=month.replace("-","년 ")+"월";
+  var generated=
+    '<section><h3>이번 달 업무 요약</h3><p>이번 달에는 '+workItems.length+'개의 업무 항목, '+daily.length+'개의 일간업무보고, '+weekly.length+'개의 주간업무보고가 기록되어 있습니다.</p></section>'+
+    '<section><h3>주요 거래처 및 프로젝트</h3>'+(topClients.length?topClients.map(function(name){return '<div class="report-paragraph"><h4>'+esc(name)+'</h4><p>이번 달 보고서에서 '+clients[name]+'개의 업무 기록이 확인됩니다.</p></div>';}).join(""):'<p>집계할 거래처 기록이 없습니다.</p>')+'</section>'+
+    '<section><h3>주요 결정과 성과</h3>'+weeklyBullets(decisions)+'</section>'+
+    '<section><h3>아직 남아 있는 업무</h3>'+weeklyBullets(pending)+'</section>'+
+    '<section><h3>주간업무보고 모아보기</h3>'+(weekly.length?weekly.map(function(w){return '<button class="article-inline-link" data-weekly-report-date="'+esc(w.weekStart)+'"><strong>'+esc(w.weekStart)+' ~ '+esc(w.weekEnd||"")+'</strong><span>'+esc(w.manualTitle||w.summary||w.title||"주간업무보고")+'</span></button>';}).join(""):'<p>이번 달 주간업무보고가 없습니다.</p>')+'</section>'+
+    '<section><h3>일간업무보고 모아보기</h3>'+(daily.length?daily.map(function(j){return '<button class="article-inline-link" data-daily-report-date="'+esc(j.date)+'"><strong>'+esc(j.date)+'</strong><span>'+esc(j.manualTitle||j.summary||"일간업무보고")+'</span></button>';}).join(""):'<p>이번 달 일간업무보고가 없습니다.</p>')+'</section>';
+  var articleBody=manual&&manual.manualBody?'<section class="manual-article-body">'+articleTextToHtml(manual.manualBody)+'</section>':generated;
+  var lead=manual&&manual.manualSummary?manual.manualSummary:('이번 달에는 '+workItems.length+'개의 업무 항목과 '+daily.length+'개의 일간업무보고, '+weekly.length+'개의 주간업무보고가 기록되어 있습니다.');
   return '<section class="article-report-page monthly-article-page">'+
-    '<div class="article-report-head report-page-head"><div><h1>월간업무보고</h1><p>한 달 동안의 업무 흐름을 글처럼 정리해서 확인합니다.</p></div><div class="report-actions"><button data-report-new="monthly">새 글 작성</button>'+(manual?'<button data-report-edit="monthly">수정</button>':'')+'</div></div>'+
+    '<div class="article-report-head report-page-head"><div><h1>월간업무보고</h1><p>한 달 동안의 업무 흐름을 글처럼 정리해서 확인합니다.</p></div><div class="report-actions"><button data-report-new="monthly">새 글 작성</button><button data-report-edit="monthly">수정</button></div></div>'+
     '<article class="report-article monthly-report-article">'+
-      '<header class="report-article-header"><p class="report-date">'+esc(monthText)+'</p><h2>'+esc(manual&&manual.manualTitle?manual.manualTitle:(monthText+' 업무 정리'))+'</h2><p class="report-lead">'+esc(manual&&manual.manualSummary?manual.manualSummary:('이번 달에는 '+workItems.length+'개의 업무 항목과 '+daily.length+'개의 일간업무보고, '+weekly.length+'개의 주간업무보고가 기록되어 있습니다.'))+'</p></header>'+(manual&&manual.manualBody?'<section class="manual-article-body">'+articleTextToHtml(manual.manualBody)+'</section>':'')+
-      '<section><h3>이번 달 업무 요약</h3><p>이번 달 업무는 일간업무보고와 주간업무보고에 기록된 내용을 기준으로 정리합니다. 실제 완료 여부가 명확하지 않은 항목은 기존 상태를 그대로 유지합니다.</p></section>'+
-      '<section><h3>주요 거래처 및 프로젝트</h3>'+(topClients.length?topClients.map(function(name){return '<div class="report-paragraph"><h4>'+esc(name)+'</h4><p>이번 달 보고서에서 '+clients[name]+'개의 업무 기록이 확인됩니다.</p></div>';}).join(""):'<p>집계할 거래처 기록이 없습니다.</p>')+'</section>'+
-      '<section><h3>주요 결정과 성과</h3>'+weeklyBullets(decisions)+'</section>'+
-      '<section><h3>아직 남아 있는 업무</h3>'+weeklyBullets(pending)+'</section>'+
-      '<section><h3>주간업무보고 모아보기</h3>'+(weekly.length?weekly.map(function(w){return '<button class="article-inline-link" data-weekly-report-date="'+esc(w.weekStart)+'"><strong>'+esc(w.weekStart)+' ~ '+esc(w.weekEnd||"")+'</strong><span>'+esc(w.summary||w.title||"주간업무보고")+'</span></button>';}).join(""):'<p>이번 달 주간업무보고가 없습니다.</p>')+'</section>'+
-      '<section><h3>일간업무보고 모아보기</h3>'+(daily.length?daily.map(function(j){return '<button class="article-inline-link" data-daily-report-date="'+esc(j.date)+'"><strong>'+esc(j.date)+'</strong><span>'+esc(j.summary||"일간업무보고")+'</span></button>';}).join(""):'<p>이번 달 일간업무보고가 없습니다.</p>')+'</section>'+
+      '<header class="report-article-header"><p class="report-date">'+esc(monthText)+'</p><h2>'+esc(manual&&manual.manualTitle?manual.manualTitle:(monthText+' 업무 정리'))+'</h2><p class="report-lead">'+esc(lead)+'</p></header>'+
+      articleBody+
     '</article>'+
   '</section>';
 }
@@ -1060,7 +1081,7 @@ function bindGlobal(){
       var kind=reportEdit.dataset.reportEdit,item=null;
       if(kind==="daily")item=state.journals.find(function(x){return x.date===state.journalDate;})||null;
       if(kind==="weekly")item=state.weeklyReports.find(function(x){return x.weekStart===state.weeklySelection;})||null;
-      if(kind==="monthly")item=state.monthlyReports.find(function(x){return x.month===state.monthlySelection;})||null;
+      if(kind==="monthly")item=state.monthlyReports.find(function(x){return x.month===state.monthlySelection;})||{month:state.monthlySelection||today().slice(0,7),manualTitle:(state.monthlySelection||today().slice(0,7)).replace("-","년 ")+"월 업무 정리",manualSummary:"",manualBody:defaultMonthlyArticle(state.monthlySelection||today().slice(0,7))};
       reportEditorForm(kind,item||{});
       return;
     }
