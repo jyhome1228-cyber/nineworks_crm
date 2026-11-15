@@ -3854,3 +3854,97 @@ body{
   .daily-report-row>span,
   .work-report-row>span{display:none}
 }
+
+
+/* 2026-11-15 — ALWAYS-VISIBLE WORK SUBNAV */
+.work-subnav{
+  display:grid;
+  grid-template-columns:1fr;
+  margin:10px 0 22px;
+  padding:8px 0;
+  border-top:1px solid #202020;
+  border-bottom:1px solid #202020;
+}
+.work-subnav button{
+  position:relative;
+  width:100%;
+  min-height:42px;
+  padding:0 12px 0 30px;
+  border:0;
+  background:transparent;
+  color:#77766f;
+  text-align:left;
+  font-size:12.5px!important;
+  font-weight:500;
+  cursor:pointer;
+}
+.work-subnav button:before{
+  content:"";
+  position:absolute;
+  left:13px;
+  top:50%;
+  width:5px;
+  height:1px;
+  background:#4d4c47;
+}
+.work-subnav button:hover{
+  color:#d8d6cf;
+  background:#0d0d0d;
+}
+.work-subnav button.active{
+  color:#fff;
+}
+.work-subnav button.active:before{
+  width:7px;
+  background:#f0eee7;
+}
+.sidebar[data-view="finance"] .work-subnav,
+.sidebar[data-view="clients"] .work-subnav,
+.sidebar[data-view="client"] .work-subnav,
+.sidebar[data-view="partner"] .work-subnav,
+.sidebar[data-view="meetings"] .work-subnav{
+  opacity:.52;
+}
+.sidebar[data-view="finance"] .work-subnav button,
+.sidebar[data-view="clients"] .work-subnav button,
+.sidebar[data-view="client"] .work-subnav button,
+.sidebar[data-view="partner"] .work-subnav button,
+.sidebar[data-view="meetings"] .work-subnav button{
+  color:#5f5e59;
+}
+
+/* Make current report state unmistakable */
+.work-report-archive .overview-panel-head h2{
+  font-size:23px!important;
+}
+.work-report-column-head strong{
+  font-size:13px!important;
+}
+.work-report-row strong{
+  font-size:15px!important;
+}
+.work-report-row small{
+  font-size:11.5px!important;
+}
+.auto-report-panel .overview-panel-head h2{
+  font-size:21px!important;
+}
+.auto-report-grid strong{
+  font-size:16px!important;
+}
+.auto-report-grid span,
+.auto-report-grid small{
+  font-size:10.5px!important;
+}
+
+@media(max-width:900px){
+  .work-subnav{
+    grid-template-columns:1fr 1fr;
+    gap:0;
+  }
+  .work-subnav button{
+    padding-left:25px;
+    min-height:40px;
+    font-size:12px!important;
+  }
+}
