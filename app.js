@@ -478,30 +478,93 @@ function reportsPage(){
   '</section>';
 }
 
+
+function dailyReportMainPage(){
+  var items=state.journals.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
+  if(!state.journalDate&&items.length)state.journalDate=items[0].date;
+  var j=items.find(function(x){return x.date===state.journalDate;})||items[0]||null;
+  var entries=j&&Array.isArray(j.entries)?j.entries:[];
+  return '<section class="simple-report-page">'+
+    '<div class="simple-page-head"><h1>일간업무보고</h1><p>매일 정리된 업무를 날짜별로 확인합니다.</p></div>'+
+    '<div class="simple-report-layout">'+
+      '<aside class="simple-report-list">'+
+        (items.length?items.map(function(x){return '<button class="'+(j&&x.date===j.date?"active":"")+'" data-daily-report-date="'+esc(x.date)+'"><strong>'+esc(x.date)+'</strong><span>'+esc(x.summary||"업무보고")+'</span></button>';}).join(""):'<div class="empty large">저장된 일간업무보고가 없습니다.</div>')+
+      '</aside>'+
+      '<div class="simple-report-detail">'+
+      (j?
+        '<div class="simple-report-title"><div><h2>'+esc(j.date)+'</h2><p>'+esc(j.summary||"")+'</p></div><span>'+esc(j.automationSaved?"자동저장":(j.reviewStatus||"저장됨"))+'</span></div>'+
+        '<section><h3>오늘 진행한 업무</h3><div class="simple-work-list">'+(entries.length?entries.map(function(e){return '<article><div><strong>'+esc(e.title||"업무")+'</strong><p>'+esc([e.client,e.project].filter(Boolean).join(" · "))+'</p><small>'+esc(e.details||"")+'</small></div><span>'+esc(e.status||"확인 필요")+'</span></article>';}).join(""):'<p>등록된 업무가 없습니다.</p>')+'</div></section>'+
+        '<section><h3>주요 결정·성과</h3>'+journalBullet(j.decisions)+'</section>'+
+        '<section><h3>미완료·확인 필요</h3>'+journalBullet(j.pending)+'</section>'+
+        '<section><h3>운영 현황</h3><p class="simple-prose">'+esc((j.operations&&j.operations.note)||"")+'</p></section>'+
+        '<section><h3>하루 회고</h3><p class="simple-prose">'+esc(j.reflection||"")+'</p></section>'+
+        '<section><h3>다음 우선순위</h3>'+journalBullet(j.tomorrowPriorities)+'</section>'
+        :'<div class="empty large">선택한 날짜의 업무보고가 없습니다.</div>')+
+      '</div>'+
+    '</div>'+
+  '</section>';
+}
+
+function weeklyReportMainPage(){
+  var items=state.weeklyReports.slice().sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");});
+  if(!state.weeklySelection&&items.length)state.weeklySelection=items[0].weekStart;
+  var r=items.find(function(x){return x.weekStart===state.weeklySelection;})||items[0]||null;
+  return '<section class="simple-report-page">'+
+    '<div class="simple-page-head"><h1>주간업무보고</h1><p>월요일부터 토요일까지의 업무를 주차별로 확인합니다.</p></div>'+
+    '<div class="simple-report-layout">'+
+      '<aside class="simple-report-list">'+
+        (items.length?items.map(function(x){return '<button class="'+(r&&x.weekStart===r.weekStart?"active":"")+'" data-weekly-report-date="'+esc(x.weekStart)+'"><strong>'+esc(x.weekStart)+' ~ '+esc(x.weekEnd||"")+'</strong><span>'+esc(x.summary||x.title||"주간업무보고")+'</span></button>';}).join(""):'<div class="empty large">저장된 주간업무보고가 없습니다.</div>')+
+      '</aside>'+
+      '<div class="simple-report-detail">'+
+      (r?
+        '<div class="simple-report-title"><div><h2>'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</h2><p>'+esc(r.summary||"")+'</p></div><span>'+esc(r.automationSaved?"자동저장":"저장됨")+'</span></div>'+
+        '<section><h3>프로젝트별 진행</h3>'+weeklyRows(r.projects)+'</section>'+
+        '<section><h3>완료 업무</h3>'+weeklyBullets(r.completed)+'</section>'+
+        '<section><h3>미완료·이월 업무</h3>'+weeklyBullets(r.carryover)+'</section>'+
+        '<section><h3>주요 결정·성과</h3>'+weeklyBullets(r.decisions)+'</section>'+
+        '<section><h3>미팅·후속 액션</h3>'+weeklyBullets(r.meetings)+'</section>'+
+        '<section><h3>리스크·확인 필요</h3>'+weeklyBullets(r.risks)+'</section>'+
+        '<section><h3>다음 주 우선순위</h3>'+weeklyBullets(r.nextPriorities)+'</section>'
+        :'<div class="empty large">선택한 주간업무보고가 없습니다.</div>')+
+      '</div>'+
+    '</div>'+
+  '</section>';
+}
+
+function monthlyReportPage(){
+  var month=today().slice(0,7);
+  var daily=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;}).sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
+  var weekly=state.weeklyReports.filter(function(w){return (w.weekStart||"").slice(0,7)===month;}).sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");});
+  var workCount=daily.reduce(function(n,j){return n+(Array.isArray(j.entries)?j.entries.length:0);},0);
+  var decisionCount=daily.reduce(function(n,j){return n+(Array.isArray(j.decisions)?j.decisions.length:0);},0);
+  var pendingCount=daily.reduce(function(n,j){return n+(Array.isArray(j.pending)?j.pending.length:0);},0);
+  return '<section class="simple-report-page">'+
+    '<div class="simple-page-head"><h1>월간업무보고</h1><p>'+esc(month.replace("-","년 ")+"월")+' 누적 업무를 일간·주간 보고 기준으로 정리합니다.</p></div>'+
+    '<div class="monthly-report-summary">'+
+      '<div><span>일간업무보고</span><strong>'+daily.length+'</strong></div>'+
+      '<div><span>업무 항목</span><strong>'+workCount+'</strong></div>'+
+      '<div><span>주요 결정</span><strong>'+decisionCount+'</strong></div>'+
+      '<div><span>확인 필요</span><strong>'+pendingCount+'</strong></div>'+
+    '</div>'+
+    '<section class="monthly-report-section"><h2>일간업무보고 기록</h2>'+(daily.length?daily.map(function(j){return '<button data-daily-report-date="'+esc(j.date)+'"><strong>'+esc(j.date)+'</strong><span>'+esc(j.summary||"")+'</span></button>';}).join(""):'<p>이번 달 일간업무보고가 없습니다.</p>')+'</section>'+
+    '<section class="monthly-report-section"><h2>주간업무보고 기록</h2>'+(weekly.length?weekly.map(function(w){return '<button data-weekly-report-date="'+esc(w.weekStart)+'"><strong>'+esc(w.weekStart)+' ~ '+esc(w.weekEnd||"")+'</strong><span>'+esc(w.summary||"")+'</span></button>';}).join(""):'<p>이번 달 주간업무보고가 없습니다.</p>')+'</section>'+
+  '</section>';
+}
+
 function taxPage(){
   var totals=partnerSalesTotals();
-  var contracts=state.contracts.slice().sort(function(a,b){return outstanding(b)-outstanding(a);});
   var invoices=state.taxInvoices.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
-  var billed=contracts.reduce(function(n,c){return n+bill(c);},0);
-  var receivedTotal=contracts.reduce(function(n,c){return n+received(c);},0);
-  var outstandingTotal=contracts.reduce(function(n,c){return n+outstanding(c);},0);
-  return '<section class="tax-page">'+
-    '<div class="tax-head"><div><p class="eyebrow">NINEWORKS / TAX & FINANCE</p><h1>세무</h1><p>매출, 세금계산서, 계약금과 미수 현황만 모아서 확인합니다.</p></div></div>'+
-    '<div class="tax-summary">'+
-      '<div><span>2025 매출</span><strong>'+won(totals.sales2025)+'</strong><small>공급가액 기준</small></div>'+
-      '<div><span>2026 매출</span><strong>'+won(totals.sales2026)+'</strong><small>11월 10일까지</small></div>'+
-      '<div><span>계약 청구액</span><strong>'+won(billed)+'</strong><small>등록 계약 기준</small></div>'+
-      '<div><span>입금액</span><strong>'+won(receivedTotal)+'</strong><small>등록 입금 기준</small></div>'+
-      '<div><span>미수금</span><strong>'+won(outstandingTotal)+'</strong><small>확인 필요 금액</small></div>'+
+  return '<section class="simple-admin-page">'+
+    '<div class="simple-page-head"><h1>세금계산서관리</h1><p>2025년·2026년 세금계산서와 매출 현황을 확인합니다.</p></div>'+
+    '<div class="monthly-report-summary">'+
+      '<div><span>2025 공급가액</span><strong>'+won(totals.sales2025)+'</strong></div>'+
+      '<div><span>2026 공급가액</span><strong>'+won(totals.sales2026)+'</strong></div>'+
+      '<div><span>발행 기록</span><strong>'+totals.invoices+'</strong></div>'+
+      '<div><span>수정 계산서</span><strong>'+totals.corrections+'</strong></div>'+
     '</div>'+
-    '<div class="tax-grid">'+
-      '<section class="tax-panel"><div class="tax-panel-head"><div><p class="eyebrow">01 / CONTRACT</p><h2>계약·수금 현황</h2></div><span>'+contracts.length+' CONTRACTS</span></div>'+
-      (contracts.length?'<div class="tax-contract-list">'+contracts.slice(0,12).map(function(c){return '<article><div><strong>'+esc(c.clientName||"—")+'</strong><small>'+esc(c.projectName||c.contractType||"계약")+'</small></div><span>'+won(bill(c))+'</span><em>'+won(outstanding(c))+' 미수</em></article>';}).join("")+'</div>':'<div class="empty large">등록된 계약이 없습니다.</div>')+
-      '</section>'+
-      '<section class="tax-panel"><div class="tax-panel-head"><div><p class="eyebrow">02 / TAX INVOICE</p><h2>최근 세금계산서</h2></div><span>'+totals.invoices+' RECORDS</span></div>'+
-      (invoices.length?'<div class="tax-invoice-list">'+invoices.slice(0,12).map(function(inv){var p=state.tradePartners.find(function(x){return x.businessNumber===inv.businessNumber;});return '<button '+(p?'data-partner-id="'+esc(p.id)+'"':'')+'><time>'+esc(inv.date||"—")+'</time><div><strong>'+esc(inv.name||"—")+'</strong><small>'+esc(inv.item||"")+'</small></div><span>'+won(inv.supply)+'</span><em>'+(inv.correction?"수정":"일반")+'</em></button>';}).join("")+'</div>':'<div class="empty large">가져온 계산서 이력이 없습니다.</div>')+
-      '</section>'+
-    '</div>'+
+    '<section class="simple-table-section"><div class="simple-section-head"><h2>최근 세금계산서</h2></div>'+
+      (invoices.length?'<div class="simple-invoice-list">'+invoices.slice(0,30).map(function(inv){return '<article><time>'+esc(inv.date||"—")+'</time><div><strong>'+esc(inv.name||"—")+'</strong><span>'+esc(inv.item||"")+'</span></div><b>'+won(inv.supply)+'</b><em>'+(inv.correction?"수정":"일반")+'</em></article>';}).join("")+'</div>':'<div class="empty large">테스트 화면에서는 합계 데이터만 표시됩니다. 상세 계산서 이력은 데이터 연결 후 표시됩니다.</div>')+
+    '</section>'+
   '</section>';
 }
 
