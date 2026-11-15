@@ -508,45 +508,59 @@ function weeklyReportMainPage(){
   var items=state.weeklyReports.slice().sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");});
   if(!state.weeklySelection&&items.length)state.weeklySelection=items[0].weekStart;
   var r=items.find(function(x){return x.weekStart===state.weeklySelection;})||items[0]||null;
-  return '<section class="simple-report-page">'+
-    '<div class="simple-page-head"><h1>주간업무보고</h1><p>월요일부터 토요일까지의 업무를 주차별로 확인합니다.</p></div>'+
-    '<div class="simple-report-layout">'+
-      '<aside class="simple-report-list">'+
-        (items.length?items.map(function(x){return '<button class="'+(r&&x.weekStart===r.weekStart?"active":"")+'" data-weekly-report-date="'+esc(x.weekStart)+'"><strong>'+esc(x.weekStart)+' ~ '+esc(x.weekEnd||"")+'</strong><span>'+esc(x.summary||x.title||"주간업무보고")+'</span></button>';}).join(""):'<div class="empty large">저장된 주간업무보고가 없습니다.</div>')+
+  return '<section class="article-report-page">'+
+    '<div class="article-report-head"><h1>주간업무보고</h1><p>주차별 업무를 하나의 글처럼 정리해서 확인합니다.</p></div>'+
+    '<div class="article-report-shell">'+
+      '<aside class="article-report-archive">'+
+        (items.length?items.map(function(x){return '<button class="'+(r&&x.weekStart===r.weekStart?"active":"")+'" data-weekly-report-date="'+esc(x.weekStart)+'"><strong>'+esc(x.weekStart)+' ~ '+esc(x.weekEnd||"")+'</strong><span>'+esc(x.title||"주간업무보고")+'</span></button>';}).join(""):'<p>저장된 주간업무보고가 없습니다.</p>')+
       '</aside>'+
-      '<div class="simple-report-detail">'+
+      '<article class="report-article">'+
       (r?
-        '<div class="simple-report-title"><div><h2>'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</h2><p>'+esc(r.summary||"")+'</p></div><span>'+esc(r.automationSaved?"자동저장":"저장됨")+'</span></div>'+
-        '<section><h3>프로젝트별 진행</h3>'+weeklyRows(r.projects)+'</section>'+
-        '<section><h3>완료 업무</h3>'+weeklyBullets(r.completed)+'</section>'+
-        '<section><h3>미완료·이월 업무</h3>'+weeklyBullets(r.carryover)+'</section>'+
-        '<section><h3>주요 결정·성과</h3>'+weeklyBullets(r.decisions)+'</section>'+
-        '<section><h3>미팅·후속 액션</h3>'+weeklyBullets(r.meetings)+'</section>'+
-        '<section><h3>리스크·확인 필요</h3>'+weeklyBullets(r.risks)+'</section>'+
-        '<section><h3>다음 주 우선순위</h3>'+weeklyBullets(r.nextPriorities)+'</section>'
-        :'<div class="empty large">선택한 주간업무보고가 없습니다.</div>')+
-      '</div>'+
+        '<header class="report-article-header"><p class="report-date">'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.title||"주간업무보고")+'</h2><p class="report-lead">'+esc(r.summary||"")+'</p></header>'+
+        '<section><h3>이번 주 핵심 내용</h3><p>'+esc(r.summary||"")+'</p></section>'+
+        '<section><h3>프로젝트별 진행사항</h3>'+(Array.isArray(r.projects)&&r.projects.length?r.projects.map(function(p){return '<div class="report-paragraph"><h4>'+esc([p.client,p.project].filter(Boolean).join(" · ")||"프로젝트")+'</h4><p>'+esc(p.summary||p.detail||"")+'</p><p class="report-status-text">'+esc(p.status||"확인 필요")+'</p></div>';}).join(""):'<p>확인된 프로젝트 기록이 없습니다.</p>')+'</section>'+
+        '<section><h3>완료한 업무</h3>'+weeklyBullets(r.completed)+'</section>'+
+        '<section><h3>미완료 및 이월 업무</h3>'+weeklyBullets(r.carryover)+'</section>'+
+        '<section><h3>주요 결정과 성과</h3>'+weeklyBullets(r.decisions)+'</section>'+
+        '<section><h3>미팅 및 후속 액션</h3>'+weeklyBullets(r.meetings)+'</section>'+
+        '<section><h3>운영 현황과 확인이 필요한 부분</h3>'+weeklyBullets(r.operations)+weeklyBullets(r.risks)+'</section>'+
+        '<section><h3>다음 주 우선순위</h3>'+weeklyBullets(r.nextPriorities)+'</section>'+
+        '<footer class="report-article-footer"><p>'+esc(r.sourceNote||"")+'</p></footer>'
+        :'<div class="article-report-empty">선택한 주간업무보고가 없습니다.</div>')+
+      '</article>'+
     '</div>'+
   '</section>';
 }
 
 function monthlyReportPage(){
   var month=today().slice(0,7);
-  var daily=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;}).sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
-  var weekly=state.weeklyReports.filter(function(w){return (w.weekStart||"").slice(0,7)===month;}).sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");});
-  var workCount=daily.reduce(function(n,j){return n+(Array.isArray(j.entries)?j.entries.length:0);},0);
-  var decisionCount=daily.reduce(function(n,j){return n+(Array.isArray(j.decisions)?j.decisions.length:0);},0);
-  var pendingCount=daily.reduce(function(n,j){return n+(Array.isArray(j.pending)?j.pending.length:0);},0);
-  return '<section class="simple-report-page">'+
-    '<div class="simple-page-head"><h1>월간업무보고</h1><p>'+esc(month.replace("-","년 ")+"월")+' 누적 업무를 일간·주간 보고 기준으로 정리합니다.</p></div>'+
-    '<div class="monthly-report-summary">'+
-      '<div><span>일간업무보고</span><strong>'+daily.length+'</strong></div>'+
-      '<div><span>업무 항목</span><strong>'+workCount+'</strong></div>'+
-      '<div><span>주요 결정</span><strong>'+decisionCount+'</strong></div>'+
-      '<div><span>확인 필요</span><strong>'+pendingCount+'</strong></div>'+
-    '</div>'+
-    '<section class="monthly-report-section"><h2>일간업무보고 기록</h2>'+(daily.length?daily.map(function(j){return '<button data-daily-report-date="'+esc(j.date)+'"><strong>'+esc(j.date)+'</strong><span>'+esc(j.summary||"")+'</span></button>';}).join(""):'<p>이번 달 일간업무보고가 없습니다.</p>')+'</section>'+
-    '<section class="monthly-report-section"><h2>주간업무보고 기록</h2>'+(weekly.length?weekly.map(function(w){return '<button data-weekly-report-date="'+esc(w.weekStart)+'"><strong>'+esc(w.weekStart)+' ~ '+esc(w.weekEnd||"")+'</strong><span>'+esc(w.summary||"")+'</span></button>';}).join(""):'<p>이번 달 주간업무보고가 없습니다.</p>')+'</section>'+
+  var daily=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;}).sort(function(a,b){return (a.date||"").localeCompare(b.date||"");});
+  var weekly=state.weeklyReports.filter(function(w){return (w.weekStart||"").slice(0,7)===month;}).sort(function(a,b){return (a.weekStart||"").localeCompare(b.weekStart||"");});
+  var workItems=[];
+  var decisions=[];
+  var pending=[];
+  var priorities=[];
+  daily.forEach(function(j){
+    (j.entries||[]).forEach(function(e){workItems.push(e);});
+    (j.decisions||[]).forEach(function(x){decisions.push(x);});
+    (j.pending||[]).forEach(function(x){pending.push(x);});
+    (j.tomorrowPriorities||[]).forEach(function(x){priorities.push(x);});
+  });
+  var clients={};
+  workItems.forEach(function(e){var key=e.client||"기타";clients[key]=(clients[key]||0)+1;});
+  var topClients=Object.keys(clients).sort(function(a,b){return clients[b]-clients[a];}).slice(0,8);
+  var monthText=month.replace("-","년 ")+"월";
+  return '<section class="article-report-page monthly-article-page">'+
+    '<div class="article-report-head"><h1>월간업무보고</h1><p>한 달 동안의 업무 흐름을 글처럼 정리해서 확인합니다.</p></div>'+
+    '<article class="report-article monthly-report-article">'+
+      '<header class="report-article-header"><p class="report-date">'+esc(monthText)+'</p><h2>'+esc(monthText)+' 업무 정리</h2><p class="report-lead">이번 달에는 '+workItems.length+'개의 업무 항목과 '+daily.length+'개의 일간업무보고, '+weekly.length+'개의 주간업무보고가 기록되어 있습니다.</p></header>'+
+      '<section><h3>이번 달 업무 요약</h3><p>이번 달 업무는 일간업무보고와 주간업무보고에 기록된 내용을 기준으로 정리합니다. 실제 완료 여부가 명확하지 않은 항목은 기존 상태를 그대로 유지합니다.</p></section>'+
+      '<section><h3>주요 거래처 및 프로젝트</h3>'+(topClients.length?topClients.map(function(name){return '<div class="report-paragraph"><h4>'+esc(name)+'</h4><p>이번 달 보고서에서 '+clients[name]+'개의 업무 기록이 확인됩니다.</p></div>';}).join(""):'<p>집계할 거래처 기록이 없습니다.</p>')+'</section>'+
+      '<section><h3>주요 결정과 성과</h3>'+weeklyBullets(decisions)+'</section>'+
+      '<section><h3>아직 남아 있는 업무</h3>'+weeklyBullets(pending)+'</section>'+
+      '<section><h3>주간업무보고 모아보기</h3>'+(weekly.length?weekly.map(function(w){return '<button class="article-inline-link" data-weekly-report-date="'+esc(w.weekStart)+'"><strong>'+esc(w.weekStart)+' ~ '+esc(w.weekEnd||"")+'</strong><span>'+esc(w.summary||w.title||"주간업무보고")+'</span></button>';}).join(""):'<p>이번 달 주간업무보고가 없습니다.</p>')+'</section>'+
+      '<section><h3>일간업무보고 모아보기</h3>'+(daily.length?daily.map(function(j){return '<button class="article-inline-link" data-daily-report-date="'+esc(j.date)+'"><strong>'+esc(j.date)+'</strong><span>'+esc(j.summary||"일간업무보고")+'</span></button>';}).join(""):'<p>이번 달 일간업무보고가 없습니다.</p>')+'</section>'+
+    '</article>'+
   '</section>';
 }
 
