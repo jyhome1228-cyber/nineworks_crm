@@ -41,7 +41,7 @@ const today=function(){
 };
 const won=function(v){return Math.round(Number(v||0)).toLocaleString("ko-KR")+"원";};
 
-const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],tradePartners:[],taxInvoices:[],activeClientId:"",activePartnerId:"",view:"daily",journalDate:today(),journals:[],journalError:"",weeklyReports:[],weeklySelection:"",weeklyError:"",automationRuns:[],query:"",partnerQuery:"",unsubs:[]};
+const state={user:null,profile:null,clients:[],todos:[],logs:[],contracts:[],tradePartners:[],taxInvoices:[],activeClientId:"",activePartnerId:"",view:"daily",journalDate:today(),journals:[],journalError:"",weeklyReports:[],weeklySelection:"",weeklyError:"",monthlyReports:[],monthlySelection:today().slice(0,7),automationRuns:[],query:"",partnerQuery:"",unsubs:[]};
 const TAX_PARTNER_SNAPSHOT=[{"id":"snapshot_001","name":"주식회사 토마스톤","lastDate":"2026-10-22","status":"2026 거래"},{"id":"snapshot_002","name":"플레이버니즈","lastDate":"2026-11-06","status":"2026 거래"},{"id":"snapshot_003","name":"진천군농업기술센터","lastDate":"2026-11-02","status":"2026 거래"},{"id":"snapshot_004","name":"(주)브이랩스","lastDate":"2026-10-29","status":"2026 거래"},{"id":"snapshot_005","name":"주식회사 오토룩","lastDate":"2026-01-22","status":"2026 거래"},{"id":"snapshot_006","name":"주식회사 카이선셀","lastDate":"2026-09-29","status":"2026 거래"},{"id":"snapshot_007","name":"주식회사 에이엠인터내셔널","lastDate":"2026-10-30","status":"2026 거래"},{"id":"snapshot_008","name":"테라클 주식회사","lastDate":"2026-08-28","status":"2026 거래"},{"id":"snapshot_009","name":"(주)월드크로스","lastDate":"2026-01-07","status":"2026 거래"},{"id":"snapshot_010","name":"주식회사 케어원","lastDate":"2026-08-31","status":"2026 거래"},{"id":"snapshot_011","name":"동원산업 (주)","lastDate":"2026-10-12","status":"2026 거래"},{"id":"snapshot_012","name":"(주)오리엔트리조트","lastDate":"2026-10-01","status":"2026 거래"},{"id":"snapshot_013","name":"닥터케이헬스케어 주식회사","lastDate":"2026-10-12","status":"2026 거래"},{"id":"snapshot_014","name":"건강미 SPA&AESTHETIC","lastDate":"2026-10-17","status":"2026 거래"},{"id":"snapshot_015","name":"주식회사 디벨로펀","lastDate":"2026-09-02","status":"2026 거래"},{"id":"snapshot_016","name":"(주)와이트라이브","lastDate":"2026-04-29","status":"2026 거래"},{"id":"snapshot_017","name":"인천대학교 산학협력단","lastDate":"2026-09-11","status":"2026 거래"},{"id":"snapshot_018","name":"(주) 스터닝","lastDate":"2026-05-26","status":"2026 거래"},{"id":"snapshot_019","name":"슈프림그로스 주식회사","lastDate":"2026-10-28","status":"2026 거래"},{"id":"snapshot_020","name":"펜타곤 법률세무회계","lastDate":"2026-06-30","status":"2026 거래"},{"id":"snapshot_021","name":"스킨핏 주식회사","lastDate":"2026-10-12","status":"2026 거래"},{"id":"snapshot_022","name":"파이토레볼루션","lastDate":"2026-10-13","status":"2026 거래"},{"id":"snapshot_023","name":"선이담","lastDate":"2026-08-31","status":"2026 거래"},{"id":"snapshot_024","name":"에스비인터내셔널","lastDate":"2026-06-30","status":"2026 거래"},{"id":"snapshot_025","name":"주식회사 수상한렌탈","lastDate":"2026-08-13","status":"2026 거래"},{"id":"snapshot_026","name":"청운대학교","lastDate":"2026-10-27","status":"2026 거래"},{"id":"snapshot_027","name":"주식회사 엘레나휴먼바이오","lastDate":"2026-08-27","status":"2026 거래"},{"id":"snapshot_028","name":"(주)꼬모펫","lastDate":"2026-11-10","status":"2026 거래"},{"id":"snapshot_029","name":"사단법인 홍성군자원봉사센터","lastDate":"2026-02-27","status":"2026 거래"},{"id":"snapshot_030","name":"임다솔","lastDate":"2025-01-24","status":"과거 거래"},{"id":"snapshot_031","name":"김지혜","lastDate":"2025-07-25","status":"과거 거래"},{"id":"snapshot_032","name":"(주) 문화방송","lastDate":"2025-01-24","status":"과거 거래"},{"id":"snapshot_033","name":"(주)스테미코리아","lastDate":"2025-08-28","status":"과거 거래"},{"id":"snapshot_034","name":"3D뮤즈","lastDate":"2025-08-14","status":"과거 거래"},{"id":"snapshot_035","name":"농업법인 나인힐스 주식회사","lastDate":"2025-04-03","status":"과거 거래"},{"id":"snapshot_036","name":"모브주식회사","lastDate":"2025-10-28","status":"과거 거래"},{"id":"snapshot_037","name":"사자가온다 주식회사","lastDate":"2025-09-12","status":"과거 거래"},{"id":"snapshot_038","name":"성균관대학교산학협력단","lastDate":"2025-11-15","status":"과거 거래"},{"id":"snapshot_039","name":"애플 가든","lastDate":"2025-12-17","status":"과거 거래"},{"id":"snapshot_040","name":"양달관광농원","lastDate":"2025-11-09","status":"과거 거래"},{"id":"snapshot_041","name":"오얏카츠","lastDate":"2025-03-31","status":"과거 거래"},{"id":"snapshot_042","name":"주식회사 더카본스튜디오","lastDate":"2025-11-13","status":"과거 거래"},{"id":"snapshot_043","name":"주식회사 아임웹","lastDate":"2025-04-11","status":"과거 거래"},{"id":"snapshot_044","name":"주식회사 지브레인","lastDate":"2025-06-26","status":"과거 거래"},{"id":"snapshot_045","name":"주식회사 지티티비","lastDate":"2025-10-29","status":"과거 거래"},{"id":"snapshot_046","name":"주식회사 키아스","lastDate":"2025-10-20","status":"과거 거래"},{"id":"snapshot_047","name":"주식회사 파이토메이트","lastDate":"2025-05-10","status":"과거 거래"},{"id":"snapshot_048","name":"청운대학교 산학협력단","lastDate":"2025-12-08","status":"과거 거래"},{"id":"snapshot_049","name":"태평제지 주식회사","lastDate":"2025-08-28","status":"과거 거래"},{"id":"snapshot_050","name":"토일럽","lastDate":"2025-08-11","status":"과거 거래"},{"id":"snapshot_051","name":"프렌즈","lastDate":"2025-04-30","status":"과거 거래"},{"id":"snapshot_052","name":"한국디비케이(주)","lastDate":"2025-08-28","status":"과거 거래"},{"id":"snapshot_053","name":"한성대학교","lastDate":"2025-12-15","status":"과거 거래"}];
 const TAX_CLIENT_SNAPSHOT=[{"id":"snapshot_client_001","name":"주식회사 토마스톤","type":"2026 거래","snapshot":true,"lastDate":"2026-10-22"},{"id":"snapshot_client_002","name":"플레이버니즈","type":"2026 거래","snapshot":true,"lastDate":"2026-11-06"},{"id":"snapshot_client_003","name":"진천군농업기술센터","type":"2026 거래","snapshot":true,"lastDate":"2026-11-02"},{"id":"snapshot_client_004","name":"(주)브이랩스","type":"2026 거래","snapshot":true,"lastDate":"2026-10-29"},{"id":"snapshot_client_005","name":"주식회사 오토룩","type":"2026 거래","snapshot":true,"lastDate":"2026-01-22"},{"id":"snapshot_client_006","name":"주식회사 카이선셀","type":"2026 거래","snapshot":true,"lastDate":"2026-09-29"},{"id":"snapshot_client_007","name":"주식회사 에이엠인터내셔널","type":"2026 거래","snapshot":true,"lastDate":"2026-10-30"},{"id":"snapshot_client_008","name":"테라클 주식회사","type":"2026 거래","snapshot":true,"lastDate":"2026-08-28"},{"id":"snapshot_client_009","name":"(주)월드크로스","type":"2026 거래","snapshot":true,"lastDate":"2026-01-07"},{"id":"snapshot_client_010","name":"주식회사 케어원","type":"2026 거래","snapshot":true,"lastDate":"2026-08-31"},{"id":"snapshot_client_011","name":"동원산업 (주)","type":"2026 거래","snapshot":true,"lastDate":"2026-10-12"},{"id":"snapshot_client_012","name":"(주)오리엔트리조트","type":"2026 거래","snapshot":true,"lastDate":"2026-10-01"},{"id":"snapshot_client_013","name":"닥터케이헬스케어 주식회사","type":"2026 거래","snapshot":true,"lastDate":"2026-10-12"},{"id":"snapshot_client_014","name":"건강미 SPA&AESTHETIC","type":"2026 거래","snapshot":true,"lastDate":"2026-10-17"},{"id":"snapshot_client_015","name":"주식회사 디벨로펀","type":"2026 거래","snapshot":true,"lastDate":"2026-09-02"},{"id":"snapshot_client_016","name":"(주)와이트라이브","type":"2026 거래","snapshot":true,"lastDate":"2026-04-29"},{"id":"snapshot_client_017","name":"인천대학교 산학협력단","type":"2026 거래","snapshot":true,"lastDate":"2026-09-11"},{"id":"snapshot_client_018","name":"(주) 스터닝","type":"2026 거래","snapshot":true,"lastDate":"2026-05-26"},{"id":"snapshot_client_019","name":"슈프림그로스 주식회사","type":"2026 거래","snapshot":true,"lastDate":"2026-10-28"},{"id":"snapshot_client_020","name":"펜타곤 법률세무회계","type":"2026 거래","snapshot":true,"lastDate":"2026-06-30"},{"id":"snapshot_client_021","name":"스킨핏 주식회사","type":"2026 거래","snapshot":true,"lastDate":"2026-10-12"},{"id":"snapshot_client_022","name":"파이토레볼루션","type":"2026 거래","snapshot":true,"lastDate":"2026-10-13"},{"id":"snapshot_client_023","name":"선이담","type":"2026 거래","snapshot":true,"lastDate":"2026-08-31"},{"id":"snapshot_client_024","name":"에스비인터내셔널","type":"2026 거래","snapshot":true,"lastDate":"2026-06-30"},{"id":"snapshot_client_025","name":"주식회사 수상한렌탈","type":"2026 거래","snapshot":true,"lastDate":"2026-08-13"},{"id":"snapshot_client_026","name":"청운대학교","type":"2026 거래","snapshot":true,"lastDate":"2026-10-27"},{"id":"snapshot_client_027","name":"주식회사 엘레나휴먼바이오","type":"2026 거래","snapshot":true,"lastDate":"2026-08-27"},{"id":"snapshot_client_028","name":"(주)꼬모펫","type":"2026 거래","snapshot":true,"lastDate":"2026-11-10"},{"id":"snapshot_client_029","name":"사단법인 홍성군자원봉사센터","type":"2026 거래","snapshot":true,"lastDate":"2026-02-27"}];
 function effectiveClients(){return state.clients.length?state.clients:TAX_CLIENT_SNAPSHOT;}
@@ -478,20 +478,137 @@ function reportsPage(){
 }
 
 
+
+const LOCAL_REPORT_KEY="nineworks_crm_manual_reports_v1";
+function loadLocalReports(){
+  try{
+    var raw=localStorage.getItem(LOCAL_REPORT_KEY);
+    var data=raw?JSON.parse(raw):{};
+    return {
+      daily:Array.isArray(data.daily)?data.daily:[],
+      weekly:Array.isArray(data.weekly)?data.weekly:[],
+      monthly:Array.isArray(data.monthly)?data.monthly:[]
+    };
+  }catch(_){return {daily:[],weekly:[],monthly:[]};}
+}
+function saveLocalReports(data){
+  try{localStorage.setItem(LOCAL_REPORT_KEY,JSON.stringify(data));}catch(_){}
+}
+function mergeReportList(base,manual,key){
+  var map={};
+  (base||[]).forEach(function(x){if(x&&x[key])map[x[key]]=Object.assign({},x);});
+  (manual||[]).forEach(function(x){if(x&&x[key])map[x[key]]=Object.assign({},map[x[key]]||{},x,{manualSaved:true});});
+  return Object.keys(map).map(function(k){return map[k];});
+}
+function hydrateLocalReports(){
+  var local=loadLocalReports();
+  state.journals=mergeReportList(state.journals,local.daily,"date");
+  state.weeklyReports=mergeReportList(state.weeklyReports,local.weekly,"weekStart");
+  state.monthlyReports=mergeReportList(state.monthlyReports,local.monthly,"month");
+}
+function articleTextToHtml(text){
+  var lines=String(text||"").replace(/\r/g,"").split("\n");
+  var html=[],list=[];
+  function flush(){if(list.length){html.push("<ul>"+list.join("")+"</ul>");list=[];}}
+  lines.forEach(function(line){
+    var t=line.trim();
+    if(!t){flush();return;}
+    if(t.indexOf("## ")===0){flush();html.push("<h3>"+esc(t.slice(3))+"</h3>");return;}
+    if(t.indexOf("# ")===0){flush();html.push("<h2>"+esc(t.slice(2))+"</h2>");return;}
+    if(t.indexOf("- ")===0){list.push("<li>"+esc(t.slice(2))+"</li>");return;}
+    flush();html.push("<p>"+esc(t)+"</p>");
+  });
+  flush();
+  return html.join("");
+}
+function defaultDailyArticle(j){
+  if(!j)return "";
+  var out=[];
+  out.push("## 오늘 진행한 업무");
+  (j.entries||[]).forEach(function(e){out.push("- "+[e.client,e.project,e.title].filter(Boolean).join(" · ")+(e.details?" — "+e.details:""));});
+  out.push("");
+  out.push("## 주요 결정과 성과");
+  (j.decisions||[]).forEach(function(x){out.push("- "+String(x));});
+  out.push("");
+  out.push("## 미완료 및 확인 필요");
+  (j.pending||[]).forEach(function(x){out.push("- "+String(x));});
+  out.push("");
+  out.push("## 하루 회고");
+  if(j.reflection)out.push(j.reflection);
+  out.push("");
+  out.push("## 다음 우선순위");
+  (j.tomorrowPriorities||[]).forEach(function(x){out.push("- "+String(x));});
+  return out.join("\n");
+}
+function defaultWeeklyArticle(r){
+  if(!r)return "";
+  var out=[];
+  out.push("## 이번 주 핵심 내용");if(r.summary)out.push(r.summary);out.push("");
+  out.push("## 프로젝트별 진행사항");
+  (r.projects||[]).forEach(function(p){out.push("- "+[p.client,p.project].filter(Boolean).join(" · ")+" — "+(p.summary||p.detail||"")+" ("+(p.status||"확인 필요")+")");});
+  out.push("");out.push("## 완료한 업무");(r.completed||[]).forEach(function(x){out.push("- "+String(x));});
+  out.push("");out.push("## 미완료 및 이월 업무");(r.carryover||[]).forEach(function(x){out.push("- "+String(x));});
+  out.push("");out.push("## 주요 결정과 성과");(r.decisions||[]).forEach(function(x){out.push("- "+String(x));});
+  out.push("");out.push("## 다음 주 우선순위");(r.nextPriorities||[]).forEach(function(x){out.push("- "+String(x));});
+  return out.join("\n");
+}
+function reportEditorForm(kind,item){
+  item=item||{};
+  var isDaily=kind==="daily",isWeekly=kind==="weekly",isMonthly=kind==="monthly";
+  var key=isDaily?(item.date||today()):isWeekly?(item.weekStart||weekMonday(today())):(item.month||today().slice(0,7));
+  var title=item.manualTitle||item.title||(isDaily?"일간업무보고":isWeekly?"주간업무보고":"월간업무보고");
+  var summary=item.manualSummary||item.summary||"";
+  var body=item.manualBody||(isDaily?defaultDailyArticle(item):isWeekly?defaultWeeklyArticle(item):(item.body||""));
+  var keyLabel=isDaily?"날짜":isWeekly?"주 시작일":"월";
+  var inputType=isMonthly?"month":"date";
+  openModal(item.manualSaved?"보고서 수정":"보고서 작성",
+    '<form id="reportEditorForm" data-report-kind="'+kind+'">'+
+      '<label class="field"><span>'+keyLabel+'</span><input id="reportKey" type="'+inputType+'" value="'+esc(key)+'" required></label>'+
+      '<label class="field"><span>제목</span><input id="reportTitle" value="'+esc(title)+'" required></label>'+
+      '<label class="field"><span>한 줄 요약</span><textarea id="reportSummary" rows="3">'+esc(summary)+'</textarea></label>'+
+      '<label class="field"><span>본문</span><textarea id="reportBody" class="report-editor-body" rows="18" placeholder="일반 글처럼 작성하세요.\n\n## 소제목\n본문 내용\n- 목록 항목">'+esc(body)+'</textarea></label>'+
+      '<p class="report-editor-help">소제목은 ##, 목록은 - 로 시작하면 글 화면에서 정리되어 보입니다.</p>'+
+      '<div class="actions"><button type="button" class="btn" data-close-modal>취소</button><button class="btn primary" type="submit">저장</button></div>'+
+    '</form>');
+}
+async function saveManualReport(kind,data){
+  var local=loadLocalReports();
+  var keyName=kind==="daily"?"date":kind==="weekly"?"weekStart":"month";
+  var arr=local[kind]||[];
+  var idx=arr.findIndex(function(x){return x[keyName]===data[keyName];});
+  if(idx>=0)arr[idx]=Object.assign({},arr[idx],data,{manualSaved:true,manualUpdatedAt:new Date().toISOString()});
+  else arr.push(Object.assign({},data,{manualSaved:true,manualUpdatedAt:new Date().toISOString()}));
+  local[kind]=arr;
+  saveLocalReports(local);
+
+  if(kind==="daily"){
+    state.journals=mergeReportList(state.journals,arr,"date");
+    state.journalDate=data.date;
+    if(state.user&&db)await setDoc(doc(db,"dailyJournals",data.date),Object.assign({},data,{manualSaved:true,updatedAt:serverTimestamp(),updatedBy:state.user.uid}),{merge:true});
+  }else if(kind==="weekly"){
+    state.weeklyReports=mergeReportList(state.weeklyReports,arr,"weekStart");
+    state.weeklySelection=data.weekStart;
+    if(state.user&&db)await setDoc(doc(db,"weeklyReports",data.weekStart),Object.assign({},data,{manualSaved:true,updatedAt:serverTimestamp(),updatedBy:state.user.uid}),{merge:true});
+  }else{
+    state.monthlyReports=mergeReportList(state.monthlyReports,arr,"month");
+    state.monthlySelection=data.month;
+    if(state.user&&db)await setDoc(doc(db,"monthlyReports",data.month),Object.assign({},data,{manualSaved:true,updatedAt:serverTimestamp(),updatedBy:state.user.uid}),{merge:true});
+  }
+}
 function dailyReportMainPage(){
   var items=state.journals.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
   if(!state.journalDate&&items.length)state.journalDate=items[0].date;
   var j=items.find(function(x){return x.date===state.journalDate;})||items[0]||null;
   var entries=j&&Array.isArray(j.entries)?j.entries:[];
   return '<section class="simple-report-page">'+
-    '<div class="simple-page-head"><h1>일간업무보고</h1><p>매일 정리된 업무를 날짜별로 확인합니다.</p></div>'+
+    '<div class="simple-page-head report-page-head"><div><h1>일간업무보고</h1><p>매일 정리된 업무를 날짜별로 확인합니다.</p></div><div class="report-actions"><button data-report-new="daily">새 글 작성</button>'+(j?'<button data-report-edit="daily">수정</button>':'')+'</div></div>'+
     '<div class="simple-report-layout">'+
       '<aside class="simple-report-list">'+
         (items.length?items.map(function(x){return '<button class="'+(j&&x.date===j.date?"active":"")+'" data-daily-report-date="'+esc(x.date)+'"><strong>'+esc(x.date)+'</strong><span>'+esc(x.summary||"업무보고")+'</span></button>';}).join(""):'<div class="empty large">저장된 일간업무보고가 없습니다.</div>')+
       '</aside>'+
       '<div class="simple-report-detail">'+
       (j?
-        '<div class="simple-report-title"><div><h2>'+esc(j.date)+'</h2><p>'+esc(j.summary||"")+'</p></div><span>'+esc(j.automationSaved?"자동저장":(j.reviewStatus||"저장됨"))+'</span></div>'+
+        '<div class="simple-report-title"><div><h2>'+esc(j.manualTitle||j.date)+'</h2><p>'+esc(j.manualSummary||j.summary||"")+'</p></div><span>'+esc(j.manualSaved?"직접 저장":(j.automationSaved?"자동저장":(j.reviewStatus||"저장됨")))+'</span></div>'+(j.manualBody?'<section class="manual-article-body">'+articleTextToHtml(j.manualBody)+'</section>':'')+
         '<section><h3>오늘 진행한 업무</h3><div class="simple-work-list">'+(entries.length?entries.map(function(e){return '<article><div><strong>'+esc(e.title||"업무")+'</strong><p>'+esc([e.client,e.project].filter(Boolean).join(" · "))+'</p><small>'+esc(e.details||"")+'</small></div><span>'+esc(e.status||"확인 필요")+'</span></article>';}).join(""):'<p>등록된 업무가 없습니다.</p>')+'</div></section>'+
         '<section><h3>주요 결정·성과</h3>'+journalBullet(j.decisions)+'</section>'+
         '<section><h3>미완료·확인 필요</h3>'+journalBullet(j.pending)+'</section>'+
@@ -509,14 +626,14 @@ function weeklyReportMainPage(){
   if(!state.weeklySelection&&items.length)state.weeklySelection=items[0].weekStart;
   var r=items.find(function(x){return x.weekStart===state.weeklySelection;})||items[0]||null;
   return '<section class="article-report-page">'+
-    '<div class="article-report-head"><h1>주간업무보고</h1><p>주차별 업무를 하나의 글처럼 정리해서 확인합니다.</p></div>'+
+    '<div class="article-report-head report-page-head"><div><h1>주간업무보고</h1><p>주차별 업무를 하나의 글처럼 정리해서 확인합니다.</p></div><div class="report-actions"><button data-report-new="weekly">새 글 작성</button>'+(r?'<button data-report-edit="weekly">수정</button>':'')+'</div></div>'+
     '<div class="article-report-shell">'+
       '<aside class="article-report-archive">'+
         (items.length?items.map(function(x){return '<button class="'+(r&&x.weekStart===r.weekStart?"active":"")+'" data-weekly-report-date="'+esc(x.weekStart)+'"><strong>'+esc(x.weekStart)+' ~ '+esc(x.weekEnd||"")+'</strong><span>'+esc(x.title||"주간업무보고")+'</span></button>';}).join(""):'<p>저장된 주간업무보고가 없습니다.</p>')+
       '</aside>'+
       '<article class="report-article">'+
       (r?
-        '<header class="report-article-header"><p class="report-date">'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.title||"주간업무보고")+'</h2><p class="report-lead">'+esc(r.summary||"")+'</p></header>'+
+        '<header class="report-article-header"><p class="report-date">'+esc(r.weekStart)+' ~ '+esc(r.weekEnd||"")+'</p><h2>'+esc(r.manualTitle||r.title||"주간업무보고")+'</h2><p class="report-lead">'+esc(r.manualSummary||r.summary||"")+'</p></header>'+(r.manualBody?'<section class="manual-article-body">'+articleTextToHtml(r.manualBody)+'</section>':'')+
         '<section><h3>이번 주 핵심 내용</h3><p>'+esc(r.summary||"")+'</p></section>'+
         '<section><h3>프로젝트별 진행사항</h3>'+(Array.isArray(r.projects)&&r.projects.length?r.projects.map(function(p){return '<div class="report-paragraph"><h4>'+esc([p.client,p.project].filter(Boolean).join(" · ")||"프로젝트")+'</h4><p>'+esc(p.summary||p.detail||"")+'</p><p class="report-status-text">'+esc(p.status||"확인 필요")+'</p></div>';}).join(""):'<p>확인된 프로젝트 기록이 없습니다.</p>')+'</section>'+
         '<section><h3>완료한 업무</h3>'+weeklyBullets(r.completed)+'</section>'+
@@ -533,7 +650,8 @@ function weeklyReportMainPage(){
 }
 
 function monthlyReportPage(){
-  var month=today().slice(0,7);
+  var month=state.monthlySelection||today().slice(0,7);
+  var manual=state.monthlyReports.find(function(x){return x.month===month;})||null;
   var daily=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;}).sort(function(a,b){return (a.date||"").localeCompare(b.date||"");});
   var weekly=state.weeklyReports.filter(function(w){return (w.weekStart||"").slice(0,7)===month;}).sort(function(a,b){return (a.weekStart||"").localeCompare(b.weekStart||"");});
   var workItems=[];
@@ -551,9 +669,9 @@ function monthlyReportPage(){
   var topClients=Object.keys(clients).sort(function(a,b){return clients[b]-clients[a];}).slice(0,8);
   var monthText=month.replace("-","년 ")+"월";
   return '<section class="article-report-page monthly-article-page">'+
-    '<div class="article-report-head"><h1>월간업무보고</h1><p>한 달 동안의 업무 흐름을 글처럼 정리해서 확인합니다.</p></div>'+
+    '<div class="article-report-head report-page-head"><div><h1>월간업무보고</h1><p>한 달 동안의 업무 흐름을 글처럼 정리해서 확인합니다.</p></div><div class="report-actions"><button data-report-new="monthly">새 글 작성</button>'+(manual?'<button data-report-edit="monthly">수정</button>':'')+'</div></div>'+
     '<article class="report-article monthly-report-article">'+
-      '<header class="report-article-header"><p class="report-date">'+esc(monthText)+'</p><h2>'+esc(monthText)+' 업무 정리</h2><p class="report-lead">이번 달에는 '+workItems.length+'개의 업무 항목과 '+daily.length+'개의 일간업무보고, '+weekly.length+'개의 주간업무보고가 기록되어 있습니다.</p></header>'+
+      '<header class="report-article-header"><p class="report-date">'+esc(monthText)+'</p><h2>'+esc(manual&&manual.manualTitle?manual.manualTitle:(monthText+' 업무 정리'))+'</h2><p class="report-lead">'+esc(manual&&manual.manualSummary?manual.manualSummary:('이번 달에는 '+workItems.length+'개의 업무 항목과 '+daily.length+'개의 일간업무보고, '+weekly.length+'개의 주간업무보고가 기록되어 있습니다.'))+'</p></header>'+(manual&&manual.manualBody?'<section class="manual-article-body">'+articleTextToHtml(manual.manualBody)+'</section>':'')+
       '<section><h3>이번 달 업무 요약</h3><p>이번 달 업무는 일간업무보고와 주간업무보고에 기록된 내용을 기준으로 정리합니다. 실제 완료 여부가 명확하지 않은 항목은 기존 상태를 그대로 유지합니다.</p></section>'+
       '<section><h3>주요 거래처 및 프로젝트</h3>'+(topClients.length?topClients.map(function(name){return '<div class="report-paragraph"><h4>'+esc(name)+'</h4><p>이번 달 보고서에서 '+clients[name]+'개의 업무 기록이 확인됩니다.</p></div>';}).join(""):'<p>집계할 거래처 기록이 없습니다.</p>')+'</section>'+
       '<section><h3>주요 결정과 성과</h3>'+weeklyBullets(decisions)+'</section>'+
@@ -937,6 +1055,15 @@ function bindGlobal(){
     if(e.target.closest("[data-client-index]")){state.view="clients";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-finance-nav]")){state.view="finance";renderContent();$("#sidebar").classList.remove("open");return;}
 
+    var reportNew=e.target.closest("[data-report-new]");if(reportNew){var kind=reportNew.dataset.reportNew;reportEditorForm(kind,{});return;}
+    var reportEdit=e.target.closest("[data-report-edit]");if(reportEdit){
+      var kind=reportEdit.dataset.reportEdit,item=null;
+      if(kind==="daily")item=state.journals.find(function(x){return x.date===state.journalDate;})||null;
+      if(kind==="weekly")item=state.weeklyReports.find(function(x){return x.weekStart===state.weeklySelection;})||null;
+      if(kind==="monthly")item=state.monthlyReports.find(function(x){return x.month===state.monthlySelection;})||null;
+      reportEditorForm(kind,item||{});
+      return;
+    }
     var dailyDate=e.target.closest("[data-daily-report-date]");if(dailyDate){state.journalDate=dailyDate.dataset.dailyReportDate;state.view="daily";renderContent();return;}
     var weeklyDate=e.target.closest("[data-weekly-report-date]");if(weeklyDate){state.weeklySelection=weeklyDate.dataset.weeklyReportDate;state.view="weekly";renderContent();return;}
     var partner=e.target.closest("[data-partner-id]");if(partner){state.activePartnerId=partner.dataset.partnerId;state.view="partner";renderContent();return;}
@@ -990,6 +1117,23 @@ function bindGlobal(){
   var mobileMenu=$("#mobileClients");if(mobileMenu)mobileMenu.addEventListener("click",function(){$("#sidebar").classList.toggle("open");});
 
   document.addEventListener("submit",async function(e){
+    if(e.target.id==="reportEditorForm"){
+      e.preventDefault();
+      var kind=e.target.dataset.reportKind;
+      var key=$("#reportKey").value;
+      var data={manualTitle:$("#reportTitle").value.trim(),manualSummary:$("#reportSummary").value.trim(),manualBody:$("#reportBody").value};
+      if(kind==="daily"){data.date=key;data.reviewStatus="직접 저장";}
+      if(kind==="weekly"){data.weekStart=key;var d=new Date(key+"T12:00:00");d.setDate(d.getDate()+5);data.weekEnd=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");data.title=data.manualTitle;}
+      if(kind==="monthly"){data.month=key;}
+      try{
+        await saveManualReport(kind,data);
+        closeModal();
+        state.view=kind==="daily"?"daily":kind==="weekly"?"weekly":"monthly";
+        renderContent();
+        toast("보고서를 저장했습니다.");
+      }catch(err){console.error(err);toast("보고서를 저장하지 못했습니다.");}
+      return;
+    }
     if(e.target.id==="meetingManagerForm"){
       e.preventDefault();
       var cid=$("#meetingClient").value;
@@ -1058,6 +1202,7 @@ function enterTestWorkspace(){
   state.user=(auth&&auth.currentUser)||null;
   state.profile=state.user?state.profile:{name:"박재영",role:"TEST MODE"};
   if(!state.user)hydrateTestReportSnapshots();
+  hydrateLocalReports();
   $("#app").innerHTML=shell();
   bindGlobal();
   renderContent();
