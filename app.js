@@ -163,7 +163,7 @@ function shell(){
     '<aside id="sidebar" class="sidebar compact-main-nav">'+
       '<div class="nav-group-label">NINEWORKS CRM</div>'+
       '<nav class="desk-nav primary-four-nav">'+
-        '<button class="desk-nav-item '+(["desk","projects","journal","reports","weekly"].includes(state.view)?"active":"")+'" data-workdesk><span>01</span><strong>업무</strong><small>WORK / PROJECT / JOURNAL</small></button>'+
+        '<button class="desk-nav-item '+(["desk","projects","journal","reports","weekly"].includes(state.view)?"active":"")+'" data-workdesk><span>01</span><strong>업무</strong><small>오늘 업무 / 업무보고 / 프로젝트</small></button>'+
         '<button class="desk-nav-item '+(["finance"].includes(state.view)?"active":"")+'" data-finance-nav><span>02</span><strong>세무</strong><small>SALES / TAX / CONTRACT</small></button>'+
         '<button class="desk-nav-item '+(["clients","client","partner"].includes(state.view)?"active":"")+'" data-client-index><span>03</span><strong>거래처관리</strong><small>CLIENT / PARTNER MASTER</small></button>'+
         '<button class="desk-nav-item '+(state.view==="meetings"?"active":"")+'" data-meetings-nav><span>04</span><strong>미팅관리</strong><small>MEETING / FOLLOW-UP</small></button>'+
@@ -252,6 +252,22 @@ function briefingText(){
   if(out>0)parts.push("미수금 "+won(out)+"도 함께 확인이 필요합니다.");
   return parts.join(" ");
 }
+function workReportArchive(){
+  var daily=state.journals.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");}).slice(0,7);
+  var weekly=state.weeklyReports.slice().sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");}).slice(0,4);
+  return '<section class="overview-panel work-report-archive">'+
+    '<div class="overview-panel-head"><div><p class="eyebrow">WORK REPORT</p><h2>업무보고</h2><p>매일 23시 업무보고와 주간보고 기록을 날짜별로 확인합니다.</p></div><button class="section-link" data-reports-nav>전체 보고서 보기 ↗</button></div>'+
+    '<div class="work-report-columns">'+
+      '<div class="work-report-column"><div class="work-report-column-head"><strong>DAILY REPORT</strong><span>매일 23:00</span></div>'+
+      (daily.length?daily.map(function(j){return '<button class="work-report-row" data-journal-open="'+esc(j.date||"")+'"><time>'+esc(j.date||"")+'</time><div><strong>'+esc(j.summary||"일간 업무보고")+'</strong><small>'+esc(j.automationSaved?"AUTO SAVED":(j.reviewStatus||"SAVED"))+' · REV '+Number(j.revision||1)+'</small></div><span>보기</span></button>';}).join(""):'<div class="empty large">저장된 일간 업무보고가 없습니다.</div>')+
+      '</div>'+
+      '<div class="work-report-column"><div class="work-report-column-head"><strong>WEEKLY REPORT</strong><span>토요일 22:00</span></div>'+
+      (weekly.length?weekly.map(function(w){return '<button class="work-report-row" data-weekly-open="'+esc(w.weekStart||"")+'"><time>'+esc(w.weekStart||"")+'</time><div><strong>'+esc(w.summary||w.title||"주간 업무보고")+'</strong><small>'+esc(w.automationSaved?"AUTO SAVED":"SAVED")+' · REV '+Number(w.revision||1)+'</small></div><span>보기</span></button>';}).join(""):'<div class="empty large">저장된 주간 업무보고가 없습니다.</div>')+
+      '</div>'+
+    '</div>'+
+  '</section>';
+}
+
 function automationReportSnapshot(){
   var daily=state.journals.find(function(j){return j.date===today();})||null;
   var weekKey=weekMonday(today());
@@ -286,9 +302,15 @@ function dashboardPage(){
   var d=new Date(),dateLabel=d.toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"});
   return '<section class="desk-page overview-dashboard">'+
     '<section class="overview-head">'+
-      '<div><p class="eyebrow">NINEWORKS / WORK DESK</p><h1>업무 대시보드</h1><p>'+esc(dateLabel)+' · '+esc(briefingText().replace(/미수금[^.]*\.?/g,""))+'</p></div>'+
+      '<div><p class="eyebrow">NINEWORKS / WORK</p><h1>업무</h1><p>'+esc(dateLabel)+' · '+esc(briefingText().replace(/미수금[^.]*\.?/g,""))+'</p></div>'+
       '<div class="overview-status"><span>TODAY</span><strong>'+tasks.length+'</strong><small>OPEN WORK</small></div>'+
     '</section>'+
+    '<nav class="work-quick-nav" aria-label="업무 바로가기">'+
+      '<button class="active" data-workdesk><strong>오늘 업무</strong><small>Today</small></button>'+
+      '<button data-reports-nav><strong>업무보고</strong><small>Daily / Weekly</small></button>'+
+      '<button data-projects-nav><strong>프로젝트</strong><small>Status / Next</small></button>'+
+      '<button data-journal-nav><strong>업무일지</strong><small>Archive</small></button>'+
+    '</nav>'+
     '<section class="overview-kpis">'+
       '<div><span>01 / 오늘 할 일</span><strong>'+tasks.length+'</strong><small>현재 처리 대상</small></div>'+
       '<div><span>02 / 오늘 완료</span><strong>'+completedToday+'</strong><small>완료 처리</small></div>'+
@@ -301,6 +323,7 @@ function dashboardPage(){
       '<article class="overview-panel today-panel"><div class="overview-panel-head"><div><p class="eyebrow">TODAY WORK</p><h2>오늘 처리할 업무</h2></div><span>'+tasks.length+' WORKS</span></div><div class="desk-task-list">'+(tasks.length?tasks.slice(0,8).map(dashboardTaskMarkup).join(""):'<div class="empty large">현재 등록된 업무가 없습니다.</div>')+'</div></article>'+
       '<article class="overview-panel attention-panel"><div class="overview-panel-head"><div><p class="eyebrow">NEED ATTENTION</p><h2>확인이 필요한 것</h2></div><span>'+attention.length+' ITEMS</span></div><div class="attention-list">'+(attention.length?attention.slice(0,6).map(function(x){return '<button class="attention-item" '+(x.client?'data-client-id="'+esc(x.client.id)+'"':'')+'><span>'+esc(x.type)+'</span><strong>'+esc(x.title)+'</strong><small>'+esc(x.meta)+'</small></button>';}).join(""):'<div class="empty large">지금 바로 확인할 업무 이슈가 없습니다.</div>')+'</div></article>'+
     '</section>'+
+    workReportArchive()+
     '<section class="overview-panel project-overview-panel">'+
       '<div class="overview-panel-head"><div><p class="eyebrow">PROJECT STATUS</p><h2>현재 프로젝트</h2><p>진행 상태와 다음 액션을 우선순위 순으로 봅니다.</p></div><button class="section-link" data-projects-nav>ALL PROJECTS ↗</button></div>'+
       projectStatusTable(7)+
@@ -384,18 +407,17 @@ function reportsPage(){
   var month=today().slice(0,7);
   var monthLogs=state.logs.filter(function(l){return (l.date||dateKeyFromValue(l.createdAt)).slice(0,7)===month;});
   var monthMeetings=monthLogs.filter(function(l){return l.type==="meeting";}).length;
-  var monthJournals=state.journals.filter(function(j){return (j.date||"").slice(0,7)===month;}).length;
+  var daily=state.journals.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"");});
   var weekly=state.weeklyReports.slice().sort(function(a,b){return (b.weekStart||"").localeCompare(a.weekStart||"");});
   return '<section class="reports-page">'+
-    '<div class="reports-head"><div><p class="eyebrow">NINEWORKS / REPORTS</p><h1>업무 보고서</h1><p>일간 기록을 주간·월간 단위로 묶어 운영 현황을 확인합니다.</p></div></div>'+
-    '<div class="reports-summary"><div><span>THIS MONTH LOG</span><strong>'+monthLogs.length+'</strong></div><div><span>MEETINGS</span><strong>'+monthMeetings+'</strong></div><div><span>DAILY JOURNAL</span><strong>'+monthJournals+'</strong></div><div><span>WEEKLY REPORT</span><strong>'+weekly.length+'</strong></div></div>'+
-    '<div class="reports-grid">'+
-      '<section class="reports-panel"><div class="reports-panel-head"><div><p class="eyebrow">WEEKLY REPORT</p><h2>주간보고서</h2></div><button class="section-link" data-weekly-nav>OPEN WEEKLY ↗</button></div>'+
-      (weekly.length?weekly.slice(0,6).map(function(w){return '<button class="report-row" data-weekly-open="'+esc(w.weekStart||"")+'"><span>'+esc(w.weekStart||"")+'</span><strong>'+esc(w.summary||w.title||"주간업무보고서")+'</strong><small>'+esc((w.projects||[]).length)+' PROJECTS</small></button>';}).join(""):'<div class="empty large">저장된 주간보고서가 없습니다.</div>')+
+    '<div class="reports-head"><div><button class="back-link" data-workdesk>← 업무</button><p class="eyebrow">NINEWORKS / WORK REPORT</p><h1>업무보고</h1><p>매일 자동 생성되는 업무보고와 주간보고를 날짜별로 확인합니다.</p></div></div>'+
+    '<div class="reports-summary"><div><span>DAILY REPORT</span><strong>'+daily.length+'</strong><small>누적 일간보고</small></div><div><span>WEEKLY REPORT</span><strong>'+weekly.length+'</strong><small>누적 주간보고</small></div><div><span>THIS MONTH LOG</span><strong>'+monthLogs.length+'</strong><small>이번 달 업무기록</small></div><div><span>MEETINGS</span><strong>'+monthMeetings+'</strong><small>이번 달 미팅</small></div></div>'+
+    '<div class="reports-stack">'+
+      '<section class="reports-panel"><div class="reports-panel-head"><div><p class="eyebrow">01 / DAILY REPORT</p><h2>매일 업무보고</h2><p>매일 23:00 자동 정리 기록</p></div><button class="section-link" data-journal-nav>업무일지 전체 ↗</button></div>'+
+      (daily.length?'<div class="daily-report-list">'+daily.map(function(j){return '<button class="daily-report-row" data-journal-open="'+esc(j.date||"")+'"><time>'+esc(j.date||"")+'</time><div><strong>'+esc(j.summary||"일간 업무보고")+'</strong><small>'+esc(j.automationSaved?"AUTO SAVED":(j.reviewStatus||"SAVED"))+' · '+Number((j.entries||[]).length)+' WORK ITEMS · REV '+Number(j.revision||1)+'</small></div><span>열기 ↗</span></button>';}).join("")+'</div>':'<div class="empty large">아직 저장된 일간 업무보고가 없습니다.</div>')+
       '</section>'+
-      '<section class="reports-panel"><div class="reports-panel-head"><div><p class="eyebrow">MONTHLY SNAPSHOT</p><h2>'+esc(month.replace("-","."))+' 월간 현황</h2></div></div>'+
-        '<div class="monthly-snapshot"><div><span>WORK LOG</span><strong>'+monthLogs.filter(function(l){return l.type!=="meeting";}).length+'</strong></div><div><span>MEETING</span><strong>'+monthMeetings+'</strong></div><div><span>DAILY JOURNAL</span><strong>'+monthJournals+'</strong></div><div><span>ACTIVE CLIENT</span><strong>'+activeClientCount()+'</strong></div></div>'+
-        '<p class="monthly-note">월간보고서는 Daily·Weekly 데이터가 누적되는 구조로 확장합니다.</p>'+
+      '<section class="reports-panel"><div class="reports-panel-head"><div><p class="eyebrow">02 / WEEKLY REPORT</p><h2>주간 업무보고</h2><p>토요일 22:00 자동 정리 기록</p></div><button class="section-link" data-weekly-nav>주간보고 상세 ↗</button></div>'+
+      (weekly.length?weekly.map(function(w){return '<button class="report-row" data-weekly-open="'+esc(w.weekStart||"")+'"><span>'+esc(w.weekStart||"")+'</span><strong>'+esc(w.summary||w.title||"주간 업무보고")+'</strong><small>'+esc(w.automationSaved?"AUTO SAVED":"SAVED")+' · REV '+Number(w.revision||1)+'</small></button>';}).join(""):'<div class="empty large">저장된 주간 업무보고가 없습니다.</div>')+
       '</section>'+
     '</div>'+
   '</section>';
