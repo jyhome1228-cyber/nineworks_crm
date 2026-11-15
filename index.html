@@ -6,51 +6,20 @@
   <meta name="theme-color" content="#080808">
   <meta name="color-scheme" content="dark">
   <meta name="application-name" content="NINEWORKS CRM">
-  <meta name="description" content="NINEWORKS Work Desk">
+  <meta name="description" content="NINEWORKS CRM">
   <title>NINEWORKS CRM</title>
   <link rel="canonical" href="https://9workscrm.cloud/">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="./app.css?v=20261115-five-main">
+  <link rel="stylesheet" href="./app.css?v=20261115-openbuild">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-  <script src="./app.js?v=20261115-five-main" defer></script>
+  <script src="./app.js?v=20261115-openbuild" defer></script>
 </head>
 <body>
   <div id="app">
-    <div class="crm-gate">
-      <main class="crm-gate-center">
-        <img class="crm-gate-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS">
-        <h1>NINEWORKS CRM</h1>
-        <form id="fallbackLoginForm" class="crm-gate-form">
-          <input id="fallbackPasscode" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="PASSWORD" aria-label="비밀번호" required>
-          <button type="submit">ENTER</button>
-          <p id="fallbackMsg"></p>
-        </form>
-      </main>
-      <footer class="crm-gate-footer">© 2026 NINEWORKS</footer>
+    <div class="crm-build-loader">
+      <img src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS">
+      <span>NINEWORKS CRM</span>
     </div>
   </div>
-  <script>
-    (function(){
-      var form=document.getElementById('fallbackLoginForm');
-      if(!form)return;
-      form.addEventListener('submit',function(e){
-        e.preventDefault();
-        var input=document.getElementById('fallbackPasscode');
-        var msg=document.getElementById('fallbackMsg');
-        if(input.value.trim()!=='1228'){
-          msg.textContent='비밀번호를 확인하세요.';
-          input.value='';
-          input.focus();
-          return;
-        }
-        sessionStorage.setItem('nineworks_crm_unlocked','1');
-        msg.textContent='불러오는 중...';
-        setTimeout(function(){
-          if(window.NINEWORKS_BOOT) window.NINEWORKS_BOOT();
-        },50);
-      });
-    })();
-  </script>
 </body>
 </html>
