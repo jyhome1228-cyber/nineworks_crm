@@ -3045,3 +3045,66 @@ body{font-size:14px}
   .meeting-management-list article>div:nth-of-type(2),
   .meeting-management-list article>div:last-child{grid-column:2}
 }
+
+
+/* 2026-11-15 — AUTOMATED REPORT PERSISTENCE STATUS */
+.auto-report-panel{
+  margin-top:38px!important;
+}
+.auto-report-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-top:1px solid #202020;
+}
+.auto-report-grid>div{
+  min-height:86px;
+  padding:16px 14px;
+  border-right:1px solid #202020;
+}
+.auto-report-grid>div:last-child{border-right:0}
+.auto-report-grid span{
+  display:block;
+  color:#62615c;
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:.03em;
+}
+.auto-report-grid strong{
+  display:block;
+  margin-top:11px;
+  color:#e7e5de;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:-.025em;
+}
+.auto-report-grid small{
+  display:block;
+  margin-top:4px;
+  color:#565550;
+  font-size:9px;
+}
+.weekly-auto-status{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.weekly-auto-status span{
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:0 8px;
+  border:1px solid #343434;
+  color:#8d8c86;
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:.04em;
+}
+@media(max-width:760px){
+  .auto-report-grid{grid-template-columns:1fr}
+  .auto-report-grid>div{
+    min-height:auto;
+    border-right:0;
+    border-bottom:1px solid #202020;
+  }
+  .auto-report-grid>div:last-child{border-bottom:0}
+}
