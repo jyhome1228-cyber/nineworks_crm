@@ -3403,3 +3403,454 @@ body{
   .management-client-list strong,
   .management-partner-table strong{font-size:12.5px!important}
 }
+
+
+/* 2026-11-15 — USABILITY PASS / WORK + REPORTS FIRST */
+.content{
+  padding-left:52px!important;
+  padding-right:52px!important;
+}
+.overview-dashboard,
+.reports-page,
+.projects-page,
+.journal-page,
+.tax-page,
+.client-management-page,
+.meeting-management-page{
+  max-width:1240px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+/* Larger top-level type */
+.overview-head h1,
+.reports-head h1,
+.projects-head h1,
+.journal-hero h1,
+.tax-head h1,
+.client-management-head h1,
+.meeting-management-head h1,
+.client-hero.compact-client h1,
+.partner-detail-head h1{
+  font-size:36px!important;
+  line-height:1.28!important;
+}
+.overview-head p:last-child,
+.reports-head p:last-child,
+.projects-head p:last-child,
+.journal-hero p,
+.tax-head p:last-child,
+.client-management-head p:last-child,
+.meeting-management-head p:last-child{
+  font-size:14px!important;
+  line-height:1.75!important;
+}
+
+/* Sidebar should read like navigation, not metadata */
+.sidebar{
+  width:250px!important;
+}
+.workspace{
+  grid-template-columns:250px minmax(0,1fr)!important;
+}
+.primary-four-nav .desk-nav-item{
+  min-height:70px!important;
+  padding:14px 5px!important;
+}
+.primary-four-nav .desk-nav-item span{
+  font-size:11px!important;
+}
+.primary-four-nav .desk-nav-item strong{
+  font-size:15px!important;
+  font-weight:500!important;
+}
+.primary-four-nav .desk-nav-item small{
+  font-size:11px!important;
+  margin-top:4px!important;
+}
+.side-intro h2{
+  font-size:22px!important;
+}
+.side-intro p:last-child{
+  font-size:13px!important;
+}
+.client-search input{
+  font-size:13px!important;
+}
+.client-button{
+  min-height:54px!important;
+}
+.client-button strong{
+  font-size:14px!important;
+}
+.client-button small,
+.client-count{
+  font-size:11px!important;
+}
+
+/* Header */
+.site-header{
+  height:82px!important;
+  padding-left:30px!important;
+  padding-right:30px!important;
+}
+.site-kicker,
+.site-meta{
+  font-size:12px!important;
+}
+.header-action,
+.header-menu{
+  font-size:12px!important;
+  min-height:38px!important;
+}
+
+/* Work quick nav */
+.work-quick-nav{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  margin-top:30px;
+  border-top:1px solid #2a2a2a;
+  border-bottom:1px solid #2a2a2a;
+}
+.work-quick-nav button{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  min-height:74px;
+  padding:16px 18px;
+  border:0;
+  border-right:1px solid #242424;
+  background:transparent;
+  color:#aaa9a3;
+  text-align:left;
+  cursor:pointer;
+}
+.work-quick-nav button:last-child{border-right:0}
+.work-quick-nav button:hover,
+.work-quick-nav button.active{
+  background:#111;
+  color:#fff;
+}
+.work-quick-nav strong{
+  font-size:15px!important;
+  font-weight:500;
+}
+.work-quick-nav small{
+  font-size:11px!important;
+  color:#6f6e68;
+  white-space:nowrap;
+}
+
+/* KPI readability */
+.overview-kpis{
+  margin-top:0!important;
+}
+.overview-kpis>div{
+  min-height:104px!important;
+  padding:18px 16px!important;
+}
+.overview-kpis span{
+  font-size:11.5px!important;
+}
+.overview-kpis strong{
+  font-size:28px!important;
+}
+.overview-kpis small{
+  font-size:11px!important;
+}
+
+/* Panels */
+.overview-panel-head,
+.reports-panel-head{
+  padding:20px 0!important;
+}
+.overview-panel-head h2,
+.reports-panel-head h2,
+.management-section-head h2,
+.tax-panel-head h2,
+.nw-section.compact-section .nw-section-head h2{
+  font-size:21px!important;
+}
+.overview-panel-head p,
+.reports-panel-head p,
+.nw-section.compact-section .nw-section-head p:last-child{
+  font-size:12.5px!important;
+}
+.overview-panel-head>span,
+.reports-panel-head>span{
+  font-size:11px!important;
+}
+
+/* Today's work */
+.desk-task{
+  min-height:68px!important;
+  padding:18px 0!important;
+}
+.desk-task-main strong{
+  font-size:15px!important;
+}
+.desk-task-main p{
+  font-size:12.5px!important;
+}
+.desk-task-meta span,
+.desk-task time{
+  font-size:11px!important;
+}
+
+/* Need attention */
+.attention-item{
+  min-height:70px!important;
+  padding:16px 0!important;
+}
+.attention-item strong{
+  font-size:14px!important;
+}
+.attention-item small,
+.attention-item>span{
+  font-size:11px!important;
+}
+
+/* Work report archive on work home */
+.work-report-archive{
+  margin-top:44px!important;
+}
+.work-report-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:32px;
+  border-top:1px solid #252525;
+}
+.work-report-column{
+  min-width:0;
+}
+.work-report-column-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  min-height:52px;
+  border-bottom:1px solid #222;
+}
+.work-report-column-head strong{
+  font-size:12px!important;
+  font-weight:500;
+  color:#ddd;
+}
+.work-report-column-head span{
+  font-size:11px!important;
+  color:#74736d;
+}
+.work-report-row{
+  display:grid;
+  grid-template-columns:104px minmax(0,1fr) auto;
+  gap:16px;
+  align-items:center;
+  width:100%;
+  min-height:70px;
+  padding:14px 0;
+  border:0;
+  border-bottom:1px solid #1e1e1e;
+  background:transparent;
+  color:#999;
+  text-align:left;
+  cursor:pointer;
+}
+.work-report-row:hover{
+  background:#0d0d0d;
+}
+.work-report-row time{
+  font-size:12px!important;
+  color:#888;
+}
+.work-report-row strong{
+  display:block;
+  font-size:14px!important;
+  line-height:1.5;
+  color:#e3e1da;
+  font-weight:500;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.work-report-row small{
+  display:block;
+  margin-top:4px;
+  font-size:11px!important;
+  color:#6f6e68;
+}
+.work-report-row>span{
+  font-size:11px!important;
+  color:#8e8d87;
+}
+
+/* Full reports page */
+.reports-stack{
+  display:grid;
+  gap:46px;
+  margin-top:44px;
+}
+.reports-summary>div{
+  min-height:108px!important;
+  padding:18px 16px!important;
+}
+.reports-summary span{
+  font-size:11.5px!important;
+}
+.reports-summary strong{
+  font-size:27px!important;
+}
+.reports-summary small{
+  font-size:11px!important;
+}
+.daily-report-list{
+  border-top:1px solid #252525;
+}
+.daily-report-row{
+  display:grid;
+  grid-template-columns:120px minmax(0,1fr) auto;
+  gap:20px;
+  align-items:center;
+  width:100%;
+  min-height:82px;
+  padding:16px 0;
+  border:0;
+  border-bottom:1px solid #202020;
+  background:transparent;
+  color:#999;
+  text-align:left;
+  cursor:pointer;
+}
+.daily-report-row:hover{background:#0e0e0e}
+.daily-report-row time{
+  font-size:13px!important;
+  color:#8c8b85;
+}
+.daily-report-row strong{
+  display:block;
+  color:#e7e5df;
+  font-size:15px!important;
+  font-weight:500;
+  line-height:1.5;
+}
+.daily-report-row small{
+  display:block;
+  margin-top:5px;
+  font-size:11.5px!important;
+  color:#74736d;
+}
+.daily-report-row>span{
+  font-size:11.5px!important;
+  color:#aaa9a3;
+}
+.report-row{
+  min-height:72px!important;
+  padding:16px 0!important;
+}
+.report-row strong{
+  font-size:14px!important;
+}
+.report-row span,
+.report-row small{
+  font-size:11.5px!important;
+}
+
+/* Project and client tables */
+.project-status-head,
+.management-partner-head,
+.client-work-head{
+  font-size:11.5px!important;
+}
+.project-status-row{
+  min-height:64px!important;
+}
+.project-status-row strong,
+.management-client-list strong,
+.management-partner-table strong,
+.client-work-row strong{
+  font-size:14px!important;
+}
+.project-status-row span,
+.project-status-row b,
+.project-status-row em,
+.project-status-row time,
+.management-client-list span,
+.management-client-list em,
+.management-partner-table>button span,
+.management-partner-table>button em{
+  font-size:12px!important;
+}
+.management-client-list>button,
+.management-partner-table>button{
+  min-height:62px!important;
+}
+.management-client-list small,
+.management-partner-table small{
+  font-size:11px!important;
+}
+
+/* Journal */
+.journal-head h2{
+  font-size:22px!important;
+}
+.journal-head p,
+.journal-prose,
+.journal-work p{
+  font-size:13px!important;
+}
+.journal-work strong{
+  font-size:14px!important;
+}
+.journal-work span,
+.journal-work small,
+.journal-work em,
+.journal-status span{
+  font-size:11.5px!important;
+}
+.journal-date-row{
+  min-height:62px!important;
+}
+.journal-date-row span,
+.journal-date-row strong{
+  font-size:12.5px!important;
+}
+.journal-date-row small{
+  font-size:11px!important;
+}
+
+/* General */
+.btn,
+.section-link,
+.back-link,
+.journal-export{
+  font-size:12px!important;
+}
+.empty,
+.empty.large,
+.partner-import-empty p,
+.journal-empty,
+.weekly-footnote{
+  font-size:12.5px!important;
+}
+
+@media(max-width:900px){
+  .content{padding-left:24px!important;padding-right:24px!important}
+  .work-quick-nav{grid-template-columns:1fr 1fr}
+  .work-quick-nav button:nth-child(2){border-right:0}
+  .work-quick-nav button:nth-child(-n+2){border-bottom:1px solid #242424}
+  .work-report-columns{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .overview-head h1,
+  .reports-head h1,
+  .projects-head h1,
+  .journal-hero h1,
+  .tax-head h1,
+  .client-management-head h1,
+  .meeting-management-head h1{font-size:30px!important}
+  .work-quick-nav strong{font-size:14px!important}
+  .daily-report-row,
+  .work-report-row{grid-template-columns:88px minmax(0,1fr)}
+  .daily-report-row>span,
+  .work-report-row>span{display:none}
+}
