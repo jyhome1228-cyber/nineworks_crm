@@ -99,14 +99,15 @@ function shell(){
     '<aside id="sidebar" class="sidebar">'+
       '<div class="nav-group-label">WORK</div>'+
       '<nav class="desk-nav">'+
-        '<button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>WORK DESK</strong><small>TODAY & OVERVIEW</small></button>'+
-        '<button class="desk-nav-item '+(["clients","client"].includes(state.view)?"active":"")+'" data-client-index><span>02</span><strong>CLIENTS</strong><small>WORK & MEETING</small></button>'+
-        '<button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>03</span><strong>JOURNAL</strong><small>DAILY / HISTORY</small></button>'+
-        '<button class="desk-nav-item '+(state.view==="weekly"?"active":"")+'" data-weekly-nav><span>04</span><strong>WEEKLY REPORT</strong><small>WEEKLY / HISTORY</small></button>'+
+        '<button class="desk-nav-item '+(state.view==="desk"?"active":"")+'" data-workdesk><span>01</span><strong>DESK</strong><small>TODAY / OVERVIEW</small></button>'+
+        '<button class="desk-nav-item '+(state.view==="projects"?"active":"")+'" data-projects-nav><span>02</span><strong>PROJECTS</strong><small>STATUS / NEXT ACTION</small></button>'+
+        '<button class="desk-nav-item '+(["clients","client"].includes(state.view)?"active":"")+'" data-client-index><span>03</span><strong>CLIENTS</strong><small>WORK / MEETING</small></button>'+
+        '<button class="desk-nav-item '+(state.view==="journal"?"active":"")+'" data-journal-nav><span>04</span><strong>JOURNAL</strong><small>DAILY / WEEKLY / MONTHLY</small></button>'+
       '</nav>'+
       '<div class="nav-group-label business">BUSINESS</div>'+
       '<nav class="desk-nav business-nav">'+
         '<button class="desk-nav-item '+(["finance","partner"].includes(state.view)?"active":"")+'" data-finance-nav><span>05</span><strong>FINANCE & TAX</strong><small>SALES / INVOICE / CONTRACT</small></button>'+
+        '<button class="desk-nav-item '+(["reports","weekly"].includes(state.view)?"active":"")+'" data-reports-nav><span>06</span><strong>REPORTS</strong><small>WEEKLY / MONTHLY</small></button>'+
       '</nav>'+
       '<div class="client-side-area">'+
         '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 진행 중인 클라이언트 업무를 빠르게 확인합니다.</p></div>'+
