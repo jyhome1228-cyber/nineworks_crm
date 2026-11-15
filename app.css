@@ -4770,3 +4770,97 @@ body{
   .info-popup-grid>div:nth-child(-n+2){border-bottom:1px solid #292929}
   .info-popup-list>div{grid-template-columns:92px minmax(0,1fr)}
 }
+
+
+/* 2026-11-15 — TAX-BASED PARTNER LIST */
+.partner-finance-head,
+.partner-finance-row{
+  display:grid;
+  grid-template-columns:minmax(220px,1.35fr) 130px 130px 110px minmax(220px,1.5fr);
+  gap:18px;
+  align-items:center;
+}
+.partner-finance-head{
+  padding:12px 0;
+  border-bottom:1px solid #292929;
+  color:#75746e;
+  font-size:11px;
+}
+.partner-finance-row{
+  width:100%;
+  min-height:66px;
+  padding:15px 0;
+  border:0;
+  border-bottom:1px solid #202020;
+  background:transparent;
+  color:#9b9a94;
+  text-align:left;
+  cursor:pointer;
+}
+.partner-finance-row:hover{
+  background:#0e0e0e;
+}
+.partner-finance-row strong{
+  display:block;
+  color:#e6e4dd;
+  font-size:14px!important;
+  font-weight:500;
+}
+.partner-finance-row small{
+  display:block;
+  margin-top:4px;
+  color:#77766f;
+  font-size:10.5px!important;
+}
+.partner-finance-row span,
+.partner-finance-row time,
+.partner-finance-row em{
+  color:#9b9a94;
+  font-size:12px!important;
+  font-style:normal;
+}
+.partner-finance-row span:nth-child(2),
+.partner-finance-row span:nth-child(3){
+  color:#d2d0c9;
+  font-variant-numeric:tabular-nums;
+}
+.partner-finance-row em{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.past-partners{
+  margin-top:58px!important;
+}
+.past-partners .partner-finance-row strong{
+  color:#c2c0ba;
+}
+.past-partners .partner-finance-row small,
+.past-partners .partner-finance-row span,
+.past-partners .partner-finance-row time,
+.past-partners .partner-finance-row em{
+  color:#6f6e68;
+}
+@media(max-width:1100px){
+  .partner-finance-head{
+    display:none;
+  }
+  .partner-finance-row{
+    grid-template-columns:minmax(180px,1fr) 120px 110px;
+  }
+  .partner-finance-row span:nth-child(3),
+  .partner-finance-row em{
+    display:none;
+  }
+}
+@media(max-width:700px){
+  .partner-finance-row{
+    grid-template-columns:minmax(0,1fr) 105px;
+    gap:12px;
+  }
+  .partner-finance-row span:nth-child(3),
+  .partner-finance-row time,
+  .partner-finance-row em{
+    display:none;
+  }
+}
