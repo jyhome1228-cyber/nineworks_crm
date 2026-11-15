@@ -2279,3 +2279,177 @@ body{font-size:14px}
   .journal-hero h1,
   .weekly-hero h1{font-size:24px!important}
 }
+
+
+/* 2026-11-15 — SIMPLE CRM PASSCODE GATE */
+.crm-gate{
+  position:relative;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#080808;
+  color:#f5f5f5;
+  overflow:hidden;
+}
+.crm-gate:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(ellipse 42% 34% at 50% 48%,rgba(52,56,64,.16),transparent 72%);
+}
+.crm-gate-splash{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  background:#080808;
+  transition:opacity .5s ease,visibility .5s ease;
+}
+.crm-gate-splash:after{
+  content:"NINEWORKS CRM";
+  color:#777;
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.14em;
+}
+.crm-gate-splash img{
+  width:158px;
+  filter:brightness(0) invert(1);
+  animation:nwCrmIntro .85s ease both;
+}
+.crm-gate-splash.done{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+@keyframes nwCrmIntro{
+  from{opacity:0;transform:translateY(5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.crm-gate-center{
+  position:relative;
+  z-index:1;
+  width:min(calc(100% - 40px),340px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.crm-gate-logo{
+  width:126px;
+  height:auto;
+  filter:brightness(0) invert(1);
+  margin-bottom:28px;
+}
+.crm-gate-label{display:none}
+.crm-gate-center h1{
+  margin:0 0 24px!important;
+  font-size:20px!important;
+  line-height:1.4!important;
+  letter-spacing:-.035em!important;
+  font-weight:500!important;
+}
+.crm-gate-form{
+  width:100%;
+  display:grid;
+  gap:9px;
+}
+.crm-gate-form input{
+  width:100%;
+  height:42px;
+  border:1px solid #3c3c3c;
+  border-radius:0;
+  background:#111;
+  color:#f5f5f5;
+  text-align:center;
+  font-size:13px!important;
+  letter-spacing:.18em;
+  outline:none;
+}
+.crm-gate-form input::placeholder{
+  color:#555;
+  font-size:10px;
+  letter-spacing:.12em;
+}
+.crm-gate-form input:focus{border-color:#aaa}
+.crm-gate-form button{
+  height:42px;
+  border:1px solid #f1f1f1;
+  border-radius:0;
+  background:#f1f1f1;
+  color:#111;
+  font-size:11px!important;
+  font-weight:500!important;
+  cursor:pointer;
+}
+.crm-gate-form button:hover{background:#d8d8d8;border-color:#d8d8d8}
+.crm-gate-form #loginMsg{
+  min-height:16px;
+  margin:2px 0 0;
+  color:#8d8d8d;
+  font-size:10px;
+  line-height:1.6;
+}
+.firebase-recovery{
+  width:100%;
+  margin-top:24px;
+  padding-top:22px;
+  border-top:1px solid #292929;
+}
+.firebase-recovery>p{
+  margin:0 0 14px;
+  color:#777;
+  font-size:10px;
+  line-height:1.7;
+}
+.firebase-recovery form{
+  display:grid;
+  gap:8px;
+}
+.firebase-recovery input{
+  width:100%;
+  height:40px;
+  border:1px solid #383838;
+  border-radius:0;
+  background:#111;
+  color:#eee;
+  padding:0 11px;
+  font-size:11px!important;
+  outline:none;
+}
+.firebase-recovery button{
+  height:40px;
+  border:1px solid #444;
+  background:transparent;
+  color:#ddd;
+  font-size:10px!important;
+}
+.firebase-recovery small{
+  color:#777;
+  font-size:9px;
+}
+.crm-gate-footer{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:26px;
+  z-index:1;
+  text-align:center;
+  color:#505050;
+  font-size:9px;
+  letter-spacing:.03em;
+}
+
+@media(max-width:600px){
+  .crm-gate-center{width:min(calc(100% - 44px),320px)}
+  .crm-gate-logo{width:116px;margin-bottom:24px}
+  .crm-gate-center h1{font-size:18px!important;margin-bottom:20px!important}
+  .crm-gate-splash img{width:145px}
+}
