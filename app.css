@@ -1604,3 +1604,100 @@ aside .panel{border-top-color:#323232}
 .weekly-client-load span{color:#b3b0aa;font-size:12px}
 .weekly-client-load strong{font-size:13px;font-weight:600}
 @media(max-width:700px){.weekly-client-load{grid-template-columns:1fr}}
+
+
+/* PROJECTS & REPORTS — 2026-11-15 */
+.projects-page,.reports-page{max-width:1380px;margin:0 auto;padding:52px 0 84px}
+.projects-head,.reports-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:28px;
+  padding-bottom:28px;border-bottom:1px solid #262626
+}
+.projects-head h1,.reports-head h1{
+  margin:8px 0 10px;font-size:clamp(34px,4vw,50px);line-height:1;letter-spacing:-.055em;font-weight:500
+}
+.projects-head p:last-child,.reports-head p:last-child{
+  max-width:700px;margin:0;color:#74736d;font-size:9px;line-height:1.7
+}
+.projects-summary,.reports-summary{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid #262626
+}
+.projects-summary>div,.reports-summary>div{
+  min-height:96px;padding:16px 14px;border-right:1px solid #262626
+}
+.projects-summary>div:last-child,.reports-summary>div:last-child{border-right:0}
+.projects-summary span,.reports-summary span{
+  display:block;color:#55544f;font-size:7px;font-weight:700;letter-spacing:.09em
+}
+.projects-summary strong,.reports-summary strong{
+  display:block;margin-top:14px;font-size:23px;font-weight:500;letter-spacing:-.04em
+}
+.projects-section{margin-top:48px;border-top:1px solid #292929}
+.projects-section-head{padding:17px 0;border-bottom:1px solid #202020}
+.projects-section-head h2{margin:7px 0 0;font-size:22px;font-weight:500;letter-spacing:-.04em}
+
+.project-overview-panel{margin-top:54px}
+.project-status-table{width:100%}
+.project-status-head,.project-status-row{
+  display:grid;
+  grid-template-columns:minmax(130px,.9fr) minmax(150px,1.1fr) 74px minmax(180px,1.4fr) 62px;
+  gap:14px;align-items:center
+}
+.project-status-head{
+  padding:12px 0;border-bottom:1px solid #252525;color:#4f4e49;font-size:7px;font-weight:700;letter-spacing:.08em
+}
+.project-status-row{
+  width:100%;padding:15px 0;border:0;border-bottom:1px solid #1d1d1d;background:transparent;color:#8e8d86;text-align:left
+}
+.project-status-row:hover{background:#080808}
+.project-status-row>span{font-size:8px;color:#77766f}
+.project-status-row strong{font-size:9px;color:#e6e3dc;font-weight:600}
+.project-status-row b{font-size:9px;font-weight:500;color:#a09e97;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.project-status-row time{font-size:8px;color:#5e5d57}
+.project-status-row em{
+  display:inline-flex;width:max-content;min-height:20px;align-items:center;padding:0 7px;
+  border:1px solid #2d2d2d;font-style:normal;font-size:7px;color:#88867e
+}
+.project-status-row em[data-status="지연"]{border-color:#654a47;color:#c18d86}
+.project-status-row em[data-status="진행"]{border-color:#49483f;color:#bbb6a8}
+.project-status-row em[data-status="검수"]{border-color:#424b44;color:#92a494}
+
+.reports-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:38px;margin-top:48px}
+.reports-panel{border-top:1px solid #292929}
+.reports-panel-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:17px 0;border-bottom:1px solid #202020
+}
+.reports-panel-head h2{margin:7px 0 0;font-size:22px;font-weight:500;letter-spacing:-.04em}
+.report-row{
+  display:grid;grid-template-columns:92px minmax(0,1fr) 72px;gap:16px;align-items:center;
+  width:100%;padding:15px 0;border:0;border-bottom:1px solid #1d1d1d;background:transparent;color:#8e8d86;text-align:left
+}
+.report-row:hover{background:#080808}
+.report-row>span{font-size:8px;color:#62615b}
+.report-row strong{font-size:9px;color:#dfddd6;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.report-row small{text-align:right;font-size:7px;color:#4d4c47}
+.monthly-snapshot{display:grid;grid-template-columns:1fr 1fr}
+.monthly-snapshot>div{min-height:88px;padding:15px 13px;border-right:1px solid #202020;border-bottom:1px solid #202020}
+.monthly-snapshot>div:nth-child(2n){border-right:0}
+.monthly-snapshot span{display:block;color:#53524d;font-size:7px;font-weight:700;letter-spacing:.08em}
+.monthly-snapshot strong{display:block;margin-top:12px;font-size:18px;font-weight:500}
+.monthly-note{margin:15px 0 0;color:#55544f;font-size:8px;line-height:1.6}
+
+@media(max-width:1050px){
+  .project-status-head{display:none}
+  .project-status-row{grid-template-columns:minmax(120px,1fr) minmax(160px,1.2fr) 70px 1fr}
+  .project-status-row time{display:none}
+  .reports-grid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .projects-page,.reports-page{padding-top:38px}
+  .projects-head h1,.reports-head h1{font-size:34px}
+  .projects-summary,.reports-summary{grid-template-columns:1fr 1fr}
+  .projects-summary>div,.reports-summary>div{min-height:84px;padding:13px 11px;border-bottom:1px solid #262626}
+  .project-status-row{grid-template-columns:1fr 68px;gap:8px;padding:14px 2px}
+  .project-status-row>span,.project-status-row b{grid-column:1}
+  .project-status-row strong{grid-column:1}
+  .project-status-row em{grid-column:2;grid-row:1 / span 3}
+  .report-row{grid-template-columns:74px 1fr}
+  .report-row small{display:none}
+  .monthly-snapshot{grid-template-columns:1fr 1fr}
+}
