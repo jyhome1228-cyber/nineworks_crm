@@ -971,8 +971,7 @@ function renderContent(){
   if(state.view==="monthly"){$("#content").innerHTML=monthlyReportPage();return;}
   if(state.view==="finance"){$("#content").innerHTML=taxPage();return;}
   if(state.view==="clients"){$("#content").innerHTML=clientManagementPage();var addInline=$("#addClientInline");if(addInline)addInline.addEventListener("click",function(){clientForm({});});var ms=$("#managementSearch");if(ms)ms.addEventListener("input",function(e){var v=e.target.value,pos=e.target.selectionStart||v.length;state.query=v;renderContent();var next=$("#managementSearch");if(next){next.focus();try{next.setSelectionRange(pos,pos);}catch(_){}}});return;}
-  if(state.view==="partner"){var p=activePartner();$("#content").innerHTML=p?partnerPage(p):clientManagementPage();return;}
-  if(state.view==="client"){$("#content").innerHTML=c?clientPage(c):clientManagementPage();return;}
+
 
   state.view="daily";
   $("#content").innerHTML=dailyReportMainPage();
@@ -982,6 +981,60 @@ function openModal(title,body){
   $("#modalBackdrop").hidden=false;$("#modal").hidden=false;document.body.style.overflow="hidden";
 }
 function closeModal(){$("#modalBackdrop").hidden=true;$("#modal").hidden=true;document.body.style.overflow="";}
+
+function clientInfoModal(c){
+  if(!c)return;
+  var open=clientTodos(c).length;
+  var logs=clientLogs(c,"work");
+  var meetings=clientLogs(c,"meeting");
+  var last=logs[0]||meetings[0]||null;
+  openModal("거래처 정보",
+    '<div class="info-popup">'+
+      '<div class="info-popup-title"><h3>'+esc(clientName(c))+'</h3><p>'+esc(c.type||"클라이언트")+'</p></div>'+
+      '<div class="info-popup-grid">'+
+        '<div><span>진행 업무</span><strong>'+open+'건</strong></div>'+
+        '<div><span>작업 기록</span><strong>'+logs.length+'건</strong></div>'+
+        '<div><span>미팅 기록</span><strong>'+meetings.length+'건</strong></div>'+
+        '<div><span>최근 업데이트</span><strong>'+esc(last?formatDate(last.date):formatDate(c.lastDate||""))+'</strong></div>'+
+      '</div>'+
+      '<div class="info-popup-list">'+
+        '<div><span>담당자</span><strong>'+esc(c.contact||c.manager||"—")+'</strong></div>'+
+        '<div><span>연락처</span><strong>'+esc(c.phone||"—")+'</strong></div>'+
+        '<div><span>이메일</span><strong>'+esc(c.email||"—")+'</strong></div>'+
+        '<div><span>업무 설명</span><strong>'+esc(c.work||c.description||"—")+'</strong></div>'+
+        '<div><span>메모</span><strong>'+esc(c.note||"—")+'</strong></div>'+
+      '</div>'+
+      (!c.snapshot?'<div class="info-popup-actions"><button class="btn" data-client-edit-popup="'+esc(c.id)+'">정보 수정</button></div>':'')+
+    '</div>'
+  );
+}
+
+function partnerInfoModal(p){
+  if(!p)return;
+  var snapshot=String(p.id||"").indexOf("snapshot_")===0;
+  openModal("거래처 정보",
+    '<div class="info-popup">'+
+      '<div class="info-popup-title"><h3>'+esc(p.name||"거래처")+'</h3><p>'+esc(snapshot?(p.status||"세금계산서 기준"):(p.status||"거래처"))+'</p></div>'+
+      '<div class="info-popup-grid">'+
+        '<div><span>최근 거래</span><strong>'+esc(p.lastDate||"—")+'</strong></div>'+
+        '<div><span>2025 공급가액</span><strong>'+won(p.sales2025||0)+'</strong></div>'+
+        '<div><span>2026 공급가액</span><strong>'+won(p.sales2026||0)+'</strong></div>'+
+        '<div><span>발행 기록</span><strong>'+Number(p.invoiceCount||0)+'건</strong></div>'+
+      '</div>'+
+      '<div class="info-popup-list">'+
+        '<div><span>사업자등록번호</span><strong>'+esc(snapshot?"—":maskBusinessNumber(p.businessNumber))+'</strong></div>'+
+        '<div><span>대표자</span><strong>'+esc(p.representative||"—")+'</strong></div>'+
+        '<div><span>주소</span><strong>'+esc(p.address||"—")+'</strong></div>'+
+        '<div><span>업태</span><strong>'+esc(p.industry||"—")+'</strong></div>'+
+        '<div><span>종목</span><strong>'+esc(p.category||"—")+'</strong></div>'+
+        '<div><span>담당자</span><strong>'+esc(p.manager||"—")+'</strong></div>'+
+        '<div><span>연락처</span><strong>'+esc(p.phone||"—")+'</strong></div>'+
+        '<div><span>이메일</span><strong>'+esc(p.email||"—")+'</strong></div>'+
+      '</div>'+
+      (!snapshot?'<div class="info-popup-actions"><button class="btn" data-partner-edit-popup="'+esc(p.id)+'">정보 수정</button></div>':'')+
+    '</div>'
+  );
+}
 
 function clientForm(c){
   c=c||{};
@@ -1019,7 +1072,7 @@ async function completeTask(id){
 
 function bindGlobal(){
   document.addEventListener("click",function(e){
-    var cb=e.target.closest("[data-client-id]");if(cb){state.activeClientId=cb.dataset.clientId;state.view="client";renderContent();$("#sidebar").classList.remove("open");return;}
+    var cb=e.target.closest("[data-client-id]");if(cb){var cc=effectiveClients().find(function(x){return x.id===cb.dataset.clientId;});if(cc)clientInfoModal(cc);return;}
     if(e.target.closest("[data-close-modal]")||e.target.id==="modalBackdrop"){closeModal();return;}
     if(e.target.closest("[data-daily-nav]")){state.view="daily";renderContent();$("#sidebar").classList.remove("open");return;}
     if(e.target.closest("[data-monthly-nav]")){state.view="monthly";renderContent();$("#sidebar").classList.remove("open");return;}
@@ -1037,7 +1090,9 @@ function bindGlobal(){
     }
     var dailyDate=e.target.closest("[data-daily-report-date]");if(dailyDate){state.journalDate=dailyDate.dataset.dailyReportDate;state.view="daily";renderContent();return;}
     var weeklyDate=e.target.closest("[data-weekly-report-date]");if(weeklyDate){state.weeklySelection=weeklyDate.dataset.weeklyReportDate;state.view="weekly";renderContent();return;}
-    var partner=e.target.closest("[data-partner-id]");if(partner){state.activePartnerId=partner.dataset.partnerId;state.view="partner";renderContent();return;}
+    var partner=e.target.closest("[data-partner-id]");if(partner){var pp=effectivePartners().find(function(x){return x.id===partner.dataset.partnerId;});if(pp)partnerInfoModal(pp);return;}
+    var clientEditPopup=e.target.closest("[data-client-edit-popup]");if(clientEditPopup){var ce=state.clients.find(function(x){return x.id===clientEditPopup.dataset.clientEditPopup;});if(ce)clientForm(ce);return;}
+    var partnerEditPopup=e.target.closest("[data-partner-edit-popup]");if(partnerEditPopup){var pe=state.tradePartners.find(function(x){return x.id===partnerEditPopup.dataset.partnerEditPopup;});if(pe)partnerForm(pe);return;}
     if(e.target.closest("[data-partner-import]")){$("#partnerImport").click();return;}
     if(e.target.closest("[data-partner-new]")){partnerForm({});return;}
     var pedit=e.target.closest("[data-partner-edit]");if(pedit){var pp=state.tradePartners.find(function(x){return x.id===pedit.dataset.partnerEdit;});if(pp)partnerForm(pp);return;}
