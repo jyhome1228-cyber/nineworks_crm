@@ -1,12 +1,36 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+let initializeApp,getAuth,setPersistence,browserLocalPersistence,signInWithEmailAndPassword,signOut,onAuthStateChanged;
+let getFirestore,collection,doc,getDoc,setDoc,onSnapshot,serverTimestamp,writeBatch;
+let firebaseApp=null,auth={currentUser:null},db=null,firebaseReady=false;
 
 const config={apiKey:"AIzaSyBXhDb0jyhIR4G1ho6Y7V8sibwvENI2r8k",authDomain:"nineworks-crm.firebaseapp.com",projectId:"nineworks-crm",storageBucket:"nineworks-crm.firebasestorage.app",messagingSenderId:"1096147745343",appId:"1:1096147745343:web:cbec82631cbc2d9db1968a"};
-const firebaseApp=initializeApp(config);
-const auth=getAuth(firebaseApp);
-const db=getFirestore(firebaseApp);
-setPersistence(auth,browserLocalPersistence).catch(function(){});
+
+async function initFirebase(){
+  try{
+    const [appMod,authMod,storeMod]=await Promise.all([
+      import("https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js"),
+      import("https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js")
+    ]);
+    initializeApp=appMod.initializeApp;
+    getAuth=authMod.getAuth;setPersistence=authMod.setPersistence;browserLocalPersistence=authMod.browserLocalPersistence;
+    signInWithEmailAndPassword=authMod.signInWithEmailAndPassword;signOut=authMod.signOut;onAuthStateChanged=authMod.onAuthStateChanged;
+    getFirestore=storeMod.getFirestore;collection=storeMod.collection;doc=storeMod.doc;getDoc=storeMod.getDoc;setDoc=storeMod.setDoc;
+    onSnapshot=storeMod.onSnapshot;serverTimestamp=storeMod.serverTimestamp;writeBatch=storeMod.writeBatch;
+    firebaseApp=initializeApp(config);
+    auth=getAuth(firebaseApp);
+    db=getFirestore(firebaseApp);
+    firebaseReady=true;
+    setPersistence(auth,browserLocalPersistence).catch(function(){});
+    onAuthStateChanged(auth,function(user){
+      if(!gateUnlocked())return;
+      if(user){subscribe(user);}
+    });
+  }catch(err){
+    console.warn("Firebase lazy init failed; test mode remains available.",err);
+    firebaseReady=false;
+  }
+}
+
 
 const $=function(s,r){return (r||document).querySelector(s);};
 const esc=function(v){return String(v==null?"":v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");};
@@ -86,11 +110,11 @@ function lockApp(){
 }
 
 function gateUnlocked(){return sessionStorage.getItem("nineworks_crm_unlocked")==="1";}
-function testMode(){return !auth.currentUser;}
+function testMode(){return !(auth&&auth.currentUser);}
 function lockApp(){
   sessionStorage.removeItem("nineworks_crm_unlocked");
   cleanup();
-  state.user=auth.currentUser||null;
+  state.user=(auth&&auth.currentUser)||null;
   state.profile=null;
   $("#app").innerHTML=loginView();
   bindLogin();
@@ -766,7 +790,7 @@ async function subscribe(user){
 
 function enterTestWorkspace(){
   cleanup();
-  state.user=auth.currentUser||null;
+  state.user=(auth&&auth.currentUser)||null;
   state.profile=state.user?state.profile:{name:"박재영",role:"TEST MODE"};
   $("#app").innerHTML=shell();
   bindGlobal();
@@ -793,21 +817,24 @@ function bindLogin(){
     }
     sessionStorage.setItem("nineworks_crm_unlocked","1");
     msg.textContent="";
-    if(auth.currentUser){
-      await subscribe(auth.currentUser);
-    }else{
-      enterTestWorkspace();
+    enterTestWorkspace();
+    if(firebaseReady&&(auth&&auth.currentUser)){
+      await subscribe((auth&&auth.currentUser));
     }
   });
 }
-onAuthStateChanged(auth,function(user){
-  if(gateUnlocked()){
-    if(user){subscribe(user);}else{enterTestWorkspace();}
-    return;
+
+
+
+function bootImmediate(){
+  try{
+    $("#app").innerHTML=loginView();
+    bindLogin();
+  }catch(err){
+    console.error("Immediate gate render failed",err);
+    var root=document.getElementById("app");
+    if(root)root.innerHTML='<div style="min-height:100vh;background:#080808;color:#fff;display:grid;place-items:center;font-family:Arial,sans-serif"><div style="text-align:center"><strong>NINEWORKS CRM</strong><p style="font-size:12px;color:#888">화면을 불러오지 못했습니다. 새로고침해 주세요.</p></div></div>';
   }
-  cleanup();
-  state.user=user||null;
-  state.profile=null;
-  $("#app").innerHTML=loginView();
-  bindLogin();
-});
+  initFirebase();
+}
+bootImmediate();
