@@ -217,31 +217,19 @@ function clientList(){
 function shell(){
   return '<div class="site-shell">'+
   '<header class="site-header">'+
-    '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS"><span class="site-kicker">NINEWORKS / CRM</span></div>'+
-    '<div class="site-header-right"><span class="site-meta">WORK MANAGEMENT SYSTEM · 2026</span><button class="header-action" id="addWorkLog">WORK LOG ↗</button><button class="header-action solid" id="addMeeting">MEETING ↗</button><button class="header-menu" id="mobileClients">MENU</button></div>'+
+    '<div class="site-header-left"><img class="site-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS"><strong class="site-title">NINEWORKS CRM</strong></div>'+
+    '<div class="site-header-right"><button class="header-action" id="addWorkLog">업무기록</button><button class="header-action" id="addMeeting">미팅기록</button><button class="header-action" id="logoutBtn">잠금</button><button class="header-menu" id="mobileClients">메뉴</button></div>'+
   '</header>'+
   '<div class="workspace">'+
-    '<aside id="sidebar" class="sidebar compact-main-nav">'+
-      '<div class="nav-group-label">NINEWORKS CRM</div>'+
-      '<nav class="desk-nav primary-four-nav">'+
-        '<button class="desk-nav-item '+(["desk","projects","journal","reports","weekly"].includes(state.view)?"active":"")+'" data-workdesk><span>01</span><strong>업무</strong><small>오늘 업무 / 업무보고 / 프로젝트</small></button>'+
-        '<button class="desk-nav-item '+(["finance"].includes(state.view)?"active":"")+'" data-finance-nav><span>02</span><strong>세무</strong><small>SALES / TAX / CONTRACT</small></button>'+
-        '<button class="desk-nav-item '+(["clients","client","partner"].includes(state.view)?"active":"")+'" data-client-index><span>03</span><strong>거래처관리</strong><small>CLIENT / PARTNER MASTER</small></button>'+
-        '<button class="desk-nav-item '+(state.view==="meetings"?"active":"")+'" data-meetings-nav><span>04</span><strong>미팅관리</strong><small>MEETING / FOLLOW-UP</small></button>'+
+    '<aside id="sidebar" class="sidebar simple-main-nav">'+
+      '<nav class="main-five-nav">'+
+        '<button class="'+(state.view==="daily"?"active":"")+'" data-daily-nav>일간업무보고</button>'+
+        '<button class="'+(state.view==="weekly"?"active":"")+'" data-weekly-nav>주간업무보고</button>'+
+        '<button class="'+(state.view==="monthly"?"active":"")+'" data-monthly-nav>월간업무보고</button>'+
+        '<button class="'+(state.view==="finance"?"active":"")+'" data-finance-nav>세금계산서관리</button>'+
+        '<button class="'+(["clients","client","partner"].includes(state.view)?"active":"")+'" data-client-index>거래처관리</button>'+
       '</nav>'+
-      '<nav class="work-subnav" aria-label="업무 세부 메뉴">'+
-        '<button class="'+(state.view==="desk"?"active":"")+'" data-workdesk>오늘 업무</button>'+
-        '<button class="'+(["reports","weekly"].includes(state.view)?"active":"")+'" data-reports-nav>업무보고</button>'+
-        '<button class="'+(state.view==="projects"?"active":"")+'" data-projects-nav>프로젝트</button>'+
-        '<button class="'+(state.view==="journal"?"active":"")+'" data-journal-nav>업무일지</button>'+
-      '</nav>'+
-      '<div class="client-side-area">'+
-        '<div class="side-intro"><p class="eyebrow">CLIENT INDEX</p><h2>Clients</h2><p>현재 진행 중인 클라이언트를 빠르게 확인합니다.</p></div>'+
-        '<label class="client-search"><input id="clientSearch" type="search" placeholder="SEARCH CLIENT"></label>'+
-        '<div id="clientList" class="client-list">'+clientList()+'</div>'+
-        '<div class="side-actions"><button class="btn primary" id="addClient">＋ ADD CLIENT</button></div>'+
-      '</div>'+
-      '<div class="side-user-area"><div class="user-mini"><strong>'+esc(state.profile&&state.profile.name||state.user&&state.user.email||"NINEWORKS")+'</strong><span>'+esc(state.profile&&state.profile.role||"OWNER")+'</span></div><button class="btn" id="logoutBtn">LOCK ↗</button></div>'+
+      '<div class="side-user-area"><div class="user-mini"><strong>'+esc(state.profile&&state.profile.name||state.user&&state.user.email||"NINEWORKS")+'</strong></div></div>'+
     '</aside>'+
     '<main class="main"><div id="content" class="content"></div></main>'+
   '</div>'+
