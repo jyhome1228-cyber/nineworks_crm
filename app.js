@@ -84,27 +84,28 @@ function lockApp(){
   $("#app").innerHTML=loginView();
   bindLogin();
 }
+const CRM_ACCESS_CODE="1228";
+function gateUnlocked(){return sessionStorage.getItem("nineworks_crm_unlocked")==="1";}
+function testMode(){return !auth.currentUser;}
+function lockApp(){
+  sessionStorage.removeItem("nineworks_crm_unlocked");
+  cleanup();
+  state.user=auth.currentUser||null;
+  state.profile=null;
+  $("#app").innerHTML=loginView();
+  bindLogin();
+}
 function loginView(){
   return '<div class="crm-gate">'+
     '<div class="crm-gate-splash" id="loginSplash"><img src="./assets/nineworks-renewal-logo.svg" alt=""></div>'+
     '<main class="crm-gate-center">'+
       '<img class="crm-gate-logo" src="./assets/nineworks-renewal-logo.svg" alt="NINEWORKS">'+
-      '<p class="crm-gate-label">NINEWORKS CRM</p>'+
       '<h1>NINEWORKS CRM</h1>'+
       '<form id="loginForm" class="crm-gate-form">'+
         '<input id="crmPasscode" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="PASSWORD" aria-label="비밀번호" required>'+
         '<button type="submit">ENTER</button>'+
         '<p id="loginMsg"></p>'+
       '</form>'+
-      '<section id="firebaseRecovery" class="firebase-recovery" hidden>'+
-        '<p>이 기기에는 관리자 세션이 없습니다. 최초 1회 관리자 계정을 연결해 주세요.</p>'+
-        '<form id="firebaseRecoveryForm">'+
-          '<input id="recoveryEmail" type="email" autocomplete="email" placeholder="관리자 이메일" required>'+
-          '<input id="recoveryPassword" type="password" autocomplete="current-password" placeholder="관리자 비밀번호" required>'+
-          '<button type="submit">관리자 연결</button>'+
-          '<small id="recoveryMsg"></small>'+
-        '</form>'+
-      '</section>'+
     '</main>'+
     '<footer class="crm-gate-footer">© 2026 NINEWORKS</footer>'+
   '</div>';
@@ -640,10 +641,12 @@ function meetingForm(){
 }
 
 async function saveLog(payload){
+  if(!state.user){toast("테스트 보기 모드에서는 저장되지 않습니다.");return;}
   var id=uid("log");
   await setDoc(doc(db,"workLogs",id),Object.assign({id:id,createdAt:serverTimestamp(),createdAtMs:Date.now(),updatedBy:state.user.uid},payload));
 }
 async function completeTask(id){
+  if(!state.user){toast("테스트 보기 모드에서는 저장되지 않습니다.");return;}
   var t=state.todos.find(function(x){return x.id===id;});
   if(!t||t.done)return;
   var c=clientForTask(t);
@@ -761,6 +764,15 @@ async function subscribe(user){
   state.unsubs.push(onSnapshot(collection(db,"financeContracts"),function(snap){state.contracts=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});renderContent();},function(err){console.warn("financeContracts unavailable",err);state.contracts=[];renderContent();}));
 }
 
+function enterTestWorkspace(){
+  cleanup();
+  state.user=auth.currentUser||null;
+  state.profile=state.user?state.profile:{name:"박재영",role:"TEST MODE"};
+  $("#app").innerHTML=shell();
+  bindGlobal();
+  renderContent();
+  runOpeningIntro();
+}
 function bindLogin(){
   var splash=$("#loginSplash");
   if(splash){
@@ -783,31 +795,14 @@ function bindLogin(){
     msg.textContent="";
     if(auth.currentUser){
       await subscribe(auth.currentUser);
-      return;
+    }else{
+      enterTestWorkspace();
     }
-    $("#firebaseRecovery").hidden=false;
-    msg.textContent="최초 1회 관리자 세션 연결이 필요합니다.";
   });
-
-  var recovery=$("#firebaseRecoveryForm");
-  if(recovery){
-    recovery.addEventListener("submit",async function(e){
-      e.preventDefault();
-      var msg=$("#recoveryMsg");msg.textContent="연결 중...";
-      try{
-        await signInWithEmailAndPassword(auth,$("#recoveryEmail").value.trim(),$("#recoveryPassword").value);
-        sessionStorage.setItem("nineworks_crm_unlocked","1");
-        msg.textContent="";
-      }catch(err){
-        console.error(err);
-        msg.textContent="관리자 계정 정보를 확인하세요.";
-      }
-    });
-  }
 }
 onAuthStateChanged(auth,function(user){
-  if(user&&gateUnlocked()){
-    subscribe(user);
+  if(gateUnlocked()){
+    if(user){subscribe(user);}else{enterTestWorkspace();}
     return;
   }
   cleanup();
